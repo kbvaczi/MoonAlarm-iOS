@@ -7,21 +7,33 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1DE8080564805DD63BDED175 /* Pods_MoonAlarm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB536FAF4678E609899C8429 /* Pods_MoonAlarm.framework */; };
 		BE390B8D2001488D00CFD46B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE390B8C2001488D00CFD46B /* AppDelegate.swift */; };
-		BE390B8F2001488D00CFD46B /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE390B8E2001488D00CFD46B /* ViewController.swift */; };
 		BE390B922001488D00CFD46B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BE390B902001488D00CFD46B /* Main.storyboard */; };
 		BE390B942001488D00CFD46B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BE390B932001488D00CFD46B /* Assets.xcassets */; };
 		BE390B972001488D00CFD46B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BE390B952001488D00CFD46B /* LaunchScreen.storyboard */; };
+		BE390BA020015AD500CFD46B /* BinanceAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE390B9F20015AD500CFD46B /* BinanceAPI.swift */; };
+		BE390BA220024B0100CFD46B /* CandleStick.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE390BA120024B0100CFD46B /* CandleStick.swift */; };
+		BE390BA62002507B00CFD46B /* MoonAlarmTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE390BA52002507B00CFD46B /* MoonAlarmTableViewController.swift */; };
+		BE390BA8200251F200CFD46B /* CoinTradingDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE390BA7200251F200CFD46B /* CoinTradingDetail.swift */; };
+		BE390BAA20026D0500CFD46B /* TradingCalcs.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE390BA920026D0500CFD46B /* TradingCalcs.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		12326CE732BB79C8E07E3DF8 /* Pods-MoonAlarm.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MoonAlarm.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MoonAlarm/Pods-MoonAlarm.debug.xcconfig"; sourceTree = "<group>"; };
+		3C27DFFC651EBF346E22BAD9 /* Pods-MoonAlarm.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MoonAlarm.release.xcconfig"; path = "Pods/Target Support Files/Pods-MoonAlarm/Pods-MoonAlarm.release.xcconfig"; sourceTree = "<group>"; };
+		BB536FAF4678E609899C8429 /* Pods_MoonAlarm.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MoonAlarm.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE390B892001488D00CFD46B /* MoonAlarm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MoonAlarm.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE390B8C2001488D00CFD46B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		BE390B8E2001488D00CFD46B /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		BE390B912001488D00CFD46B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		BE390B932001488D00CFD46B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		BE390B962001488D00CFD46B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		BE390B982001488D00CFD46B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BE390B9F20015AD500CFD46B /* BinanceAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinanceAPI.swift; sourceTree = "<group>"; };
+		BE390BA120024B0100CFD46B /* CandleStick.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CandleStick.swift; sourceTree = "<group>"; };
+		BE390BA52002507B00CFD46B /* MoonAlarmTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoonAlarmTableViewController.swift; sourceTree = "<group>"; };
+		BE390BA7200251F200CFD46B /* CoinTradingDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoinTradingDetail.swift; sourceTree = "<group>"; };
+		BE390BA920026D0500CFD46B /* TradingCalcs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradingCalcs.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -29,17 +41,37 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1DE8080564805DD63BDED175 /* Pods_MoonAlarm.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0863ED533BC0137F179C2FD5 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				BB536FAF4678E609899C8429 /* Pods_MoonAlarm.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		8CE19EB6F85AED5810747D89 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				12326CE732BB79C8E07E3DF8 /* Pods-MoonAlarm.debug.xcconfig */,
+				3C27DFFC651EBF346E22BAD9 /* Pods-MoonAlarm.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		BE390B802001488D00CFD46B = {
 			isa = PBXGroup;
 			children = (
 				BE390B8B2001488D00CFD46B /* MoonAlarm */,
 				BE390B8A2001488D00CFD46B /* Products */,
+				8CE19EB6F85AED5810747D89 /* Pods */,
+				0863ED533BC0137F179C2FD5 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -55,13 +87,41 @@
 			isa = PBXGroup;
 			children = (
 				BE390B8C2001488D00CFD46B /* AppDelegate.swift */,
-				BE390B8E2001488D00CFD46B /* ViewController.swift */,
-				BE390B902001488D00CFD46B /* Main.storyboard */,
 				BE390B932001488D00CFD46B /* Assets.xcassets */,
 				BE390B952001488D00CFD46B /* LaunchScreen.storyboard */,
 				BE390B982001488D00CFD46B /* Info.plist */,
+				BE390B9E20015ABE00CFD46B /* Models */,
+				BE390BA320024F8100CFD46B /* View Controllers */,
+				BE390BA420024FA500CFD46B /* Views */,
 			);
 			path = MoonAlarm;
+			sourceTree = "<group>";
+		};
+		BE390B9E20015ABE00CFD46B /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				BE390B9F20015AD500CFD46B /* BinanceAPI.swift */,
+				BE390BA120024B0100CFD46B /* CandleStick.swift */,
+				BE390BA7200251F200CFD46B /* CoinTradingDetail.swift */,
+				BE390BA920026D0500CFD46B /* TradingCalcs.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		BE390BA320024F8100CFD46B /* View Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				BE390BA52002507B00CFD46B /* MoonAlarmTableViewController.swift */,
+			);
+			path = "View Controllers";
+			sourceTree = "<group>";
+		};
+		BE390BA420024FA500CFD46B /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				BE390B902001488D00CFD46B /* Main.storyboard */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -71,9 +131,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = BE390B9B2001488D00CFD46B /* Build configuration list for PBXNativeTarget "MoonAlarm" */;
 			buildPhases = (
+				DC8B1F561A13116DBAF7DFA7 /* [CP] Check Pods Manifest.lock */,
 				BE390B852001488D00CFD46B /* Sources */,
 				BE390B862001488D00CFD46B /* Frameworks */,
 				BE390B872001488D00CFD46B /* Resources */,
+				73B75C95897BA883B95F8E2F /* [CP] Embed Pods Frameworks */,
+				74B1252E793DBA76295B2914 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -131,13 +194,75 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		73B75C95897BA883B95F8E2F /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-MoonAlarm/Pods-MoonAlarm-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
+				"${BUILT_PRODUCTS_DIR}/AlamofireSwiftyJSON/AlamofireSwiftyJSON.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftyJSON/SwiftyJSON.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AlamofireSwiftyJSON.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyJSON.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MoonAlarm/Pods-MoonAlarm-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		74B1252E793DBA76295B2914 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MoonAlarm/Pods-MoonAlarm-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		DC8B1F561A13116DBAF7DFA7 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-MoonAlarm-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		BE390B852001488D00CFD46B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BE390B8F2001488D00CFD46B /* ViewController.swift in Sources */,
+				BE390BA020015AD500CFD46B /* BinanceAPI.swift in Sources */,
+				BE390BA220024B0100CFD46B /* CandleStick.swift in Sources */,
+				BE390BAA20026D0500CFD46B /* TradingCalcs.swift in Sources */,
+				BE390BA62002507B00CFD46B /* MoonAlarmTableViewController.swift in Sources */,
 				BE390B8D2001488D00CFD46B /* AppDelegate.swift in Sources */,
+				BE390BA8200251F200CFD46B /* CoinTradingDetail.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -272,6 +397,7 @@
 		};
 		BE390B9C2001488D00CFD46B /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 12326CE732BB79C8E07E3DF8 /* Pods-MoonAlarm.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -287,6 +413,7 @@
 		};
 		BE390B9D2001488D00CFD46B /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3C27DFFC651EBF346E22BAD9 /* Pods-MoonAlarm.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
