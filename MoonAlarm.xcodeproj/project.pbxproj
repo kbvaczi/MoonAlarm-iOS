@@ -15,8 +15,11 @@
 		BE390BA020015AD500CFD46B /* BinanceAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE390B9F20015AD500CFD46B /* BinanceAPI.swift */; };
 		BE390BA220024B0100CFD46B /* CandleStick.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE390BA120024B0100CFD46B /* CandleStick.swift */; };
 		BE390BA62002507B00CFD46B /* MoonAlarmTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE390BA52002507B00CFD46B /* MoonAlarmTableViewController.swift */; };
-		BE390BA8200251F200CFD46B /* CoinTradingDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE390BA7200251F200CFD46B /* CoinTradingDetail.swift */; };
-		BE390BAA20026D0500CFD46B /* TradingCalcs.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE390BA920026D0500CFD46B /* TradingCalcs.swift */; };
+		BE9E3C9420043429005D531C /* CandleSticks.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E3C9320043429005D531C /* CandleSticks.swift */; };
+		BE9E3C9620044CD9005D531C /* TimeAliases.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E3C9520044CD9005D531C /* TimeAliases.swift */; };
+		BE9E3C9B20045189005D531C /* MarketSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E3C9A20045189005D531C /* MarketSnapshot.swift */; };
+		BE9E3C9D200452A9005D531C /* PercentAlias.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E3C9C200452A9005D531C /* PercentAlias.swift */; };
+		BE9E3C9F20045467005D531C /* MarketSnapshots.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E3C9E20045467005D531C /* MarketSnapshots.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,8 +35,11 @@
 		BE390B9F20015AD500CFD46B /* BinanceAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinanceAPI.swift; sourceTree = "<group>"; };
 		BE390BA120024B0100CFD46B /* CandleStick.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CandleStick.swift; sourceTree = "<group>"; };
 		BE390BA52002507B00CFD46B /* MoonAlarmTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoonAlarmTableViewController.swift; sourceTree = "<group>"; };
-		BE390BA7200251F200CFD46B /* CoinTradingDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoinTradingDetail.swift; sourceTree = "<group>"; };
-		BE390BA920026D0500CFD46B /* TradingCalcs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradingCalcs.swift; sourceTree = "<group>"; };
+		BE9E3C9320043429005D531C /* CandleSticks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CandleSticks.swift; sourceTree = "<group>"; };
+		BE9E3C9520044CD9005D531C /* TimeAliases.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeAliases.swift; sourceTree = "<group>"; };
+		BE9E3C9A20045189005D531C /* MarketSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketSnapshot.swift; sourceTree = "<group>"; };
+		BE9E3C9C200452A9005D531C /* PercentAlias.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PercentAlias.swift; sourceTree = "<group>"; };
+		BE9E3C9E20045467005D531C /* MarketSnapshots.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketSnapshots.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,6 +96,7 @@
 				BE390B932001488D00CFD46B /* Assets.xcassets */,
 				BE390B952001488D00CFD46B /* LaunchScreen.storyboard */,
 				BE390B982001488D00CFD46B /* Info.plist */,
+				BE9E3C9720044FA1005D531C /* Connections */,
 				BE390B9E20015ABE00CFD46B /* Models */,
 				BE390BA320024F8100CFD46B /* View Controllers */,
 				BE390BA420024FA500CFD46B /* Views */,
@@ -100,10 +107,8 @@
 		BE390B9E20015ABE00CFD46B /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				BE390B9F20015AD500CFD46B /* BinanceAPI.swift */,
-				BE390BA120024B0100CFD46B /* CandleStick.swift */,
-				BE390BA7200251F200CFD46B /* CoinTradingDetail.swift */,
-				BE390BA920026D0500CFD46B /* TradingCalcs.swift */,
+				BE9E3C9820044FC1005D531C /* General */,
+				BE9E3C9920044FC8005D531C /* Trading */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -122,6 +127,34 @@
 				BE390B902001488D00CFD46B /* Main.storyboard */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		BE9E3C9720044FA1005D531C /* Connections */ = {
+			isa = PBXGroup;
+			children = (
+				BE390B9F20015AD500CFD46B /* BinanceAPI.swift */,
+			);
+			path = Connections;
+			sourceTree = "<group>";
+		};
+		BE9E3C9820044FC1005D531C /* General */ = {
+			isa = PBXGroup;
+			children = (
+				BE9E3C9520044CD9005D531C /* TimeAliases.swift */,
+				BE9E3C9C200452A9005D531C /* PercentAlias.swift */,
+			);
+			path = General;
+			sourceTree = "<group>";
+		};
+		BE9E3C9920044FC8005D531C /* Trading */ = {
+			isa = PBXGroup;
+			children = (
+				BE9E3C9320043429005D531C /* CandleSticks.swift */,
+				BE390BA120024B0100CFD46B /* CandleStick.swift */,
+				BE9E3C9A20045189005D531C /* MarketSnapshot.swift */,
+				BE9E3C9E20045467005D531C /* MarketSnapshots.swift */,
+			);
+			path = Trading;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -219,7 +252,7 @@
 		};
 		74B1252E793DBA76295B2914 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 8;
 			files = (
 			);
 			inputPaths = (
@@ -227,10 +260,9 @@
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
+			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MoonAlarm/Pods-MoonAlarm-resources.sh\"\n";
-			showEnvVarsInLog = 0;
 		};
 		DC8B1F561A13116DBAF7DFA7 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -258,11 +290,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				BE390BA020015AD500CFD46B /* BinanceAPI.swift in Sources */,
+				BE9E3C9F20045467005D531C /* MarketSnapshots.swift in Sources */,
 				BE390BA220024B0100CFD46B /* CandleStick.swift in Sources */,
-				BE390BAA20026D0500CFD46B /* TradingCalcs.swift in Sources */,
+				BE9E3C9620044CD9005D531C /* TimeAliases.swift in Sources */,
+				BE9E3C9B20045189005D531C /* MarketSnapshot.swift in Sources */,
 				BE390BA62002507B00CFD46B /* MoonAlarmTableViewController.swift in Sources */,
 				BE390B8D2001488D00CFD46B /* AppDelegate.swift in Sources */,
-				BE390BA8200251F200CFD46B /* CoinTradingDetail.swift in Sources */,
+				BE9E3C9D200452A9005D531C /* PercentAlias.swift in Sources */,
+				BE9E3C9420043429005D531C /* CandleSticks.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -400,12 +435,14 @@
 			baseConfigurationReference = 12326CE732BB79C8E07E3DF8 /* Pods-MoonAlarm.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 9TGE3BXSJD;
 				INFOPLIST_FILE = MoonAlarm/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = vaczoway.MoonAlarm;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -416,12 +453,14 @@
 			baseConfigurationReference = 3C27DFFC651EBF346E22BAD9 /* Pods-MoonAlarm.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 9TGE3BXSJD;
 				INFOPLIST_FILE = MoonAlarm/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = vaczoway.MoonAlarm;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

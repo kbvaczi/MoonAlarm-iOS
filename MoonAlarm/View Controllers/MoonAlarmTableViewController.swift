@@ -12,7 +12,7 @@ class MoonAlarmTableViewController: UITableViewController {
 
     var tradingPair = "BTC"
     var symbols = [String]()
-    var tradingDetails = [CoinTradingDetail]()
+    var marketSnapshots = MarketSnapshots()
     var updateTimer = Timer()
     
     override func viewDidLoad() {
@@ -36,15 +36,15 @@ class MoonAlarmTableViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return tradingDetails.count
+        return marketSnapshots.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "tradeDetailCell", for: indexPath)
-        let tDetail = tradingDetails[indexPath.row]
+        let snapshot = marketSnapshots[indexPath.row]
         
-        cell.textLabel?.text = tDetail.symbol
-        cell.detailTextLabel?.text = "$: \(tDetail.priceIncreasePercent)%  VR: \(tDetail.volumeRatio)"
+        cell.textLabel?.text = snapshot.symbol
+        cell.detailTextLabel?.text = "$: \(snapshot.candleSticks.priceIsIncreasing)%  VR: \(snapshot.volumeRatio1To15M) #R:\(snapshot.tradesRatio1To15M)"
 
         return cell
     }
@@ -60,37 +60,54 @@ class MoonAlarmTableViewController: UITableViewController {
     
     private func updateSymbolData(callback: @escaping () -> Void) {
         // remove outdated information
-        self.tradingDetails = []
+        self.marketSnapshots.removeAll()
         
         // use a dispatch group to keep track of how many symbols we've updated
         let dpG = DispatchGroup()
         
         for symbol in symbols {
-            dpG.enter()
-            let newDetail = CoinTradingDetail(symbol: symbol)
+            dpG.enter() // enter dispatch queue
+            let newSnapshot = MarketSnapshot(symbol: symbol)
             let symbolPair = symbol + tradingPair
-            
-            BinanceAPI.instance.getVolumeRatio(symbolPair: symbolPair, last: .m15, forPeriod: 4){
-                (isSuccess, volRatio, candlesticks) in
+
+            BinanceAPI.instance.getKLineData(symbolPair: symbolPair, interval: .m1, limit: 15) {
+                (isSuccess, cSticks) in
                 if isSuccess {
-                    newDetail.volumeRatio = volRatio
-                }
-                BinanceAPI.instance.getPriceRatio(symbolPair: symbolPair, last: .m1, forPeriod: 5) {
-                    (isSuccess, pRatio, candlesticks) in
-                    if isSuccess {
-                        newDetail.priceRatio = pRatio
+                    newSnapshot.candleSticks = cSticks
+                    if  newSnapshot.candleSticks.last!.pairVolume > 3 &&
+                        newSnapshot.candleSticks.priceIsIncreasing {
+                            self.marketSnapshots.append(newSnapshot)
                     }
-                    if pRatio > 1 {
-                        self.tradingDetails.append(newDetail)
-                    }
-                    dpG.leave()
+                    
                 }
+                dpG.leave() // leave dispatch queue
             }
+            
+//            BinanceAPI.instance.getVolumeRatio(symbolPair: symbolPair, last: .m15, forPeriod: 4){
+//                (isSuccess, volRatio, candlesticks) in
+//                if isSuccess {
+//                    newDetail.volumeRatio = volRatio
+//                }
+//                BinanceAPI.instance.getPriceRatio(symbolPair: symbolPair, last: .m1, forPeriod: 5) {
+//                    (isSuccess, pRatio, candlesticks) in
+//                    if isSuccess {
+//                        newDetail.priceRatio = pRatio
+
+//                    }
+//                    let lastVolume = candlesticks.last!.volume
+//                    let pairEquivalentVolume = lastVolume * candlesticks.last!.closePrice
+//                    let toBeDisplayed = pRatio > 1 && volRatio >= 1 && pairEquivalentVolume > 3
+//                    if toBeDisplayed {
+//                        self.tradingDetails.append(newDetail)
+//                    }
+//                    dpG.leave()
+//                }
+//            }
         }
         
         // when all API calls are returned, run callback
         dpG.notify(queue: .main) {
-            self.tradingDetails = self.tradingDetails.sorted(by: { $0.volumeRatio > $1.volumeRatio })
+            self.marketSnapshots = self.marketSnapshots.sorted(by: { $0.volumeRatio1To15M > $1.volumeRatio1To15M })
             callback()
         }
     }
