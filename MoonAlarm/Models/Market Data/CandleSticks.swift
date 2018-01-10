@@ -45,37 +45,50 @@ extension Array where Element : CandleStick {
     var volumeRatio1To15M: Double? {
         guard   let stickDuration = self.stickDuration,
                 let currentStick = self.last,
+                let volumeAvg15M = self.volumeAvg15M,
                 let currentStickDuration = self.currentStickDuration else { return nil }
         
-        let M15 = (15 as Minutes).minutesToSeconds()
-        let sticks15MCount = Int(M15 / round(stickDuration))
-        let sticks15M = self.suffix(sticks15MCount)
-        let volume15MTotal = sticks15M.map({ $0.volume }).reduce(0, +)
-        let volume15MAvg = volume15MTotal / Double(sticks15MCount)
+        guard stickDuration > 0 else { return nil }
         
         let volumeCurrent = currentStick.volume
-        let volumeCurrentNormalized = volumeCurrent * 60 / currentStickDuration
+//        let volumeCurrentNormalized = volumeCurrent * 60 / currentStickDuration
         
-        let volRatio = volumeCurrent / volume15MAvg
+        let volRatio = volumeCurrent / volumeAvg15M
         let roundedVolRatio = round(volRatio * 100) / 100
         
         return roundedVolRatio
     }
     
-    // last candlestick volume normalized to 1-minute over average 15-minute volume
+    // average volume over 15 minutes
+    var volumeAvg15M: Double? {
+        guard   let stickDuration = self.stickDuration,
+                let currentStick = self.last else { return nil }
+        
+        guard stickDuration > 0 else { return nil }
+        
+        let M15 = (15 as Minutes).minutesToSeconds()
+        let sticks15MCount = Int(M15 / round(stickDuration))
+        let sticks15M = self.suffix(sticks15MCount)
+        let volume15MAvg = sticks15M.map({ $0.volume }).reduce(0, { $0 + $1 / Double(sticks15MCount) })
+        
+        return volume15MAvg
+    }
+    
+    // number of trades conducted within last minute vs 15-minute running average
     var tradesRatio1To15M: Double? {
         guard   let stickDuration = self.stickDuration,
             let currentStick = self.last,
             let currentStickDuration = self.currentStickDuration else { return nil }
         
+        guard stickDuration > 0 else { return nil }
+        
         let M15 = (15 as Minutes).minutesToSeconds()
         let sticks15MCount = Int(M15 / round(stickDuration))
         let sticks15M = self.suffix(sticks15MCount)
-        let trades15MTotal = sticks15M.map({ $0.tradesCount }).reduce(0, +)
-        let trades15MAvg = Double(trades15MTotal) / Double(sticks15MCount)
+        let trades15MAvg = sticks15M.map({ Double($0.tradesCount) }).reduce(0, { $0 + $1 / Double(sticks15MCount) })
         
         let tradesCurrent = currentStick.tradesCount
-        let tradesCurrentNormalized = Double(tradesCurrent) * 60 / currentStickDuration
+//        let tradesCurrentNormalized = Double(tradesCurrent) * 60 / currentStickDuration
         
         let tradesRatio = Double(tradesCurrent) / trades15MAvg
         let roundedTradesRatio = round(tradesRatio * 100) / 100
@@ -83,10 +96,12 @@ extension Array where Element : CandleStick {
         return roundedTradesRatio
     }
     
-    // last candlestick volume normalized to 1-minute over average 15-minute volume
+    // current price vs 3-minute running average
     var priceRatio1To3M: Double? {
         guard   let stickDuration = self.stickDuration,
                 let currentStick = self.last else { return nil }
+
+        guard stickDuration > 0 else { return nil }
         
         let M3 = (3 as Minutes).minutesToSeconds()
         let sticks3MCount = Int(M3 / round(stickDuration))

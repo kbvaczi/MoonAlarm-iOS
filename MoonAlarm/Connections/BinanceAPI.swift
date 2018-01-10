@@ -40,6 +40,17 @@ class BinanceAPI {
                 callback(false, [])
                 return
             }
+            guard jsonResponse["code"].intValue != -1003 else {
+                print("too many requests made")
+                callback(false, [])
+                return
+                
+                // Example data:
+                // { "code" : -1003, "msg" : "Way too many requests; IP banned until 1515547977300." }
+            }
+
+            
+            print(jsonResponse)
             
             // Data is an array of dictionaries
             // Example data: [{"price" : "0.05919500","symbol" : "ETHBTC"}]
@@ -85,6 +96,14 @@ class BinanceAPI {
                 callback(false, [])
                 return
             }
+            guard jsonResponse["code"].intValue != -1003 else {
+                print("too many requests made")
+                callback(false, [])
+                return
+                
+                // Example data:
+                // { "code" : -1003, "msg" : "Way too many requests; IP banned until 1515547977300." }
+            }
             
             // Data is an array of array (see example data in Candlestick initializer)
             for (_ ,cStickJson):(String, JSON) in jsonResponse {
@@ -94,60 +113,6 @@ class BinanceAPI {
             callback(true, candleSticks)
         }
     }
-    
-//    // getVolumeRatio Method
-//    // computes normalized trading volume for the last KLineInterval over the previous period
-//    // Parameters:
-//    //      symbolPair -    symbol for coin plus trading pair, ex: "LTCBTC"
-//    //      last -          kline interval to compare volume for
-//    //      forPeriod -     number of periods to compare, ex: last m5, forPeriod 4 looks at normalized volume
-//    //                      from last 5 minutes compared to the last 20 minutes
-//    // Returns: volume ratio, candlesticks
-//
-//    func getVolumeRatio(symbolPair: String, last: KLineInterval = .m5, forPeriod period: Int = 4,
-//                        callback: @escaping (_ isSuccessful: Bool, _ volRatio: Double,
-//                                             _ candleSticks: [CandleStick]) -> Void) {
-//
-//        getKLineData(symbolPair: symbolPair, interval: last, limit: period) {
-//            (isSuccess, candleSticks) in
-//
-//            guard isSuccess, candleSticks.count >= period else {
-//                callback(false, 0.0, [])
-//                return
-//            }
-//
-//            let volRatio = TradingCalcs.volumeRatio(cSticks: candleSticks, last: 1, period: period)
-//
-//            callback(true, volRatio, candleSticks)
-//        }
-//    }
-//
-//    // getPriceRatio Method
-//    // compares last close price for the last KLineInterval over the previous period
-//    // Parameters:
-//    //      symbolPair -    symbol for coin plus trading pair, ex: "LTCBTC"
-//    //      last -          kline interval to compare volume for
-//    //      forPeriod -     number of periods to compare, ex: last m1, forPeriod 5 looks at the last 1 minute price
-//    //                      compared to the average 5 minute price
-//    // Returns: price ratio, candlesticks
-//
-//    func getPriceRatio(symbolPair: String, last: KLineInterval = .m1, forPeriod period: Int = 5,
-//                        callback: @escaping (_ isSuccessful: Bool, _ volRatio: Double,
-//        _ candleSticks: [CandleStick]) -> Void) {
-//
-//        getKLineData(symbolPair: symbolPair, interval: last, limit: period) {
-//            (isSuccess, candleSticks) in
-//
-//            guard isSuccess, candleSticks.count >= period else {
-//                callback(false, 0.0, [])
-//                return
-//            }
-//
-//            let priceRatio = TradingCalcs.priceRatio(cSticks: candleSticks, last: 1, period: period)
-//
-//            callback(true, priceRatio, candleSticks)
-//        }
-//    }
 
     enum KLineInterval: String {
         case m1 = "1m"

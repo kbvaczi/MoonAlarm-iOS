@@ -20,6 +20,9 @@
 		BE9E3C9B20045189005D531C /* MarketSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E3C9A20045189005D531C /* MarketSnapshot.swift */; };
 		BE9E3C9D200452A9005D531C /* PercentAlias.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E3C9C200452A9005D531C /* PercentAlias.swift */; };
 		BE9E3C9F20045467005D531C /* MarketSnapshots.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E3C9E20045467005D531C /* MarketSnapshots.swift */; };
+		BE9E3CA1200588BA005D531C /* TradeSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E3CA0200588BA005D531C /* TradeSession.swift */; };
+		BE9E3CA420058F3B005D531C /* Trade.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E3CA320058F3B005D531C /* Trade.swift */; };
+		BE9E3CA720059458005D531C /* Trades.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E3CA620059458005D531C /* Trades.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +43,9 @@
 		BE9E3C9A20045189005D531C /* MarketSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketSnapshot.swift; sourceTree = "<group>"; };
 		BE9E3C9C200452A9005D531C /* PercentAlias.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PercentAlias.swift; sourceTree = "<group>"; };
 		BE9E3C9E20045467005D531C /* MarketSnapshots.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketSnapshots.swift; sourceTree = "<group>"; };
+		BE9E3CA0200588BA005D531C /* TradeSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradeSession.swift; sourceTree = "<group>"; };
+		BE9E3CA320058F3B005D531C /* Trade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Trade.swift; sourceTree = "<group>"; };
+		BE9E3CA620059458005D531C /* Trades.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Trades.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,6 +114,7 @@
 			isa = PBXGroup;
 			children = (
 				BE9E3C9820044FC1005D531C /* General */,
+				BE9E3CA220058E09005D531C /* Market Data */,
 				BE9E3C9920044FC8005D531C /* Trading */,
 			);
 			path = Models;
@@ -149,12 +156,22 @@
 		BE9E3C9920044FC8005D531C /* Trading */ = {
 			isa = PBXGroup;
 			children = (
+				BE9E3CA0200588BA005D531C /* TradeSession.swift */,
+				BE9E3CA320058F3B005D531C /* Trade.swift */,
+				BE9E3CA620059458005D531C /* Trades.swift */,
+			);
+			path = Trading;
+			sourceTree = "<group>";
+		};
+		BE9E3CA220058E09005D531C /* Market Data */ = {
+			isa = PBXGroup;
+			children = (
 				BE9E3C9320043429005D531C /* CandleSticks.swift */,
 				BE390BA120024B0100CFD46B /* CandleStick.swift */,
 				BE9E3C9A20045189005D531C /* MarketSnapshot.swift */,
 				BE9E3C9E20045467005D531C /* MarketSnapshots.swift */,
 			);
-			path = Trading;
+			path = "Market Data";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -290,6 +307,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				BE390BA020015AD500CFD46B /* BinanceAPI.swift in Sources */,
+				BE9E3CA420058F3B005D531C /* Trade.swift in Sources */,
+				BE9E3CA1200588BA005D531C /* TradeSession.swift in Sources */,
 				BE9E3C9F20045467005D531C /* MarketSnapshots.swift in Sources */,
 				BE390BA220024B0100CFD46B /* CandleStick.swift in Sources */,
 				BE9E3C9620044CD9005D531C /* TimeAliases.swift in Sources */,
@@ -297,6 +316,7 @@
 				BE390BA62002507B00CFD46B /* MoonAlarmTableViewController.swift in Sources */,
 				BE390B8D2001488D00CFD46B /* AppDelegate.swift in Sources */,
 				BE9E3C9D200452A9005D531C /* PercentAlias.swift in Sources */,
+				BE9E3CA720059458005D531C /* Trades.swift in Sources */,
 				BE9E3C9420043429005D531C /* CandleSticks.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
