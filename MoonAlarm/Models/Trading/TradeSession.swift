@@ -22,7 +22,7 @@ class TradeSession {
     
     var tradingPair = "ETH"
     var tradeAmountTarget: Double = 1
-    var maxOpenTrades: Int = 8
+    var maxOpenTrades: Int = 10
     var status: Status = .running // TODO: implement toggle
     
     var trades = Trades()
@@ -53,7 +53,7 @@ class TradeSession {
         for symbol in symbols {
             dpG.enter() // enter dispatch queue
             let newSnapshot = MarketSnapshot(symbol: symbol)
-            newSnapshot.update {
+            newSnapshot.updateData {
                 self.marketSnapshots.append(newSnapshot)
                 dpG.leave()
             }
@@ -69,10 +69,10 @@ class TradeSession {
     func investInWinners() {
         for snapshot in self.marketSnapshots {
             if  snapshot.volumeRatio1To15M > 3 &&
-                snapshot.tradesRatio1To15M > 1.5 &&
-                snapshot.priceIncreasePercent3M > 0.01 &&
+                snapshot.tradesRatio1To15M > 1.0 &&
+                //snapshot.priceIncreasePercent3M > 0.1 &&
                 snapshot.priceIsIncreasing &&
-                snapshot.volumeAvg15M > (25 * self.tradeAmountTarget) &&
+                snapshot.volumeAvg15M > (10 * self.tradeAmountTarget) &&
                 !trades.openTradeFor(snapshot.symbol) &&
                 trades.countOnly(status: .open) < self.maxOpenTrades {
                     let newTrade = Trade(symbol: snapshot.symbol, snapshot: snapshot)

@@ -113,6 +113,50 @@ class BinanceAPI {
             callback(true, candleSticks)
         }
     }
+    
+    // getKLineData Method
+    // Returns candlestick data from a given symbol pair
+    // Parameters:
+    //      symbolPair - what symbol to return candlestick data form
+    //      interval - time interval for candlesticks
+    //      limit - number of candlesticks to get, starting from present time
+    
+    func getOrderBook(symbolPair: String, limit: Int = 30,
+                      callback: @escaping (_ isSuccessful: Bool, _ orderBook: OrderBook) -> Void) {
+        
+        let url = rootURLString + "/api/v1/depth"
+        let params = ["symbol": symbolPair,
+                      "limit": String(limit)]
+        
+        Alamofire.request(url, method: .get, parameters: params).responseSwiftyJSON {
+            response in
+            guard response.result.isSuccess else {
+                print("get order book data unsuccessful")
+                print(response.result.value ?? JSON.null)
+                callback(false, OrderBook(symbol: "error"))
+                return
+            }
+            guard let jsonResponse = response.result.value else {
+                print("get order book returned no data")
+                callback(false, OrderBook(symbol: "error"))
+                return
+            }
+            guard jsonResponse["code"].intValue != -1003 else {
+                print("too many requests made")
+                callback(false, OrderBook(symbol: "error"))
+                return
+                
+                // Example data:
+                // { "code" : -1003, "msg" : "Way too many requests; IP banned until 1515547977300." }
+            }
+            
+            let pairSymbol = TradeSession.instance.tradingPair
+            let symbol = symbolPair.replacingOccurrences(of: pairSymbol, with: "")
+            let newOrderBook = OrderBook(symbol: symbol, fromJson: jsonResponse)
+            
+            callback(true, newOrderBook)
+        }
+    }
 
     enum KLineInterval: String {
         case m1 = "1m"
@@ -154,5 +198,59 @@ extension CandleStick {
                   highPrice: json[2].doubleValue, lowPrice: json[3].doubleValue,
                   volume: json[5].doubleValue, pairVolume: json[7].doubleValue,
                   tradesCount: json[8].intValue)
+    }
+}
+
+extension OrderBook {
+    
+    convenience init(symbol sym: String, fromJson json: JSON) {
+        
+        // Data is a dictionary of arrays
+        // Example: [{"bids" : [[Price, Quantity], [Price, Quantity]]}]
+        let bidsJson = json["bids"]
+        let asksJson = json["asks"]
+        
+        var bids = [Order]()
+        var asks = [Order]()
+        
+        for (_ ,bidJson):(String, JSON) in bidsJson {
+            bids.append(Order(fromJson: bidJson))
+        }
+        
+        for (_ ,askJson):(String, JSON) in asksJson {
+            asks.append(Order(fromJson: askJson))
+        }
+        
+        self.init(symbol: sym, asks: asks, bids: bids)
+        
+        //    Example Data
+        //    Dictionary of arrays
+        //    {
+        //    "lastUpdateId": 1027024,
+        //    "bids": [
+        //    [
+        //    "4.00000000",     // PRICE
+        //    "431.00000000",   // QTY
+        //    []                // Can be ignored
+        //    ]
+        //    ],
+        //    "asks": [
+        //    [
+        //    "4.00000200",
+        //    "12.00000000",
+        //    []
+        //    ]
+        //    ]
+        //    }
+        
+    }
+    
+}
+
+extension Order {
+    
+    // Data is an array: [Price, Quantity]
+    convenience init(fromJson json: JSON) {
+        self.init(price: json[0].doubleValue, quantity: json[1].doubleValue)
     }
 }

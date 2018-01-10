@@ -12,15 +12,16 @@ class MarketSnapshot {
     
     let symbol: String          // ticker symbol
     var candleSticks: CandleSticks
-//    var orderbook: OrderBook
+    var orderbook: OrderBook
     
-    init(symbol sym: String, candleSticks cSticks: CandleSticks) {
-        symbol = sym
-        candleSticks = cSticks
+    init(symbol sym: String, candleSticks cSticks: CandleSticks, orderBook oBook: OrderBook) {
+        self.symbol = sym
+        self.candleSticks = cSticks
+        self.orderbook = oBook
     }
     
     convenience init(symbol sym: String) {
-        self.init(symbol: sym, candleSticks: CandleSticks())
+        self.init(symbol: sym, candleSticks: CandleSticks(), orderBook: OrderBook(symbol: sym))
     }
     
     var priceIncreasePercent3M: Double {
@@ -52,7 +53,7 @@ class MarketSnapshot {
         return self.candleSticks.last!.closePrice
     }
 
-    func update(callback: @escaping () -> Void) {
+    func updateData(callback: @escaping () -> Void) {
         let symbolPair = self.symbol + TradeSession.instance.tradingPair
         BinanceAPI.instance.getKLineData(symbolPair: symbolPair, interval: .m1, limit: 15) {
             (isSuccess, cSticks) in

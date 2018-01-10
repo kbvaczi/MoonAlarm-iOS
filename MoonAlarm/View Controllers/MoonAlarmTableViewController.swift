@@ -39,7 +39,7 @@ class MoonAlarmTableViewController: UITableViewController {
         let snapshot = TradeSession.instance.marketSnapshots[indexPath.row]
         
         cell.textLabel?.text = snapshot.symbol
-        cell.detailTextLabel?.text = "$: \(snapshot.candleSticks.priceIsIncreasing)%  VR: \(snapshot.volumeRatio1To15M) #R:\(snapshot.tradesRatio1To15M)"
+        cell.detailTextLabel?.text = "$: \(snapshot.priceIncreasePercent3M)%  VR: \(snapshot.volumeRatio1To15M) #R:\(snapshot.tradesRatio1To15M)"
 
         return cell
     }

@@ -66,7 +66,7 @@ class Trade {
     private func startUpdatingData() {
         self.stopUpdatingData()
         self.updateTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
-            self.marketSnapshot.update {
+            self.marketSnapshot.updateData {
                 self.monitorAndTerminateIfAppropriate()
             }
         }

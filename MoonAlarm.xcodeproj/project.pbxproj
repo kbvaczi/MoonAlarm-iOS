@@ -23,6 +23,8 @@
 		BE9E3CA1200588BA005D531C /* TradeSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E3CA0200588BA005D531C /* TradeSession.swift */; };
 		BE9E3CA420058F3B005D531C /* Trade.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E3CA320058F3B005D531C /* Trade.swift */; };
 		BE9E3CA720059458005D531C /* Trades.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E3CA620059458005D531C /* Trades.swift */; };
+		BE9E3CA92006867E005D531C /* OrderBook.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E3CA82006867E005D531C /* OrderBook.swift */; };
+		BE9E3CAB200686CE005D531C /* Order.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E3CAA200686CE005D531C /* Order.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,6 +48,8 @@
 		BE9E3CA0200588BA005D531C /* TradeSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradeSession.swift; sourceTree = "<group>"; };
 		BE9E3CA320058F3B005D531C /* Trade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Trade.swift; sourceTree = "<group>"; };
 		BE9E3CA620059458005D531C /* Trades.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Trades.swift; sourceTree = "<group>"; };
+		BE9E3CA82006867E005D531C /* OrderBook.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderBook.swift; sourceTree = "<group>"; };
+		BE9E3CAA200686CE005D531C /* Order.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Order.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -170,6 +174,8 @@
 				BE390BA120024B0100CFD46B /* CandleStick.swift */,
 				BE9E3C9A20045189005D531C /* MarketSnapshot.swift */,
 				BE9E3C9E20045467005D531C /* MarketSnapshots.swift */,
+				BE9E3CA82006867E005D531C /* OrderBook.swift */,
+				BE9E3CAA200686CE005D531C /* Order.swift */,
 			);
 			path = "Market Data";
 			sourceTree = "<group>";
@@ -312,7 +318,9 @@
 				BE9E3C9F20045467005D531C /* MarketSnapshots.swift in Sources */,
 				BE390BA220024B0100CFD46B /* CandleStick.swift in Sources */,
 				BE9E3C9620044CD9005D531C /* TimeAliases.swift in Sources */,
+				BE9E3CAB200686CE005D531C /* Order.swift in Sources */,
 				BE9E3C9B20045189005D531C /* MarketSnapshot.swift in Sources */,
+				BE9E3CA92006867E005D531C /* OrderBook.swift in Sources */,
 				BE390BA62002507B00CFD46B /* MoonAlarmTableViewController.swift in Sources */,
 				BE390B8D2001488D00CFD46B /* AppDelegate.swift in Sources */,
 				BE9E3C9D200452A9005D531C /* PercentAlias.swift in Sources */,
