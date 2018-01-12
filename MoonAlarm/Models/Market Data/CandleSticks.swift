@@ -21,16 +21,9 @@ extension Array where Element : CandleStick {
     }
     
     var stickDuration: Seconds? {
-        guard   let oT = self.first?.openTime,
-                let cT = self.first?.closeTime else { return nil }
-        
-        return Seconds(cT - oT)
-    }
-    
-    var currentStickDuration: Seconds? {
-        guard   let oT = self.last?.openTime,
-                let cT = self.last?.closeTime else { return nil }
-        print(cT - oT)
+        guard   self.count > 1 else { return nil }
+        let oT = self[0].openTime
+        let cT = self[1].openTime
         return Seconds(cT - oT)
     }
     
@@ -38,25 +31,13 @@ extension Array where Element : CandleStick {
         return self.last?.volume
     }
     
-    var currentVolNormalized: Double? {
-        guard   let vol = self.currentStickVolume,
-                let cStickDur = self.currentStickDuration,
-                let stickDur = self.stickDuration else { return nil }
-        print(cStickDur)
-        return vol * stickDur / cStickDur
-    }
-    
-    var currentTradesCountNormalized: Int? {
-        guard   let trades = self.last?.tradesCount,
-                let cStickDur = self.currentStickDuration,
-                let stickDur = self.stickDuration else { return nil }
-        return Int(Double(trades) * stickDur / cStickDur)
+    var currentStickTradesCount: Int? {
+        return self.last?.tradesCount
     }
     
     var priceIsIncreasing: Bool {
         guard   let currentStick = self.last,
                 let prevStick = self.suffix(2).first else { return false }
-        
         return currentStick.closePrice > prevStick.closePrice
     }
 
@@ -64,11 +45,11 @@ extension Array where Element : CandleStick {
     var volumeRatio1To15M: Double? {
         guard   let stickDuration = self.stickDuration,
                 let volumeAvg15M = self.volumeAvg15M,
-                let currentVolNorm = self.currentVolNormalized else { return nil }
+                let currentStickVolume = self.currentStickVolume else { return nil }
         
-        guard   stickDuration > 0 else { return nil }
+        guard   stickDuration > 0 else { return nil } // prevent divide by zero error
         
-        let volRatio = currentVolNorm / volumeAvg15M
+        let volRatio = currentStickVolume / volumeAvg15M
         let roundedVolRatio = round(volRatio * 100) / 100
         
         return roundedVolRatio
@@ -90,9 +71,9 @@ extension Array where Element : CandleStick {
     // number of trades conducted within last minute vs 15-minute running average
     var tradesRatio1To15M: Double? {
         guard   let stickDuration = self.stickDuration,
-                let tradesCurrent = currentTradesCountNormalized else { return nil }
+                let tradesCurrent = self.currentStickTradesCount else { return nil }
         
-        guard   stickDuration > 0 else { return nil }
+        guard   stickDuration > 0 else { return nil } // prevent divide by zero error
         
         let M15 = (15 as Minutes).minutesToSeconds()
         let sticks15MCount = Int(M15 / round(stickDuration))
