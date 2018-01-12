@@ -14,7 +14,7 @@ extension Array where Element : Trade {
     
     var successRate: Percent {
         let completedTrades = self.filter { $0.status == .complete }
-        var sRate = completedTrades.map({ $0.wasProfitable ? 1 : 0 }).reduce(0) {$0 + $1 / Double(completedTrades.count)}
+        let sRate = completedTrades.map({ $0.wasProfitable ? 1 : 0 }).reduce(0) {$0 + $1 / Double(completedTrades.count)}
         return sRate.toPercent()
     }
     

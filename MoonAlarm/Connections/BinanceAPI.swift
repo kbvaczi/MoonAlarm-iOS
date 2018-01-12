@@ -40,17 +40,15 @@ class BinanceAPI {
                 callback(false, [])
                 return
             }
-            guard jsonResponse["code"].intValue != -1003 else {
-                print("too many requests made")
+            guard jsonResponse["code"].int == nil else {
+                // there is an error code returned
+                print("Code: \(jsonResponse["code"].intValue) Error: \(jsonResponse["msg"].stringValue)")
                 callback(false, [])
                 return
                 
                 // Example data:
                 // { "code" : -1003, "msg" : "Way too many requests; IP banned until 1515547977300." }
             }
-
-            
-            print(jsonResponse)
             
             // Data is an array of dictionaries
             // Example data: [{"price" : "0.05919500","symbol" : "ETHBTC"}]
@@ -69,7 +67,7 @@ class BinanceAPI {
     // getKLineData Method
     // Returns candlestick data from a given symbol pair
     // Parameters:
-    //      symbolPair - what symbol to return candlestick data form
+    //      symbolPair - what symbol to return candlestick data from
     //      interval - time interval for candlesticks
     //      limit - number of candlesticks to get, starting from present time
     
@@ -96,8 +94,9 @@ class BinanceAPI {
                 callback(false, [])
                 return
             }
-            guard jsonResponse["code"].intValue != -1003 else {
-                print("too many requests made")
+            guard jsonResponse["code"].int == nil else {
+                // there is an error code returned
+                print("Code: \(jsonResponse["code"].intValue) Error: \(jsonResponse["msg"].stringValue)")
                 callback(false, [])
                 return
                 
@@ -107,21 +106,23 @@ class BinanceAPI {
             
             // Data is an array of array (see example data in Candlestick initializer)
             for (_ ,cStickJson):(String, JSON) in jsonResponse {
+                
                 candleSticks.append(CandleStick(fromJson: cStickJson))
             }
+            
+            
             
             callback(true, candleSticks)
         }
     }
     
-    // getKLineData Method
+    // getOrderBook Method
     // Returns candlestick data from a given symbol pair
     // Parameters:
-    //      symbolPair - what symbol to return candlestick data form
-    //      interval - time interval for candlesticks
-    //      limit - number of candlesticks to get, starting from present time
+    //      symbolPair - what symbol to return order book data from
+    //      limit - number of orders in book (5, 10, 20, 50, 100, 500, 1000 permitted)
     
-    func getOrderBook(symbolPair: String, limit: Int = 30,
+    func getOrderBook(symbolPair: String, limit: Int = 5,
                       callback: @escaping (_ isSuccessful: Bool, _ orderBook: OrderBook) -> Void) {
         
         let url = rootURLString + "/api/v1/depth"
@@ -141,8 +142,9 @@ class BinanceAPI {
                 callback(false, OrderBook(symbol: "error"))
                 return
             }
-            guard jsonResponse["code"].intValue != -1003 else {
-                print("too many requests made")
+            guard jsonResponse["code"].int == nil else {
+                // there is an error code returned
+                print("Code: \(jsonResponse["code"].intValue) Error: \(jsonResponse["msg"].stringValue)")
                 callback(false, OrderBook(symbol: "error"))
                 return
                 

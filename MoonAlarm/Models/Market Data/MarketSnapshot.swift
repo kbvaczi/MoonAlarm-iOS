@@ -12,20 +12,34 @@ class MarketSnapshot {
     
     let symbol: String          // ticker symbol
     var candleSticks: CandleSticks
-    var orderbook: OrderBook
+    var orderBook: OrderBook
     
     init(symbol sym: String, candleSticks cSticks: CandleSticks, orderBook oBook: OrderBook) {
         self.symbol = sym
         self.candleSticks = cSticks
-        self.orderbook = oBook
+        self.orderBook = oBook
     }
     
     convenience init(symbol sym: String) {
         self.init(symbol: sym, candleSticks: CandleSticks(), orderBook: OrderBook(symbol: sym))
     }
     
+    var runwayPercent1M: Double? {
+        guard   let cVolNorm = candleSticks.currentVolNormalized else { return nil }
+        guard   let runwayPrice = orderBook.runwayPrice(forVolume: cVolNorm),
+                let firstAsk = orderBook.firstAsk else { return nil }
+        return  ((runwayPrice / firstAsk) - 1).toPercent()
+    }
+    
+    var fallwayPercent1M: Double? {
+        guard   let cVolNorm = candleSticks.currentVolNormalized else { return nil }
+        guard   let fallwayPrice = orderBook.fallwayPrice(forVolume: cVolNorm),
+                let firstAsk = orderBook.firstAsk else { return nil }
+        return  ((firstAsk / fallwayPrice) - 1).toPercent()
+    }
+    
     var priceIncreasePercent3M: Double {
-        guard var pRatio = candleSticks.priceRatio1To3M else { return 0 }
+        guard   let pRatio = candleSticks.priceRatio1To3M else { return 0 }
         return round((pRatio.toPercent() - 100) * 100) / 100
     }
     
@@ -54,6 +68,14 @@ class MarketSnapshot {
     }
 
     func updateData(callback: @escaping () -> Void) {
+        updateCandleSticks {
+            self.updateOrderBook {
+                callback()
+            }
+        }
+    }
+    
+    private func updateCandleSticks(callback: @escaping () -> Void) {
         let symbolPair = self.symbol + TradeSession.instance.tradingPair
         BinanceAPI.instance.getKLineData(symbolPair: symbolPair, interval: .m1, limit: 15) {
             (isSuccess, cSticks) in
@@ -64,4 +86,9 @@ class MarketSnapshot {
         }
     }
     
+    private func updateOrderBook(callback: @escaping () -> Void) {
+        self.orderBook.updateData {
+            callback()
+        }
+    }
 }
