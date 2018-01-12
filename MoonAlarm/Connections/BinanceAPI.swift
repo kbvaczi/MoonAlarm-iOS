@@ -22,14 +22,14 @@ class BinanceAPI {
     // performRequest Method
     // General request method used as a root for other request methods to standardize error logging
     
-    private func jsonRequest(url: String, method: HTTPMethod, params: [String: String],
+    private func jsonRequest(url: String, method: HTTPMethod, params: [String: Any]?,
                         callback: @escaping (_ isSuccessful: Bool, _ jsonResponse: JSON) -> Void) {
         
-        Alamofire.request(url, method: method).responseSwiftyJSON { response in
+        Alamofire.request(url, method: method, parameters: params).responseSwiftyJSON { response in
             guard response.result.isSuccess else {
                 print("*** Request to \(url) unsuccessful ***")
                 print("Parameters:")
-                print(params)
+                print(params ?? "no parameters")
                 print("Response:")
                 let jsonResponse = response.result.value ?? JSON.null
                 print(jsonResponse)
@@ -39,14 +39,14 @@ class BinanceAPI {
             guard let jsonResponse = response.result.value else {
                 print("*** Request to \(url) returned no data ***")
                 print("Parameters:")
-                print(params)
+                print(params ?? "no parameters")
                 callback(false, JSON.null)
                 return
             }
             guard jsonResponse["code"].int == nil else {
                 print("*** Error in request to \(url) ***")
                 print("Parameters:")
-                print(params)
+                print(params ?? "no parameters")
                 print("Code: \(jsonResponse["code"].intValue) Error: \(jsonResponse["msg"].stringValue)")
                 callback(false, JSON.null)
                 return
@@ -54,6 +54,8 @@ class BinanceAPI {
                 // Example data:
                 // { "code" : -1003, "msg" : "Way too many requests; IP banned until 1515547977300." }
             }
+            
+            callback(true, jsonResponse)
         }
     }
     
@@ -64,7 +66,7 @@ class BinanceAPI {
         
         let url = rootURLString + "/api/v1/time"
         
-        jsonRequest(url: url, method: .get, params: [:]) {
+        jsonRequest(url: url, method: .get, params: nil) {
             (isSuccessful, jsonResponse) in
             
             let currentServerTime = jsonResponse["serverTime"].intValue
@@ -85,7 +87,7 @@ class BinanceAPI {
         let url = rootURLString + "/api/v1/ticker/allPrices"
         var symbolsList = [String]()
         
-        jsonRequest(url: url, method: .get, params: [:]) {
+        jsonRequest(url: url, method: .get, params: nil) {
             (isSuccessful, jsonResponse) in
             
             // Data is an array of dictionaries
