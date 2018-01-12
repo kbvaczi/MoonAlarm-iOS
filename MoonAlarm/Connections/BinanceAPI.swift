@@ -19,6 +19,44 @@ class BinanceAPI {
     
     let rootURLString = "https:/api.binance.com"
     
+    // performRequest Method
+    // General request method used as a root for other request methods to standardize error logging
+    
+    private func jsonRequest(url: String, method: HTTPMethod, params: [String: String],
+                        callback: @escaping (_ isSuccessful: Bool, _ jsonResponse: JSON) -> Void) {
+        
+        Alamofire.request(url, method: method).responseSwiftyJSON { response in
+            guard response.result.isSuccess else {
+                print("*** Request to \(url) unsuccessful ***")
+                print("Parameters:")
+                print(params)
+                print("Response:")
+                let jsonResponse = response.result.value ?? JSON.null
+                print(jsonResponse)
+                callback(false, jsonResponse)
+                return
+            }
+            guard let jsonResponse = response.result.value else {
+                print("*** Request to \(url) returned no data ***")
+                print("Parameters:")
+                print(params)
+                callback(false, JSON.null)
+                return
+            }
+            guard jsonResponse["code"].int == nil else {
+                print("*** Error in request to \(url) ***")
+                print("Parameters:")
+                print(params)
+                print("Code: \(jsonResponse["code"].intValue) Error: \(jsonResponse["msg"].stringValue)")
+                callback(false, JSON.null)
+                return
+                
+                // Example data:
+                // { "code" : -1003, "msg" : "Way too many requests; IP banned until 1515547977300." }
+            }
+        }
+    }
+    
     // getAllSymbols Method
     // Returns list of all available symbols with selected trading pair
     
@@ -28,27 +66,8 @@ class BinanceAPI {
         let url = rootURLString + "/api/v1/ticker/allPrices"
         var symbolsList = [String]()
         
-        Alamofire.request(url, method: .get).responseSwiftyJSON { response in
-            guard response.result.isSuccess else {
-                print("get symbols unsuccessful")
-                print(response.result.value ?? JSON.null)
-                callback(false, [])
-                return
-            }
-            guard let jsonResponse = response.result.value else {
-                print("get symbols returned no data")
-                callback(false, [])
-                return
-            }
-            guard jsonResponse["code"].int == nil else {
-                // there is an error code returned
-                print("Code: \(jsonResponse["code"].intValue) Error: \(jsonResponse["msg"].stringValue)")
-                callback(false, [])
-                return
-                
-                // Example data:
-                // { "code" : -1003, "msg" : "Way too many requests; IP banned until 1515547977300." }
-            }
+        jsonRequest(url: url, method: .get, params: [:]) {
+            (isSuccessful, jsonResponse) in
             
             // Data is an array of dictionaries
             // Example data: [{"price" : "0.05919500","symbol" : "ETHBTC"}]
@@ -61,17 +80,17 @@ class BinanceAPI {
             }
             
             callback(true, symbolsList)
-        }        
+        }
     }
     
-    // getKLineData Method
+    // getCandleSticks Method
     // Returns candlestick data from a given symbol pair
     // Parameters:
     //      symbolPair - what symbol to return candlestick data from
     //      interval - time interval for candlesticks
-    //      limit - number of candlesticks to get, starting from present time
+    //      limit - number of candlesticks to get, starting from present time going backwards
     
-    func getKLineData(symbolPair: String, interval: KLineInterval, limit: Int = 2,
+    func getCandleSticks(symbolPair: String, interval: KLineInterval, limit: Int = 2,
                       callback: @escaping (_ isSuccessful: Bool, _ candleSticks: CandleSticks) -> Void) {
         
         let url = rootURLString + "/api/v1/klines"
@@ -81,85 +100,20 @@ class BinanceAPI {
         
         var candleSticks = [CandleStick]()
         
-        Alamofire.request(url, method: .get, parameters: params).responseSwiftyJSON {
-            response in
-            guard response.result.isSuccess else {
-                print("get kline data unsuccessful")
-                print(response.result.value ?? JSON.null)
-                callback(false, [])
-                return
-            }
-            guard let jsonResponse = response.result.value else {
-                print("get kline data returned no data")
-                callback(false, [])
-                return
-            }
-            guard jsonResponse["code"].int == nil else {
-                // there is an error code returned
-                print("Code: \(jsonResponse["code"].intValue) Error: \(jsonResponse["msg"].stringValue)")
-                callback(false, [])
-                return
-                
-                // Example data:
-                // { "code" : -1003, "msg" : "Way too many requests; IP banned until 1515547977300." }
-            }
+        jsonRequest(url: url, method: .get, params: params) {
+            (isSuccessful, jsonResponse) in
             
             // Data is an array of array (see example data in Candlestick initializer)
             for (_ ,cStickJson):(String, JSON) in jsonResponse {
-                
                 candleSticks.append(CandleStick(fromJson: cStickJson))
             }
-            
-            
-            
+
             callback(true, candleSticks)
         }
     }
     
-    // getOrderBook Method
-    // Returns candlestick data from a given symbol pair
-    // Parameters:
-    //      symbolPair - what symbol to return order book data from
-    //      limit - number of orders in book (5, 10, 20, 50, 100, 500, 1000 permitted)
-    
-    func getOrderBook(symbolPair: String, limit: Int = 5,
-                      callback: @escaping (_ isSuccessful: Bool, _ orderBook: OrderBook) -> Void) {
-        
-        let url = rootURLString + "/api/v1/depth"
-        let params = ["symbol": symbolPair,
-                      "limit": String(limit)]
-        
-        Alamofire.request(url, method: .get, parameters: params).responseSwiftyJSON {
-            response in
-            guard response.result.isSuccess else {
-                print("get order book data unsuccessful")
-                print(response.result.value ?? JSON.null)
-                callback(false, OrderBook(symbol: "error"))
-                return
-            }
-            guard let jsonResponse = response.result.value else {
-                print("get order book returned no data")
-                callback(false, OrderBook(symbol: "error"))
-                return
-            }
-            guard jsonResponse["code"].int == nil else {
-                // there is an error code returned
-                print("Code: \(jsonResponse["code"].intValue) Error: \(jsonResponse["msg"].stringValue)")
-                callback(false, OrderBook(symbol: "error"))
-                return
-                
-                // Example data:
-                // { "code" : -1003, "msg" : "Way too many requests; IP banned until 1515547977300." }
-            }
-            
-            let pairSymbol = TradeSession.instance.tradingPair
-            let symbol = symbolPair.replacingOccurrences(of: pairSymbol, with: "")
-            let newOrderBook = OrderBook(symbol: symbol, fromJson: jsonResponse)
-            
-            callback(true, newOrderBook)
-        }
-    }
-
+    // KLineInterval
+    // duration of each candlestick
     enum KLineInterval: String {
         case m1 = "1m"
         case m3 = "3m"
@@ -171,6 +125,30 @@ class BinanceAPI {
         case d1 = "1d"
     }
     
+    // getOrderBook Method
+    // Returns candlestick data from a given symbol pair
+    // Parameters:
+    //      symbolPair - what symbol to return order book data from
+    //      limit - number of orders in book (5, 10, 20, 50, 100, 500, 1000 permitted)
+    
+    func getOrderBook(symbolPair: String, limit: Int = 50,
+                      callback: @escaping (_ isSuccessful: Bool, _ orderBook: OrderBook) -> Void) {
+        
+        let url = rootURLString + "/api/v1/depth"
+        let params = ["symbol": symbolPair,
+                      "limit": String(limit)]
+        
+        jsonRequest(url: url, method: .get, params: params) {
+            (isSuccessful, jsonResponse) in
+            
+            let pairSymbol = TradeSession.instance.tradingPair
+            let symbol = symbolPair.replacingOccurrences(of: pairSymbol, with: "")
+            let newOrderBook = OrderBook(symbol: symbol, fromJson: jsonResponse)
+            
+            callback(true, newOrderBook)
+        }
+    }
+
 }
 
 extension CandleStick {
