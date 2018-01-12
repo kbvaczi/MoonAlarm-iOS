@@ -41,24 +41,26 @@ class Trade {
     
     func execute() {
         // don't get into any new trades if trade session has ended
-        guard TradeSession.instance.status == .running else { return }
+        guard TradeSession.instance.status == .running,
+              let currentPrice = marketSnapshot.currentPrice else { return }
 
         self.status = .open
-        self.enterPrice = marketSnapshot.currentPrice
+        self.enterPrice = currentPrice
         startUpdatingData()
         print("\(self.symbol) trade started")
     }
     
     func terminate() {
         self.status = .complete
-        self.exitPrice = marketSnapshot.currentPrice
+        self.exitPrice = marketSnapshot.currentPrice ?? 0
         self.stopUpdatingData()
         print("\(self.symbol) trade ended: \(self.profitPercent) profit")
         print("Session Success Rate: \(TradeSession.instance.trades.successRate)")
     }
     
     func monitorAndTerminateIfAppropriate() {
-        if marketSnapshot.currentPrice > (enterPrice * 1.01) || (marketSnapshot.currentPrice * 1.01) < enterPrice {
+        guard let currentPrice = marketSnapshot.currentPrice else { return }
+        if currentPrice > (enterPrice * 1.01) || (currentPrice * 1.01) < enterPrice {
             terminate()
         }
     }

@@ -25,45 +25,45 @@ class MarketSnapshot {
     }
     
     var runwayPercent1M: Double? {
-        guard   let cVolNorm = candleSticks.currentVolNormalized else { return nil }
-        guard   let runwayPrice = orderBook.runwayPrice(forVolume: cVolNorm),
+        guard   let cVol = candleSticks.currentStickVolume else { return nil }
+        guard   let runwayPrice = orderBook.runwayPrice(forVolume: cVol),
                 let firstAsk = orderBook.firstAsk else { return nil }
         return  ((runwayPrice / firstAsk) - 1).toPercent()
     }
     
     var fallwayPercent1M: Double? {
-        guard   let cVolNorm = candleSticks.currentVolNormalized else { return nil }
-        guard   let fallwayPrice = orderBook.fallwayPrice(forVolume: cVolNorm),
+        guard   let cVol = candleSticks.currentStickVolume else { return nil }
+        guard   let fallwayPrice = orderBook.fallwayPrice(forVolume: cVol),
                 let firstAsk = orderBook.firstAsk else { return nil }
         return  ((firstAsk / fallwayPrice) - 1).toPercent()
     }
     
-    var priceIncreasePercent3M: Double {
-        guard   let pRatio = candleSticks.priceRatio1To3M else { return 0 }
+    var priceIncreasePercent3M: Double? {
+        guard   let pRatio = candleSticks.priceRatio1To3M else { return nil }
         return round((pRatio.toPercent() - 100) * 100) / 100
     }
     
-    var priceIsIncreasing: Bool {
+    var priceIsIncreasing: Bool? {
         return candleSticks.priceIsIncreasing
     }
     
-    var volumeAvg15M: Double {
-        guard let avg = candleSticks.volumeAvg15M else { return 0 }
+    var volumeAvg15M: Double? {
+        guard let avg = candleSticks.volumeAvg15M else { return nil }
         return avg
     }
     
-    var volumeRatio1To15M: Double {
-        guard let pRatio = candleSticks.volumeRatio1To15M else { return 0 }
+    var volumeRatio1To15M: Double? {
+        guard let pRatio = candleSticks.volumeRatio1To15M else { return nil }
         return pRatio
     }
     
-    var tradesRatio1To15M: Double {
-        guard let tRatio = candleSticks.tradesRatio1To15M else { return 0 }
+    var tradesRatio1To15M: Double? {
+        guard let tRatio = candleSticks.tradesRatio1To15M else { return nil }
         return tRatio
     }
     
-    var currentPrice: Double {
-        guard self.candleSticks.count > 0 else { return 0 }
+    var currentPrice: Double? {
+        guard self.candleSticks.count > 0 else { return nil }
         return self.candleSticks.last!.closePrice
     }
 

@@ -61,18 +61,17 @@ class TradeSession {
         
         // when all API calls are returned, run callback
         dpG.notify(queue: .main) {
-            self.marketSnapshots.sort(by: { $0.volumeRatio1To15M > $1.volumeRatio1To15M })
             callback()
         }
     }
     
     func investInWinners() {
         for snapshot in self.marketSnapshots {
-            if  snapshot.volumeRatio1To15M > 3 &&
-                snapshot.tradesRatio1To15M > 1.0 &&
+            if  snapshot.volumeRatio1To15M! > 3 &&
+                snapshot.tradesRatio1To15M! > 1.0 &&
                 //snapshot.priceIncreasePercent3M > 0.1 &&
-                snapshot.priceIsIncreasing &&
-                snapshot.volumeAvg15M > (10 * self.tradeAmountTarget) &&
+                snapshot.priceIsIncreasing! &&
+                snapshot.volumeAvg15M! > (10 * self.tradeAmountTarget) &&
                 !trades.openTradeFor(snapshot.symbol) &&
                 trades.countOnly(status: .open) < self.maxOpenTrades {
                     let newTrade = Trade(symbol: snapshot.symbol, snapshot: snapshot)

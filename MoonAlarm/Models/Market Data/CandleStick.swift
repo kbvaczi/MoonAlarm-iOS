@@ -25,6 +25,7 @@ class CandleStick {
     let tradesCount: Int
     
     var duration: Seconds {
+        // candlesticks are 1ms less than standard size to prevent overlap (e.g. 1m stick is 999ms)
         return Seconds(self.closeTime - self.openTime) / 1000
     }
     

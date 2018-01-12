@@ -35,9 +35,9 @@ extension Array where Element : CandleStick {
         return self.last?.tradesCount
     }
     
-    var priceIsIncreasing: Bool {
+    var priceIsIncreasing: Bool? {
         guard   let currentStick = self.last,
-                let prevStick = self.suffix(2).first else { return false }
+                let prevStick = self.suffix(2).first else { return nil }
         return currentStick.closePrice > prevStick.closePrice
     }
 
