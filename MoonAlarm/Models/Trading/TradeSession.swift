@@ -18,18 +18,31 @@ class TradeSession {
     
     var symbols = [String]()
     var marketSnapshots = MarketSnapshots()
-    var updateTimer = Timer()
+    private var updateTimer = Timer()
     
-    var tradingPair = "ETH"
+    var tradingPair = "BTC"
     var tradeAmountTarget: Double = 1
-    var maxOpenTrades: Int = 10
-    var status: Status = .running // TODO: implement toggle
-    
+    var maxOpenTrades: Int = 3
     var trades = Trades()
     
+    var status: Status = .running // TODO: implement toggle
     enum Status: String {
         case running = "Running"
         case stopped = "Stopped"
+    }
+    
+    func start(callback: @escaping () -> Void) {
+        self.status = .running
+        TradeSession.instance.updateSymbols {
+            self.startRepeatingSnapshotUpdates {
+                callback()
+            }
+        }
+    }
+    
+    func stop(callback: @escaping () -> Void) {
+        self.status = .stopped
+        self.stopRepeatingSnapshotUpdates()
     }
     
     func updateSymbols(callback: @escaping () -> Void) {
@@ -63,6 +76,18 @@ class TradeSession {
         dpG.notify(queue: .main) {
             callback()
         }
+    }
+    
+    func startRepeatingSnapshotUpdates(callback: @escaping () -> Void) {
+        self.updateTimer = Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { _ in
+            self.updateMarketSnapshots {
+                callback()
+            }
+        }
+    }
+    
+    func stopRepeatingSnapshotUpdates() {
+        self.updateTimer.invalidate()
     }
     
     func investInWinners() {

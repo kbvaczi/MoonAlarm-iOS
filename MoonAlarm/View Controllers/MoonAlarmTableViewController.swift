@@ -12,9 +12,9 @@ class MoonAlarmTableViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        TradeSession.instance.updateSymbols {
-            self.startUpdatingData()
+        print("hi")
+        TradeSession.instance.start {
+            self.updateDisplay()
         }
 
     }
@@ -39,28 +39,14 @@ class MoonAlarmTableViewController: UITableViewController {
         let snapshot = TradeSession.instance.marketSnapshots[indexPath.row]
         
         cell.textLabel?.text = snapshot.symbol
-        cell.detailTextLabel?.text = "$: \(snapshot.priceIncreasePercent3M)%  VR: \(snapshot.volumeRatio1To15M) #R:\(snapshot.tradesRatio1To15M)"
+        
+        cell.detailTextLabel?.text = "$: \(snapshot.priceIncreasePercent3M!)%  VR: \(snapshot.volumeRatio1To15M!) #R:\(snapshot.tradesRatio1To15M!)"
 
         return cell
     }
     
-    private func startUpdatingData() {
-        self.stopUpdatingData()
-        updateData()
-        TradeSession.instance.updateTimer = Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { _ in
-            self.updateData()
-        }
-    }
-    
-    private func stopUpdatingData() {
-        TradeSession.instance.updateTimer.invalidate()
-    }
-    
-    private func updateData() {        
-        TradeSession.instance.updateMarketSnapshots {
-            self.tableView.reloadData()
-            TradeSession.instance.investInWinners()
-        }
+    private func updateDisplay() {
+        self.tableView.reloadData()
     }
     
    
