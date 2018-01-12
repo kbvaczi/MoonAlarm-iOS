@@ -57,6 +57,25 @@ class BinanceAPI {
         }
     }
     
+    // getCurrentServerTime Method
+    // Returns current timeo of server in milliseconds
+    
+    func getCurrentServerTime(callback: @escaping (_ isSuccessful: Bool, _ currentTime: Milliseconds) -> Void) {
+        
+        let url = rootURLString + "/api/v1/time"
+        
+        jsonRequest(url: url, method: .get, params: [:]) {
+            (isSuccessful, jsonResponse) in
+            
+            let currentServerTime = jsonResponse["serverTime"].intValue
+            
+            callback(true, Milliseconds(currentServerTime))
+        }
+        
+        // Example Data:
+        // { "serverTime": 1499827319559 }
+    }
+    
     // getAllSymbols Method
     // Returns list of all available symbols with selected trading pair
     
@@ -172,8 +191,8 @@ extension CandleStick {
              "17928899.62484339"] // Can be ignored
          ]*/
     
-        self.init(openTime: (json[0].doubleValue as Milliseconds).msToSeconds(),
-                  closeTime: (json[6].doubleValue as Milliseconds).msToSeconds(),
+        self.init(openTime: (json[0].intValue as Milliseconds),
+                  closeTime: (json[6].intValue as Milliseconds),
                   openPrice: json[1].doubleValue, closePrice: json[4].doubleValue,
                   highPrice: json[2].doubleValue, lowPrice: json[3].doubleValue,
                   volume: json[5].doubleValue, pairVolume: json[7].doubleValue,

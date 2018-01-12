@@ -10,8 +10,8 @@ import Foundation
 
 class CandleStick {
     
-    let openTime: Seconds
-    let closeTime: Seconds
+    let openTime: Milliseconds
+    let closeTime: Milliseconds
     
     let openPrice: Double
     let closePrice: Double
@@ -26,10 +26,10 @@ class CandleStick {
     
     var duration: Seconds {
         // candlesticks are 1ms less than standard size to prevent overlap (e.g. 1m stick is 999ms)
-        return Seconds(self.closeTime - self.openTime) / 1000
+        return (self.closeTime - self.openTime + 1 as Milliseconds).msToSeconds
     }
     
-    init(openTime: Seconds, closeTime: Seconds, openPrice: Double, closePrice: Double,
+    init(openTime: Milliseconds, closeTime: Milliseconds, openPrice: Double, closePrice: Double,
          highPrice: Double, lowPrice: Double, volume: Double, pairVolume: Double, tradesCount: Int) {
         
         self.openTime = openTime

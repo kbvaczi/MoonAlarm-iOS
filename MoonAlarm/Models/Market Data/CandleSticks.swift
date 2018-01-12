@@ -12,19 +12,19 @@ typealias CandleSticks = Array<CandleStick>
 
 extension Array where Element : CandleStick {
     
-    var startTime: Seconds? {
+    var startTime: Milliseconds? {
         return self.first?.openTime
     }
     
-    var currentTime: Seconds? {
+    var currentTime: Milliseconds? {
         return self.last?.closeTime
     }
     
     var stickDuration: Seconds? {
         guard   self.count > 1 else { return nil }
-        let oT = self[0].openTime
-        let cT = self[1].openTime
-        return Seconds(cT - oT)
+        let oT = self[0].openTime as Milliseconds
+        let cT = self[1].openTime as Milliseconds
+        return (cT - oT).msToSeconds
     }
     
     var currentStickVolume: Double? {
@@ -60,7 +60,7 @@ extension Array where Element : CandleStick {
         guard   let stickDuration = self.stickDuration else { return nil }
         guard   stickDuration > 0 else { return nil }
         
-        let M15 = (15 as Minutes).minutesToSeconds()
+        let M15 = (15 as Minutes).minutesToSeconds
         let sticks15MCount = Int(M15 / round(stickDuration))
         let sticks15M = self.suffix(sticks15MCount)
         let volume15MAvg = sticks15M.map({ $0.volume }).reduce(0, { $0 + $1 / Double(sticks15MCount) })
@@ -75,7 +75,7 @@ extension Array where Element : CandleStick {
         
         guard   stickDuration > 0 else { return nil } // prevent divide by zero error
         
-        let M15 = (15 as Minutes).minutesToSeconds()
+        let M15 = (15 as Minutes).minutesToSeconds
         let sticks15MCount = Int(M15 / round(stickDuration))
         let sticks15M = self.suffix(sticks15MCount)
         let trades15MAvg = sticks15M.map({ Double($0.tradesCount) }).reduce(0, { $0 + $1 / Double(sticks15MCount) })
@@ -93,7 +93,7 @@ extension Array where Element : CandleStick {
 
         guard stickDuration > 0 else { return nil }
         
-        let M3 = (3 as Minutes).minutesToSeconds()
+        let M3 = (3 as Minutes).minutesToSeconds
         let sticks3MCount = Int(M3 / round(stickDuration))
         let sticks3M = self.suffix(sticks3MCount)
         let price3MTotal = sticks3M.map({ $0.closePrice }).reduce(0, +)

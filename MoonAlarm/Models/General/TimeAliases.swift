@@ -10,20 +10,28 @@ import Foundation
 
 typealias Minutes = Double
 typealias Seconds = Double
-typealias Milliseconds = Double
+typealias Milliseconds = Int
 
 extension Milliseconds {
     
-    func msToSeconds() -> Seconds {
-        return self / 1000
+    var msToSeconds: Seconds {
+        return Double(self) / 1000.0
     }
     
 }
 
 extension Minutes {
     
-    func minutesToSeconds() -> Seconds {
+    var minutesToSeconds: Seconds {
         return self * 60
+    }
+    
+}
+
+extension Seconds {
+    
+    var secondsToMinutes: Seconds {
+        return self / 60
     }
     
 }
