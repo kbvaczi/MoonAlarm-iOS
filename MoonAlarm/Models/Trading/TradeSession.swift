@@ -22,7 +22,6 @@ class TradeSession {
     // Settings //
     var tradingPair = "BTC"
     var tradeAmountTarget: Double = 1
-    var tradeStrategy = TradeStrategy()
     var maxOpenTrades: Int = 3
     var trades = Trades()
     
@@ -105,7 +104,7 @@ class TradeSession {
             if trades.openTradeFor(snapshot.symbol) { continue }
             
             // only trade if the market snapshot passes our trade enter criteria
-            if self.tradeStrategy.entranceCriteria.allPassed(usingSnapshot: snapshot) {
+            if TradeStrategy.instance.entranceCriteria.allPassedFor(snapshot) {
                 let newTrade = Trade(symbol: snapshot.symbol, snapshot: snapshot)
                 self.trades.append(newTrade)
                 newTrade.execute()

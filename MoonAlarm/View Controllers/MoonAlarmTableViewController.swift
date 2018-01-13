@@ -18,7 +18,7 @@ class MoonAlarmTableViewController: UITableViewController {
         let fsC = FallwaySupportCriterion(maxFallwayPercent: 0.5)
         let mvC = MinVolumeCriterion(minVolume: 10 * TradeSession.instance.tradeAmountTarget)
         
-        TradeSession.instance.tradeStrategy.entranceCriteria = [ivC, srC, mvC, fsC]
+        TradeStrategy.instance.entranceCriteria = [ivC, srC, mvC, fsC]
         TradeSession.instance.start {
             self.updateDisplay()
             TradeSession.instance.investInWinners()

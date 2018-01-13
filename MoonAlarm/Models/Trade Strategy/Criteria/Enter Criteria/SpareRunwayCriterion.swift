@@ -16,8 +16,8 @@ class SpareRunwayCriterion: TradeEnterCriterion {
         self.minRunwayPercent = mrp
     }
     
-    override func passed(usingSnapshot mSnapshot: MarketSnapshot) -> Bool {
-        guard   let runwayPercent = mSnapshot.runwayPercent1M else { return false }
+    override func passedFor(snapshot: MarketSnapshot) -> Bool {
+        guard   let runwayPercent = snapshot.runwayPercent1M else { return false }
         
         return runwayPercent > minRunwayPercent
     }

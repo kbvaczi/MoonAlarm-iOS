@@ -13,7 +13,7 @@ class TradeEnterCriterion {
     // passed Method
     // to be overridden by child classes
     // does this criteria pass based on provided market data?
-    func passed(usingSnapshot mSnapshot: MarketSnapshot) -> Bool {
+    func passedFor(snapshot: MarketSnapshot) -> Bool {
         return false
     }
     

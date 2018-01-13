@@ -14,12 +14,12 @@ extension Array where Element : TradeEnterCriterion {
     
     // allPassed
     // using all criterion, should we enter/exit this trade?
-    func allPassed(usingSnapshot mSnapshot: MarketSnapshot) -> Bool {
+    func allPassedFor(_ snapshot: MarketSnapshot) -> Bool {
         // If there are no criterion, criteria does not pass
         guard self.count > 0 else { return false }
         
         // All criterion must pass to enter a trade (conservative)
-        let answers = self.map() { $0.passed(usingSnapshot: mSnapshot) }
+        let answers = self.map() { $0.passedFor(snapshot: snapshot) }
         return answers.reduce(true, { $0 && $1 })
     }
     
@@ -31,12 +31,12 @@ extension Array where Element : TradeExitCriterion {
     
     // allPassed
     // using all criterion, should we enter/exit this trade?
-    func onePassed(usingTrade trade: Trade) -> Bool {
+    func onePassedFor(_ trade: Trade) -> Bool {
         // If there are no criterion, criteria does not pass
         guard self.count > 0 else { return false }
 
         // only one criterion must pass to exit a trade (conservative)
-        let answers = self.map() { $0.passed(usingTrade: trade) }
+        let answers = self.map() { $0.passedFor(trade: trade) }
         return answers.reduce(true, { $0 || $1 })
     }
     

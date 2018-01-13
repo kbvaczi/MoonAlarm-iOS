@@ -137,6 +137,7 @@
 			children = (
 				BE9E3C9820044FC1005D531C /* General */,
 				BE9E3CA220058E09005D531C /* Market Data */,
+				BEF496272009791D00501C5C /* Trade Strategy */,
 				BE9E3C9920044FC8005D531C /* Trading */,
 			);
 			path = Models;
@@ -181,7 +182,6 @@
 				BE9E3CA0200588BA005D531C /* TradeSession.swift */,
 				BE9E3CA320058F3B005D531C /* Trade.swift */,
 				BE9E3CA620059458005D531C /* Trades.swift */,
-				BEF496272009791D00501C5C /* Strategy */,
 			);
 			path = Trading;
 			sourceTree = "<group>";
@@ -200,13 +200,13 @@
 			path = "Market Data";
 			sourceTree = "<group>";
 		};
-		BEF496272009791D00501C5C /* Strategy */ = {
+		BEF496272009791D00501C5C /* Trade Strategy */ = {
 			isa = PBXGroup;
 			children = (
 				BEF49623200978CE00501C5C /* TradeStrategy.swift */,
 				BEF4962A200979BF00501C5C /* Criteria */,
 			);
-			path = Strategy;
+			path = "Trade Strategy";
 			sourceTree = "<group>";
 		};
 		BEF496282009799900501C5C /* Enter Criteria */ = {

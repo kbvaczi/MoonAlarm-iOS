@@ -16,8 +16,8 @@ class IncreaseVolumeCriterion: TradeEnterCriterion {
         self.minVolRatio = mvr
     }
     
-    override func passed(usingSnapshot mSnapshot: MarketSnapshot) -> Bool {
-        guard let marketVolRatio = mSnapshot.candleSticks.volumeRatio1To15M else { return false }
+    override func passedFor(snapshot: MarketSnapshot) -> Bool {
+        guard let marketVolRatio = snapshot.candleSticks.volumeRatio1To15M else { return false }
         return marketVolRatio > minVolRatio
     }
     

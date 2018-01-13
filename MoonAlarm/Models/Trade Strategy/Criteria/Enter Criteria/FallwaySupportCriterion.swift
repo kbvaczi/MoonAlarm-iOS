@@ -17,8 +17,8 @@ class FallwaySupportCriterion: TradeEnterCriterion {
         self.maxFallwayPercent = mfp
     }
     
-    override func passed(usingSnapshot mSnapshot: MarketSnapshot) -> Bool {
-        guard   let fallwayPercent = mSnapshot.fallwayPercent1M else { return false }
+    override func passedFor(snapshot: MarketSnapshot) -> Bool {
+        guard   let fallwayPercent = snapshot.fallwayPercent1M else { return false }
         
         return fallwayPercent < self.maxFallwayPercent
     }
