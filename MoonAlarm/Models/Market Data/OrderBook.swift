@@ -55,7 +55,7 @@ class OrderBook {
     }
     
     func updateData(callback: @escaping () -> Void) {
-        let symbolPair = self.symbol + TradeSession.instance.tradingPair
+        let symbolPair = self.symbol + TradeStrategy.instance.tradingPair
         BinanceAPI.instance.getOrderBook(symbolPair: symbolPair,
                                          limit: 50) {
             (isSuccess, oBook) in

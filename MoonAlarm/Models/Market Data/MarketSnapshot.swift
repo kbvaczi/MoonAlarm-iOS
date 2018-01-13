@@ -76,7 +76,7 @@ class MarketSnapshot {
     }
     
     private func updateCandleSticks(callback: @escaping () -> Void) {
-        let symbolPair = self.symbol + TradeSession.instance.tradingPair
+        let symbolPair = self.symbol + TradeStrategy.instance.tradingPair
         BinanceAPI.instance.getCandleSticks(symbolPair: symbolPair, interval: .m1, limit: 15) {
             (isSuccess, cSticks) in
             if isSuccess {
