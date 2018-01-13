@@ -10,22 +10,23 @@ import Foundation
 
 class TradeSession {
     
-    // singleton
-    static let instance = TradeSession()
+    static let instance = TradeSession() // singleton
+    private init() { } // prohibit instances of this class from being declared
     
-    // prohibit instances of this class from being declared
-    private init() { }
-    
+    // Market Data //
     var symbols = [String]()
     var marketSnapshots = MarketSnapshots()
-    var tradeStrategy = TradeStrategy()
-    private var updateTimer = Timer()
+    var exchangeClock = ExchangeClock()
+    private var updateTimer = Timer() // Timer that periodically updates market data
     
+    // Settings //
     var tradingPair = "BTC"
     var tradeAmountTarget: Double = 1
+    var tradeStrategy = TradeStrategy()
     var maxOpenTrades: Int = 3
     var trades = Trades()
     
+    // Conditions //
     var status: Status = .running // TODO: implement toggle
     enum Status: String {
         case running = "Running"
@@ -34,8 +35,9 @@ class TradeSession {
     
     func start(callback: @escaping () -> Void) {
         self.status = .running
+        exchangeClock.startRegularSync()
         TradeSession.instance.updateSymbols {
-            self.startRepeatingSnapshotUpdates {
+            self.startRegularSnapshotUpdates {
                 callback()
             }
         }
@@ -43,7 +45,8 @@ class TradeSession {
     
     func stop(callback: @escaping () -> Void) {
         self.status = .stopped
-        self.stopRepeatingSnapshotUpdates()
+        self.stopRegularSnapshotUpdates()
+        exchangeClock.stopRegularSync()
     }
     
     func updateSymbols(callback: @escaping () -> Void) {
@@ -79,15 +82,17 @@ class TradeSession {
         }
     }
     
-    func startRepeatingSnapshotUpdates(callback: @escaping () -> Void) {
-        self.updateTimer = Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { _ in
+    func startRegularSnapshotUpdates(callback: @escaping () -> Void) {
+        self.updateTimer = Timer.scheduledTimer(withTimeInterval: 15, repeats: true) { _ in
+            guard self.trades.countOnly(status: .open) < self.maxOpenTrades else { return }
             self.updateMarketSnapshots {
+                self.marketSnapshots.sort { $0.volumeRatio1To15M ?? 0 > $1.volumeRatio1To15M ?? 0 }
                 callback()
             }
         }
     }
     
-    func stopRepeatingSnapshotUpdates() {
+    func stopRegularSnapshotUpdates() {
         self.updateTimer.invalidate()
     }
     

@@ -35,3 +35,14 @@ extension Seconds {
     }
     
 }
+
+extension Date {
+    
+    var millisecondsSince1970: Milliseconds {
+        return Milliseconds((self.timeIntervalSince1970 * 1000.0).rounded())
+    }
+    
+    init(milliseconds: Milliseconds) {
+        self = Date(timeIntervalSince1970: TimeInterval(milliseconds / 1000))
+    }
+}
