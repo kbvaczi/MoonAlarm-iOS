@@ -34,6 +34,10 @@ extension Seconds {
         return self / 60
     }
     
+    var secondsToMilliseconds: Milliseconds {
+        return Milliseconds(self * 1000)
+    }
+    
 }
 
 extension Date {
