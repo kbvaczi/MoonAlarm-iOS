@@ -27,15 +27,15 @@ class MarketSnapshot {
     var runwayPercent1M: Double? {
         guard   let cVol = candleSticks.currentStickVolume else { return nil }
         guard   let runwayPrice = orderBook.runwayPrice(forVolume: cVol),
-                let firstAsk = orderBook.firstAsk else { return nil }
-        return  ((runwayPrice / firstAsk) - 1).toPercent()
+                let currentPrice = self.currentPrice else { return nil }
+        return  ((runwayPrice / currentPrice) - 1).toPercent()
     }
     
     var fallwayPercent1M: Double? {
         guard   let cVol = candleSticks.currentStickVolume else { return nil }
         guard   let fallwayPrice = orderBook.fallwayPrice(forVolume: cVol),
-                let firstAsk = orderBook.firstAsk else { return nil }
-        return  ((firstAsk / fallwayPrice) - 1).toPercent()
+                let currentPrice = self.currentPrice else { return nil }
+        return  ((currentPrice / fallwayPrice) - 1).toPercent()
     }
     
     var priceIncreasePercent3M: Double? {
