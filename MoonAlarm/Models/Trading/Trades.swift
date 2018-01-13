@@ -18,6 +18,12 @@ extension Array where Element : Trade {
         return sRate.toPercent()
     }
     
+    var totalProfitPercent: Percent {
+        let completedTrades = self.filter { $0.status == .complete }
+        let tPP = completedTrades.map({ $0.profitPercent }).reduce(0) { $0 + $1 }
+        return tPP
+    }
+    
     func countOnly(status: Trade.Status) -> Int {
         let count = self.filter { $0.status == status }.count
         return count
