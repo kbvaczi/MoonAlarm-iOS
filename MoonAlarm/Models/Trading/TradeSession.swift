@@ -19,10 +19,7 @@ class TradeSession {
     var exchangeClock = ExchangeClock()
     private var updateTimer = Timer() // Timer that periodically updates market data
     
-    // Settings //
-    var tradingPair = "BTC"
-    var tradeAmountTarget: Double = 1
-    var maxOpenTrades: Int = 3
+
     var trades = Trades()
     
     // Conditions //
@@ -83,7 +80,8 @@ class TradeSession {
     
     func startRegularSnapshotUpdates(callback: @escaping () -> Void) {
         self.updateTimer = Timer.scheduledTimer(withTimeInterval: 15, repeats: true) { _ in
-            guard self.trades.countOnly(status: .open) < self.maxOpenTrades else { return }
+            let maxOpenTrades = TradeStrategy.instance.maxOpenTrades
+            guard self.trades.countOnly(status: .open) < maxOpenTrades else { return }
             self.updateMarketSnapshots {
                 self.marketSnapshots.sort { $0.volumeRatio1To15M ?? 0 > $1.volumeRatio1To15M ?? 0 }
                 callback()
@@ -98,7 +96,8 @@ class TradeSession {
     func investInWinners() {
         for snapshot in self.marketSnapshots {
             // don't start any more trades if we've maxed out
-            guard trades.countOnly(status: .open) < self.maxOpenTrades else { return }
+            let maxOpenTrades = TradeStrategy.instance.maxOpenTrades
+            guard trades.countOnly(status: .open) < maxOpenTrades else { return }
             
             // only one trade open per symbol at a time
             if trades.openTradeFor(snapshot.symbol) { continue }

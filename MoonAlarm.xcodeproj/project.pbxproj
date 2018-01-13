@@ -34,6 +34,7 @@
 		BEF4963420098E4600501C5C /* MinVolumeCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF4963320098E4600501C5C /* MinVolumeCriterion.swift */; };
 		BEF49636200A336500501C5C /* ExchangeClock.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF49635200A336500501C5C /* ExchangeClock.swift */; };
 		BEF4963A200A621A00501C5C /* FallwaySupportCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF49639200A621A00501C5C /* FallwaySupportCriterion.swift */; };
+		BEF4963E200A9FC600501C5C /* TimeLimitProfitableCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF4963D200A9FC600501C5C /* TimeLimitProfitableCriterion.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -68,6 +69,7 @@
 		BEF4963320098E4600501C5C /* MinVolumeCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MinVolumeCriterion.swift; sourceTree = "<group>"; };
 		BEF49635200A336500501C5C /* ExchangeClock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeClock.swift; sourceTree = "<group>"; };
 		BEF49639200A621A00501C5C /* FallwaySupportCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FallwaySupportCriterion.swift; sourceTree = "<group>"; };
+		BEF4963D200A9FC600501C5C /* TimeLimitProfitableCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeLimitProfitableCriterion.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -223,6 +225,7 @@
 		BEF49629200979A100501C5C /* Exit Criteria */ = {
 			isa = PBXGroup;
 			children = (
+				BEF4963D200A9FC600501C5C /* TimeLimitProfitableCriterion.swift */,
 			);
 			path = "Exit Criteria";
 			sourceTree = "<group>";
@@ -389,6 +392,7 @@
 				BEF4962E2009826400501C5C /* TradeEnterCriterion.swift in Sources */,
 				BE9E3C9D200452A9005D531C /* PercentAlias.swift in Sources */,
 				BE9E3CA720059458005D531C /* Trades.swift in Sources */,
+				BEF4963E200A9FC600501C5C /* TimeLimitProfitableCriterion.swift in Sources */,
 				BEF49636200A336500501C5C /* ExchangeClock.swift in Sources */,
 				BEF49630200984DE00501C5C /* TradeExitCriterion.swift in Sources */,
 				BEF49632200989B800501C5C /* SpareRunwayCriterion.swift in Sources */,

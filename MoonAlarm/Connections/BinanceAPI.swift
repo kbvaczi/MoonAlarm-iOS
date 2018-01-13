@@ -162,7 +162,7 @@ class BinanceAPI {
         jsonRequest(url: url, method: .get, params: params) {
             (isSuccessful, jsonResponse) in
             
-            let pairSymbol = TradeSession.instance.tradingPair
+            let pairSymbol = TradeStrategy.instance.tradingPair
             let symbol = symbolPair.replacingOccurrences(of: pairSymbol, with: "")
             let newOrderBook = OrderBook(symbol: symbol, fromJson: jsonResponse)
             
