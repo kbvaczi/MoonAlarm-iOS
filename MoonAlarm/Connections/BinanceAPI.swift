@@ -81,7 +81,7 @@ class BinanceAPI {
     // getAllSymbols Method
     // Returns list of all available symbols with selected trading pair
     
-    func getAllSymbols(forTradingPair tradingPairSymbol: String = "BTC",
+    func getAllSymbols(forTradingPair tradingPairSymbol: String,
                        callback: @escaping (_ isSuccessful: Bool, _ symbols: [String]) -> Void) {
         
         let url = rootURLString + "/api/v1/ticker/allPrices"
@@ -96,7 +96,6 @@ class BinanceAPI {
             for (_ ,subJson):(String, JSON) in jsonResponse {
                 let symbolPair = subJson["symbol"].stringValue
                 if symbolPair.hasSuffix(tradingPairSymbol) {
-                    symbolTest.append(symbolPair)
                     let symbol = symbolPair.replacingOccurrences(of: tradingPairSymbol, with: "")
                     symbolsList.append(symbol)
                 }
@@ -164,7 +163,7 @@ class BinanceAPI {
         jsonRequest(url: url, method: .get, params: params) {
             (isSuccessful, jsonResponse) in
             
-            let pairSymbol = TradeStrategy.instance.tradingPair
+            let pairSymbol = TradeStrategy.instance.tradingPairSymbol
             let symbol = symbolPair.replacingOccurrences(of: pairSymbol, with: "")
             let newOrderBook = OrderBook(symbol: symbol, fromJson: jsonResponse)
             

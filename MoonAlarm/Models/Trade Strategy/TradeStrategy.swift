@@ -13,7 +13,7 @@ class TradeStrategy {
     static var instance = TradeStrategy() // singleton
     
     // Settings //
-    var tradingPair = "ETH"
+    var tradingPairSymbol = "ETH"
     var tradeAmountTarget: Double = 1
     var maxOpenTrades: Int = 3
     var expectedFeePerTrade: Percent = 0.2

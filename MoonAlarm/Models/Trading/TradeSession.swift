@@ -46,7 +46,8 @@ class TradeSession {
     }
     
     func updateSymbols(callback: @escaping () -> Void) {
-        BinanceAPI.instance.getAllSymbols() { (isSuccess, newSymbols) in
+        let tradingPairSymbol = TradeStrategy.instance.tradingPairSymbol
+        BinanceAPI.instance.getAllSymbols(forTradingPair: tradingPairSymbol) { (isSuccess, newSymbols) in
             if isSuccess {
                 self.symbols = newSymbols
                 callback()
