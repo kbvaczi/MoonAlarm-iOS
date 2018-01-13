@@ -18,12 +18,7 @@ class FallwaySupportCriterion: TradeEnterCriterion {
     }
     
     override func passed(usingSnapshot mSnapshot: MarketSnapshot) -> Bool {
-        guard let currentVol = mSnapshot.candleSticks.currentStickVolume,
-            let currentPrice = mSnapshot.currentPrice else { return false }
-        guard let fallwayPrice = mSnapshot.orderBook.fallwayPrice(forVolume: currentVol)
-            else { return false }
-        
-        let fallwayPercent = (currentPrice / fallwayPrice - 1).toPercent()
+        guard   let fallwayPercent = mSnapshot.fallwayPercent1M else { return false }
         
         return fallwayPercent < self.maxFallwayPercent
     }

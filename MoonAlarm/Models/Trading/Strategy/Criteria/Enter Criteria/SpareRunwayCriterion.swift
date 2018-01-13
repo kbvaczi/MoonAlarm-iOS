@@ -17,12 +17,7 @@ class SpareRunwayCriterion: TradeEnterCriterion {
     }
     
     override func passed(usingSnapshot mSnapshot: MarketSnapshot) -> Bool {
-        guard let currentVol = mSnapshot.candleSticks.currentStickVolume,
-              let currentPrice = mSnapshot.currentPrice else { return false }
-        guard let runwayPrice = mSnapshot.orderBook.runwayPrice(forVolume: currentVol)
-                  else { return false }
-        
-        let runwayPercent = (runwayPrice / currentPrice - 1).toPercent()
+        guard   let runwayPercent = mSnapshot.runwayPercent1M else { return false }
         
         return runwayPercent > minRunwayPercent
     }

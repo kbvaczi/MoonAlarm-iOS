@@ -13,11 +13,12 @@ class MoonAlarmTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let ivC = IncreaseVolumeCriterion(minVolRatio: 1.5)
-        let srC = SpareRunwayCriterion(minRunwayPercent: 0.01)
+        let ivC = IncreaseVolumeCriterion(minVolRatio: 2.0)
+        let srC = SpareRunwayCriterion(minRunwayPercent: 1.0)
+        let fsC = FallwaySupportCriterion(maxFallwayPercent: 0.5)
         let mvC = MinVolumeCriterion(minVolume: 10 * TradeSession.instance.tradeAmountTarget)
         
-        TradeSession.instance.tradeStrategy.entranceCriteria = [ivC, srC, mvC]
+        TradeSession.instance.tradeStrategy.entranceCriteria = [ivC, srC, mvC, fsC]
         TradeSession.instance.start {
             self.updateDisplay()
             TradeSession.instance.investInWinners()
@@ -46,14 +47,17 @@ class MoonAlarmTableViewController: UITableViewController {
         
         cell.textLabel?.text = snapshot.symbol
         
-        guard let currentVol = snapshot.candleSticks.currentStickVolume,
-            let currentPrice = snapshot.currentPrice else { return cell }
-        guard let runwayPrice = snapshot.orderBook.runwayPrice(forVolume: currentVol)
-            else { return cell }
+        guard   let currentVol = snapshot.candleSticks.currentStickVolume,
+                let currentPrice = snapshot.currentPrice else { return cell }
+        
+        guard   let runwayPrice = snapshot.orderBook.runwayPrice(forVolume: currentVol),
+                let fallwayPrice = snapshot.orderBook.fallwayPrice(forVolume: currentVol)
+                else { return cell }
         
         let runwayPercent = (runwayPrice / currentPrice - 1).toPercent()
+        let fallwayPercent = (currentPrice / fallwayPrice - 1).toPercent()
         
-        cell.detailTextLabel?.text = "Run: \(runwayPercent)%  VRatio: \(snapshot.volumeRatio1To15M!) tRatio:\(snapshot.tradesRatio1To15M!)"
+        cell.detailTextLabel?.text = "Run:\(runwayPercent)%  Fall:\(fallwayPercent)% VRat:\(snapshot.volumeRatio1To15M!) tRat:\(snapshot.tradesRatio1To15M!)"
 
         return cell
     }

@@ -16,10 +16,10 @@ class TradeStrategy {
     init() { }
     
     func entranceCriteriaPassed(usingSnapshot mSnapshot: MarketSnapshot) -> Bool {
-        return entranceCriteria.passed(usingSnapshot: mSnapshot)
+        return entranceCriteria.allPassed(usingSnapshot: mSnapshot)
     }
     
-    func exitCriteriaPassed(usingSnapshot mSnapshot: MarketSnapshot) -> Bool {
-        return exitCriteria.passed(usingSnapshot: mSnapshot)
+    func exitCriteriaPassed(usingTrade trade: Trade) -> Bool {
+        return exitCriteria.onePassed(usingTrade: trade)
     }
 }

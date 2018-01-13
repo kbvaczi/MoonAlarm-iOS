@@ -212,7 +212,6 @@
 		BEF496282009799900501C5C /* Enter Criteria */ = {
 			isa = PBXGroup;
 			children = (
-				BEF4962D2009826400501C5C /* TradeEnterCriterion.swift */,
 				BEF4962B20097ED000501C5C /* IncreasedVolumeCriterion.swift */,
 				BEF49631200989B800501C5C /* SpareRunwayCriterion.swift */,
 				BEF4963320098E4600501C5C /* MinVolumeCriterion.swift */,
@@ -224,7 +223,6 @@
 		BEF49629200979A100501C5C /* Exit Criteria */ = {
 			isa = PBXGroup;
 			children = (
-				BEF4962F200984DE00501C5C /* TradeExitCriterion.swift */,
 			);
 			path = "Exit Criteria";
 			sourceTree = "<group>";
@@ -233,6 +231,8 @@
 			isa = PBXGroup;
 			children = (
 				BEF496252009791900501C5C /* TradeEnterExitCriteria.swift */,
+				BEF4962D2009826400501C5C /* TradeEnterCriterion.swift */,
+				BEF4962F200984DE00501C5C /* TradeExitCriterion.swift */,
 				BEF496282009799900501C5C /* Enter Criteria */,
 				BEF49629200979A100501C5C /* Exit Criteria */,
 			);
