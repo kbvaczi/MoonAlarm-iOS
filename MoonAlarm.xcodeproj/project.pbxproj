@@ -30,6 +30,8 @@
 		BEF4962C20097ED000501C5C /* IncreasedVolumeCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF4962B20097ED000501C5C /* IncreasedVolumeCriterion.swift */; };
 		BEF4962E2009826400501C5C /* TradeEnterCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF4962D2009826400501C5C /* TradeEnterCriterion.swift */; };
 		BEF49630200984DE00501C5C /* TradeExitCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF4962F200984DE00501C5C /* TradeExitCriterion.swift */; };
+		BEF49632200989B800501C5C /* SpareRunwayCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF49631200989B800501C5C /* SpareRunwayCriterion.swift */; };
+		BEF4963420098E4600501C5C /* MinVolumeCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF4963320098E4600501C5C /* MinVolumeCriterion.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -60,6 +62,8 @@
 		BEF4962B20097ED000501C5C /* IncreasedVolumeCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncreasedVolumeCriterion.swift; sourceTree = "<group>"; };
 		BEF4962D2009826400501C5C /* TradeEnterCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradeEnterCriterion.swift; sourceTree = "<group>"; };
 		BEF4962F200984DE00501C5C /* TradeExitCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradeExitCriterion.swift; sourceTree = "<group>"; };
+		BEF49631200989B800501C5C /* SpareRunwayCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpareRunwayCriterion.swift; sourceTree = "<group>"; };
+		BEF4963320098E4600501C5C /* MinVolumeCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MinVolumeCriterion.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -205,6 +209,8 @@
 			children = (
 				BEF4962D2009826400501C5C /* TradeEnterCriterion.swift */,
 				BEF4962B20097ED000501C5C /* IncreasedVolumeCriterion.swift */,
+				BEF49631200989B800501C5C /* SpareRunwayCriterion.swift */,
+				BEF4963320098E4600501C5C /* MinVolumeCriterion.swift */,
 			);
 			path = "Enter Criteria";
 			sourceTree = "<group>";
@@ -371,11 +377,13 @@
 				BE9E3C9B20045189005D531C /* MarketSnapshot.swift in Sources */,
 				BE9E3CA92006867E005D531C /* OrderBook.swift in Sources */,
 				BE390BA62002507B00CFD46B /* MoonAlarmTableViewController.swift in Sources */,
+				BEF4963420098E4600501C5C /* MinVolumeCriterion.swift in Sources */,
 				BE390B8D2001488D00CFD46B /* AppDelegate.swift in Sources */,
 				BEF4962E2009826400501C5C /* TradeEnterCriterion.swift in Sources */,
 				BE9E3C9D200452A9005D531C /* PercentAlias.swift in Sources */,
 				BE9E3CA720059458005D531C /* Trades.swift in Sources */,
 				BEF49630200984DE00501C5C /* TradeExitCriterion.swift in Sources */,
+				BEF49632200989B800501C5C /* SpareRunwayCriterion.swift in Sources */,
 				BE9E3C9420043429005D531C /* CandleSticks.swift in Sources */,
 				BEF4962C20097ED000501C5C /* IncreasedVolumeCriterion.swift in Sources */,
 			);

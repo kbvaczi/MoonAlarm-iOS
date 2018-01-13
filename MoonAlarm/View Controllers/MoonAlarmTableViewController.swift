@@ -12,9 +12,15 @@ class MoonAlarmTableViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("hi")
+        
+        let ivC = IncreaseVolumeCriterion(minVolRatio: 1.5)
+        let srC = SpareRunwayCriterion(minRunwayPercent: 0.01)
+        let mvC = MinVolumeCriterion(minVolume: 10 * TradeSession.instance.tradeAmountTarget)
+        
+        TradeSession.instance.tradeStrategy.entranceCriteria = [ivC, srC, mvC]
         TradeSession.instance.start {
             self.updateDisplay()
+            TradeSession.instance.investInWinners()
         }
 
     }
@@ -40,7 +46,14 @@ class MoonAlarmTableViewController: UITableViewController {
         
         cell.textLabel?.text = snapshot.symbol
         
-        cell.detailTextLabel?.text = "$: \(snapshot.priceIncreasePercent3M!)%  VR: \(snapshot.volumeRatio1To15M!) #R:\(snapshot.tradesRatio1To15M!)"
+        guard let currentVol = snapshot.candleSticks.currentStickVolume,
+            let currentPrice = snapshot.currentPrice else { return cell }
+        guard let runwayPrice = snapshot.orderBook.runwayPrice(forVolume: currentVol)
+            else { return cell }
+        
+        let runwayPercent = (runwayPrice / currentPrice - 1).toPercent()
+        
+        cell.detailTextLabel?.text = "Run: \(runwayPercent)%  VRatio: \(snapshot.volumeRatio1To15M!) tRatio:\(snapshot.tradesRatio1To15M!)"
 
         return cell
     }

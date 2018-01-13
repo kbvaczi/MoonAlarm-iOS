@@ -93,16 +93,17 @@ class TradeSession {
     
     func investInWinners() {
         for snapshot in self.marketSnapshots {
-            if  snapshot.volumeRatio1To15M! > 3 &&
-                snapshot.tradesRatio1To15M! > 1.0 &&
-                //snapshot.priceIncreasePercent3M > 0.1 &&
-                snapshot.priceIsIncreasing! &&
-                snapshot.volumeAvg15M! > (10 * self.tradeAmountTarget) &&
-                !trades.openTradeFor(snapshot.symbol) &&
-                trades.countOnly(status: .open) < self.maxOpenTrades {
-                    let newTrade = Trade(symbol: snapshot.symbol, snapshot: snapshot)
-                    self.trades.append(newTrade)
-                    newTrade.execute()
+            // don't start any more trades if we've maxed out
+            guard trades.countOnly(status: .open) < self.maxOpenTrades else { return }
+            
+            // only one trade open per symbol at a time
+            if trades.openTradeFor(snapshot.symbol) { continue }
+            
+            // only trade if the market snapshot passes our trade enter criteria
+            if self.tradeStrategy.entranceCriteria.passed(usingSnapshot: snapshot) {
+                let newTrade = Trade(symbol: snapshot.symbol, snapshot: snapshot)
+                self.trades.append(newTrade)
+                newTrade.execute()
             }
         }
     }
