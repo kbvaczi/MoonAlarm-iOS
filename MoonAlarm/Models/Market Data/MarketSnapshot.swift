@@ -43,8 +43,8 @@ class MarketSnapshot {
         return round((pRatio.toPercent() - 100) * 100) / 100
     }
     
-    var priceIsIncreasing: Bool? {
-        return candleSticks.priceIsIncreasing
+    var priceHasIncreased: Bool? {
+        return candleSticks.priceHasIncreased
     }
     
     var volumeAvg15M: Double? {
