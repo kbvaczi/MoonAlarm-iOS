@@ -22,20 +22,50 @@ extension Array where Element : CandleStick {
     
     var stickDuration: Seconds? {
         guard   self.count > 1 else { return nil }
-        let oT = self[0].openTime as Milliseconds
-        let cT = self[1].openTime as Milliseconds
-        return (cT - oT).msToSeconds
+        let openT = self[0].openTime as Milliseconds
+        let closeT = self[1].openTime as Milliseconds
+        return (closeT - openT).msToSeconds
+    }
+    
+    var currentStickDuration: Seconds? {
+        guard let currentStick = self.last else { return nil }
+        let openT = currentStick.openTime
+        let currentT = TradeSession.instance.exchangeClock.currentTime
+        return (currentT - openT).msToSeconds
     }
     
     var currentStickVolume: Double? {
         return self.last?.volume
     }
     
+    var currentStickVolumeProrated: Double? {
+        guard   let stickDuration = self.stickDuration,
+                let currentStickDuration = self.currentStickDuration,
+                let currentStickVolume = self.currentStickVolume else { return nil }
+        
+        // prorating less than 10 seconds of data can lead to scewed results
+        let minStickDur: Seconds = 10
+        let proRateFactor = stickDuration / Swift.max(minStickDur, currentStickDuration)
+        return (currentStickVolume * proRateFactor)
+    }
+    
     var currentStickTradesCount: Int? {
         return self.last?.tradesCount
     }
     
-    var priceIsIncreasing: Bool? {
+    var currentStickTradesCountProrated: Int? {
+        guard   let stickDuration = self.stickDuration,
+            let currentStickDuration = self.currentStickDuration,
+            let currentStickTrades = self.currentStickTradesCount else { return nil }
+        
+        // prorating less than 10 seconds of data can lead to scewed results
+        let minStickDur: Seconds = 10
+        let proRateFactor = stickDuration / Swift.max(minStickDur, currentStickDuration)
+        return Int(Double(currentStickTrades) * proRateFactor)
+    }
+    
+    // Price of current stick is higher than previous stick
+    var priceHasIncreased: Bool? {
         guard   let currentStick = self.last,
                 let prevStick = self.suffix(2).first else { return nil }
         return currentStick.closePrice > prevStick.closePrice
@@ -45,7 +75,7 @@ extension Array where Element : CandleStick {
     var volumeRatio1To15M: Double? {
         guard   let stickDuration = self.stickDuration,
                 let volumeAvg15M = self.volumeAvg15M,
-                let currentStickVolume = self.currentStickVolume else { return nil }
+                let currentStickVolume = self.currentStickVolumeProrated else { return nil }
         
         guard   stickDuration > 0 else { return nil } // prevent divide by zero error
         
