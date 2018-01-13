@@ -10,7 +10,9 @@ import Foundation
 
 class IncreaseVolumeCriterion: TradeEnterCriterion {
     
-    var minVolRatio: Double
+    var minVolRatio: Double = 2.0
+    
+    override init() { }
     
     init(minVolRatio mvr: Double) {
         self.minVolRatio = mvr

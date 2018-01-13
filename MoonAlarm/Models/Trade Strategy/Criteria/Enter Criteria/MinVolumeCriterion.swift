@@ -10,7 +10,9 @@ import Foundation
 
 class MinVolumeCriterion: TradeEnterCriterion {
     
-    var minVolume: Double
+    var minVolume: Double = TradeStrategy.instance.tradeAmountTarget * 10
+    
+    override init() { }
     
     init(minVolume mv: Double) {
         self.minVolume = mv

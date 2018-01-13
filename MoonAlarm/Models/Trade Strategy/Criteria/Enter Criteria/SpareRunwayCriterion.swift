@@ -10,7 +10,9 @@ import Foundation
 
 class SpareRunwayCriterion: TradeEnterCriterion {
     
-    var minRunwayPercent: Percent
+    var minRunwayPercent: Percent = 1.0
+    
+    override init() { }
     
     init(minRunwayPercent mrp: Double) {
         self.minRunwayPercent = mrp
