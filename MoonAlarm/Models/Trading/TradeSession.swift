@@ -18,6 +18,7 @@ class TradeSession {
     
     var symbols = [String]()
     var marketSnapshots = MarketSnapshots()
+    var tradeStrategy = TradeStrategy()
     private var updateTimer = Timer()
     
     var tradingPair = "BTC"
