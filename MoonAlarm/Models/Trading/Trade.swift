@@ -18,6 +18,17 @@ class Trade {
     var enterPrice: Double = 0
     var exitPrice: Double = 0
     
+    var startTime: Milliseconds = TradeSession.instance.exchangeClock.currentTime
+    var endTime: Milliseconds? = nil
+    // Track how long this trade has been active
+    var duration: Milliseconds {
+        if let eT = self.endTime {
+            return eT - self.startTime
+        } else {
+            return TradeSession.instance.exchangeClock.currentTime - self.startTime
+        }
+    }
+    
     init(symbol sym: String, snapshot: MarketSnapshot) {
         self.symbol = sym
         self.marketSnapshot = snapshot
@@ -28,11 +39,11 @@ class Trade {
     }
     
     var profit: Double {
-        return exitPrice - enterPrice
+        return exitPrice - enterPrice - (exitPrice * 0.002)
     }
     
     var profitPercent: Percent {
-        return exitPrice / enterPrice
+        return (self.profit / enterPrice).toPercent()
     }
     
     var wasProfitable: Bool {
@@ -54,13 +65,13 @@ class Trade {
         self.status = .complete
         self.exitPrice = marketSnapshot.currentPrice ?? 0
         self.stopUpdatingData()
-        print("\(self.symbol) trade ended: \(self.profitPercent) profit")
-        print("Session Success Rate: \(TradeSession.instance.trades.successRate)")
+        print("\(self.symbol) trade ended: \(self.profitPercent)% profit")
+        print("Session Trades:\(TradeSession.instance.trades.countOnly(status: .complete)) Success: \(TradeSession.instance.trades.successRate)% Total Profit: \(TradeSession.instance.trades.totalProfitPercent)%")
     }
     
     func monitorAndTerminateIfAppropriate() {
         guard let currentPrice = marketSnapshot.currentPrice else { return }
-        if currentPrice > (enterPrice * 1.01) || (currentPrice * 1.01) < enterPrice {
+        if currentPrice > (enterPrice * 1.01) || (currentPrice * 1.005) < enterPrice || self.duration.msToSeconds > 60 {
             terminate()
         }
     }
