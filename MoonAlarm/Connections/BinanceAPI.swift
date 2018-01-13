@@ -92,9 +92,11 @@ class BinanceAPI {
             
             // Data is an array of dictionaries
             // Example data: [{"price" : "0.05919500","symbol" : "ETHBTC"}]
+            
             for (_ ,subJson):(String, JSON) in jsonResponse {
                 let symbolPair = subJson["symbol"].stringValue
                 if symbolPair.hasSuffix(tradingPairSymbol) {
+                    symbolTest.append(symbolPair)
                     let symbol = symbolPair.replacingOccurrences(of: tradingPairSymbol, with: "")
                     symbolsList.append(symbol)
                 }

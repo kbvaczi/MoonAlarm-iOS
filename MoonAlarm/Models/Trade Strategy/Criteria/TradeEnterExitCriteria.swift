@@ -12,8 +12,8 @@ typealias TradeEnterCriteria = Array<TradeEnterCriterion>
 
 extension Array where Element : TradeEnterCriterion {
     
-    // allPassed
-    // using all criterion, should we enter/exit this trade?
+    // allPassedFor
+    // using all criterion, should we enter this trade?
     func allPassedFor(_ snapshot: MarketSnapshot) -> Bool {
         // If there are no criterion, criteria does not pass
         guard self.count > 0 else { return false }
@@ -29,15 +29,15 @@ typealias TradeExitCriteria = Array<TradeExitCriterion>
 
 extension Array where Element : TradeExitCriterion {
     
-    // allPassed
-    // using all criterion, should we enter/exit this trade?
+    // onePassedFor
+    // using all criterion, should we exit this trade?
     func onePassedFor(_ trade: Trade) -> Bool {
         // If there are no criterion, criteria does not pass
         guard self.count > 0 else { return false }
 
         // only one criterion must pass to exit a trade (conservative)
         let answers = self.map() { $0.passedFor(trade: trade) }
-        return answers.reduce(true, { $0 || $1 })
+        return answers.reduce(false, { $0 || $1 })
     }
     
 }

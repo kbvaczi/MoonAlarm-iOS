@@ -14,13 +14,13 @@ extension Array where Element : Trade {
     
     var successRate: Percent {
         let completedTrades = self.filter { $0.status == .complete }
-        let sRate = completedTrades.map({ $0.wasProfitable ? 1 : 0 }).reduce(0) {$0 + $1 / Double(completedTrades.count)}
-        return sRate.toPercent()
+        let sRate = completedTrades.map({ ($0.wasProfitable ?? false) ? 1 : 0 }).reduce(0) {$0 + $1 / Double(completedTrades.count)}
+        return sRate.doubleToPercent
     }
     
     var totalProfitPercent: Percent {
         let completedTrades = self.filter { $0.status == .complete }
-        let tPP = completedTrades.map({ $0.profitPercent }).reduce(0) { $0 + $1 }
+        let tPP = completedTrades.map({ $0.profitPercent ?? 0 }).reduce(0) { $0 + $1 }
         return tPP
     }
     

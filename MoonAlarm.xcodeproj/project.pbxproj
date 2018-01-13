@@ -35,6 +35,9 @@
 		BEF49636200A336500501C5C /* ExchangeClock.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF49635200A336500501C5C /* ExchangeClock.swift */; };
 		BEF4963A200A621A00501C5C /* FallwaySupportCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF49639200A621A00501C5C /* FallwaySupportCriterion.swift */; };
 		BEF4963E200A9FC600501C5C /* TimeLimitProfitableCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF4963D200A9FC600501C5C /* TimeLimitProfitableCriterion.swift */; };
+		BEF49640200AA6A400501C5C /* TimeLimitUnprofitableCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF4963F200AA6A400501C5C /* TimeLimitUnprofitableCriterion.swift */; };
+		BEF49646200AABC400501C5C /* ProfitPercentCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF49645200AABC400501C5C /* ProfitPercentCriterion.swift */; };
+		BEF49648200AAC4E00501C5C /* LossPercentCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF49647200AAC4E00501C5C /* LossPercentCriterion.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -70,6 +73,9 @@
 		BEF49635200A336500501C5C /* ExchangeClock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeClock.swift; sourceTree = "<group>"; };
 		BEF49639200A621A00501C5C /* FallwaySupportCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FallwaySupportCriterion.swift; sourceTree = "<group>"; };
 		BEF4963D200A9FC600501C5C /* TimeLimitProfitableCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeLimitProfitableCriterion.swift; sourceTree = "<group>"; };
+		BEF4963F200AA6A400501C5C /* TimeLimitUnprofitableCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeLimitUnprofitableCriterion.swift; sourceTree = "<group>"; };
+		BEF49645200AABC400501C5C /* ProfitPercentCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfitPercentCriterion.swift; sourceTree = "<group>"; };
+		BEF49647200AAC4E00501C5C /* LossPercentCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LossPercentCriterion.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -226,6 +232,9 @@
 			isa = PBXGroup;
 			children = (
 				BEF4963D200A9FC600501C5C /* TimeLimitProfitableCriterion.swift */,
+				BEF4963F200AA6A400501C5C /* TimeLimitUnprofitableCriterion.swift */,
+				BEF49645200AABC400501C5C /* ProfitPercentCriterion.swift */,
+				BEF49647200AAC4E00501C5C /* LossPercentCriterion.swift */,
 			);
 			path = "Exit Criteria";
 			sourceTree = "<group>";
@@ -380,6 +389,7 @@
 				BE9E3CA1200588BA005D531C /* TradeSession.swift in Sources */,
 				BEF4963A200A621A00501C5C /* FallwaySupportCriterion.swift in Sources */,
 				BEF49624200978CE00501C5C /* TradeStrategy.swift in Sources */,
+				BEF49640200AA6A400501C5C /* TimeLimitUnprofitableCriterion.swift in Sources */,
 				BE9E3C9F20045467005D531C /* MarketSnapshots.swift in Sources */,
 				BE390BA220024B0100CFD46B /* CandleStick.swift in Sources */,
 				BE9E3C9620044CD9005D531C /* TimeAliases.swift in Sources */,
@@ -392,12 +402,14 @@
 				BEF4962E2009826400501C5C /* TradeEnterCriterion.swift in Sources */,
 				BE9E3C9D200452A9005D531C /* PercentAlias.swift in Sources */,
 				BE9E3CA720059458005D531C /* Trades.swift in Sources */,
+				BEF49648200AAC4E00501C5C /* LossPercentCriterion.swift in Sources */,
 				BEF4963E200A9FC600501C5C /* TimeLimitProfitableCriterion.swift in Sources */,
 				BEF49636200A336500501C5C /* ExchangeClock.swift in Sources */,
 				BEF49630200984DE00501C5C /* TradeExitCriterion.swift in Sources */,
 				BEF49632200989B800501C5C /* SpareRunwayCriterion.swift in Sources */,
 				BE9E3C9420043429005D531C /* CandleSticks.swift in Sources */,
 				BEF4962C20097ED000501C5C /* IncreasedVolumeCriterion.swift in Sources */,
+				BEF49646200AABC400501C5C /* ProfitPercentCriterion.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -19,6 +19,7 @@ class MoonAlarmTableViewController: UITableViewController {
         let mvC = MinVolumeCriterion(minVolume: 10 * TradeStrategy.instance.tradeAmountTarget)
         
         TradeStrategy.instance.entranceCriteria = [ivC, srC, mvC, fsC]
+        TradeStrategy.instance.exitCriteria = [TimeLimitProfitableCriterion(), TimeLimitUnprofitableCriterion(), ProfitPercentCriterion(), LossPercentCriterion()]
         TradeSession.instance.start {
             self.updateDisplay()
             TradeSession.instance.investInWinners()
@@ -54,8 +55,8 @@ class MoonAlarmTableViewController: UITableViewController {
                 let fallwayPrice = snapshot.orderBook.fallwayPrice(forVolume: currentVol)
                 else { return cell }
         
-        let runwayPercent = (runwayPrice / currentPrice - 1).toPercent()
-        let fallwayPercent = (currentPrice / fallwayPrice - 1).toPercent()
+        let runwayPercent = (runwayPrice / currentPrice - 1).doubleToPercent
+        let fallwayPercent = (currentPrice / fallwayPrice - 1).doubleToPercent
         
         cell.detailTextLabel?.text = "Run:\(runwayPercent)%  Fall:\(fallwayPercent)% VRat:\(snapshot.volumeRatio1To15M!) tRat:\(snapshot.tradesRatio1To15M!)"
 

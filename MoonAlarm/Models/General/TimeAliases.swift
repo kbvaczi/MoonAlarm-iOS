@@ -26,6 +26,10 @@ extension Minutes {
         return self * 60
     }
     
+    var minutesToMilliseconds: Milliseconds {
+        return Int(self * 60 * 1000)
+    }
+    
 }
 
 extension Seconds {

@@ -15,8 +15,8 @@ class Trade {
     var updateTimer = Timer()
     
     var status: Status = .draft
-    var enterPrice: Double = 0
-    var exitPrice: Double = 0
+    var enterPrice: Double? = nil
+    var exitPrice: Double? = nil
     
     var startTime: Milliseconds = TradeSession.instance.exchangeClock.currentTime
     var endTime: Milliseconds? = nil
@@ -38,16 +38,30 @@ class Trade {
         self.init(symbol: sym, snapshot:  MarketSnapshot(symbol: sym))
     }
     
-    var profit: Double {
-        return exitPrice - enterPrice - (exitPrice * 0.002)
+    var profit: Double? {
+        let fee = TradeStrategy.instance.expectedFeePerTrade
+        switch self.status {
+        case .draft: return nil
+        case .open:
+            guard   let enterP = self.enterPrice,
+                    let currentP = self.marketSnapshot.currentPrice else { return nil }
+            return currentP - enterP - (fee.percentToDouble * currentP)
+        case .complete:
+            guard   let enterP = self.enterPrice,
+                    let exitP = self.exitPrice else { return nil }
+            return exitP - enterP - (fee.percentToDouble * exitP)
+        }
     }
     
-    var profitPercent: Percent {
-        return (self.profit / enterPrice).toPercent()
+    var profitPercent: Percent? {
+        guard   let enterP = self.enterPrice,
+                let profit = self.profit else { return nil }
+        return (profit / enterP).doubleToPercent
     }
     
-    var wasProfitable: Bool {
-        return self.profit > 0
+    var wasProfitable: Bool? {
+        guard   let profit = self.profit else { return nil }
+        return profit > 0
     }
     
     func execute() {
@@ -65,13 +79,12 @@ class Trade {
         self.status = .complete
         self.exitPrice = marketSnapshot.currentPrice ?? 0
         self.stopUpdatingData()
-        print("\(self.symbol) trade ended: \(self.profitPercent)% profit")
+        print("\(self.symbol) trade ended: \(String(describing: self.profitPercent))% profit")
         print("Session Trades:\(TradeSession.instance.trades.countOnly(status: .complete)) Success: \(TradeSession.instance.trades.successRate)% Total Profit: \(TradeSession.instance.trades.totalProfitPercent)%")
     }
     
     func monitorAndTerminateIfAppropriate() {
-        guard let currentPrice = marketSnapshot.currentPrice else { return }
-        if currentPrice > (enterPrice * 1.01) || (currentPrice * 1.005) < enterPrice || self.duration.msToSeconds > 60 {
+        if TradeStrategy.instance.exitCriteriaPassedFor(trade: self) {
             terminate()
         }
     }

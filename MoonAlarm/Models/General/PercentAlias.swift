@@ -12,9 +12,17 @@ typealias Percent = Double
 
 extension Double {
     
-    func toPercent() -> Percent {
+    var doubleToPercent: Percent {
         let percent = Darwin.round(self * 1000) / 10
         return percent
+    }
+    
+}
+
+extension Percent {
+    
+    var percentToDouble: Double {
+        return self / 100
     }
     
 }

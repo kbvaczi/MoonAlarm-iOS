@@ -16,6 +16,7 @@ class TradeStrategy {
     var tradingPair = "ETH"
     var tradeAmountTarget: Double = 1
     var maxOpenTrades: Int = 3
+    var expectedFeePerTrade: Percent = 0.2
     var entranceCriteria = TradeEnterCriteria()
     var exitCriteria = TradeExitCriteria()
     
