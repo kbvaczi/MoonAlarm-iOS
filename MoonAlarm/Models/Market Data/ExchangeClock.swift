@@ -11,6 +11,8 @@ import QuartzCore
 
 class ExchangeClock {
     
+    static var instance = ExchangeClock() // singleton
+    
     private var lastSyncLocalTime: Milliseconds
     private var lastSyncServerTime: Milliseconds
     
@@ -19,7 +21,7 @@ class ExchangeClock {
     var currentTime: Milliseconds {
         let currentLocalTime = Date().millisecondsSince1970
         let timeSinceLastSync = currentLocalTime - self.lastSyncLocalTime
-        return timeSinceLastSync + lastSyncServerTime
+        return timeSinceLastSync + self.lastSyncServerTime
     }
     
     private init(serverTime: Milliseconds, localTime: Milliseconds) {
@@ -27,10 +29,11 @@ class ExchangeClock {
         self.lastSyncLocalTime = localTime
     }
     
-    convenience init() {
-        self.init(serverTime: 0, localTime: 0)
-        syncTimeWithServer()
-        startRegularSync()
+    private convenience init() {
+        self.init(serverTime: Date().millisecondsSince1970,
+                  localTime: Date().millisecondsSince1970)
+        self.syncTimeWithServer()
+        self.startRegularSync()
     }
     
     private func syncTimeWithServer() {

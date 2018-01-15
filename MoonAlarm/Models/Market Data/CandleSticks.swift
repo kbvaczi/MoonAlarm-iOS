@@ -30,7 +30,7 @@ extension Array where Element : CandleStick {
     var currentStickDuration: Seconds? {
         guard let currentStick = self.last else { return nil }
         let openT = currentStick.openTime
-        let currentT = TradeSession.instance.exchangeClock.currentTime
+        let currentT = ExchangeClock.instance.currentTime
         return (currentT - openT).msToSeconds
     }
     
@@ -96,6 +96,19 @@ extension Array where Element : CandleStick {
         let volume15MAvg = sticks15M.map({ $0.volume }).reduce(0, { $0 + $1 / Double(sticks15MCount) })
         
         return volume15MAvg
+    }
+    
+    // pair asset average volume over 15 minutes
+    var volumeAvg15MPair: Double? {
+        guard   let stickDuration = self.stickDuration else { return nil }
+        guard   stickDuration > 0 else { return nil }
+        
+        let M15 = (15 as Minutes).minutesToSeconds
+        let sticks15MCount = Int(M15 / round(stickDuration))
+        let sticks15M = self.suffix(sticks15MCount)
+        let volume15MAvgPair = sticks15M.map({ $0.pairVolume }).reduce(0, { $0 + $1 / Double(sticks15MCount) })
+        
+        return volume15MAvgPair
     }
     
     // number of trades conducted within last minute vs 15-minute running average

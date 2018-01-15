@@ -16,7 +16,6 @@ class TradeSession {
     // Market Data //
     var symbols = [String]()
     var marketSnapshots = MarketSnapshots()
-    var exchangeClock = ExchangeClock()
     private var updateTimer = Timer() // Timer that periodically updates market data
     
 
@@ -31,8 +30,7 @@ class TradeSession {
     
     func start(callback: @escaping () -> Void) {
         self.status = .running
-        exchangeClock.startRegularSync()
-        TradeSession.instance.updateSymbols {
+        TradeSession.instance.updateSymbolsAndPrioritize {
             self.startRegularSnapshotUpdates {
                 callback()
             }
@@ -42,14 +40,21 @@ class TradeSession {
     func stop(callback: @escaping () -> Void) {
         self.status = .stopped
         self.stopRegularSnapshotUpdates()
-        exchangeClock.stopRegularSync()
     }
     
-    func updateSymbols(callback: @escaping () -> Void) {
+    func updateSymbolsAndPrioritize(callback: @escaping () -> Void) {
         let tradingPairSymbol = TradeStrategy.instance.tradingPairSymbol
-        BinanceAPI.instance.getAllSymbols(forTradingPair: tradingPairSymbol) { (isSuccess, newSymbols) in
+        BinanceAPI.instance.getAllSymbols(forTradingPair: tradingPairSymbol) { (isSuccess, allSymbols) in
             if isSuccess {
-                self.symbols = newSymbols
+                self.symbols = allSymbols
+                self.updateMarketSnapshots {
+                    // Get first 50 snapshots based on 15M volume
+                    let prioritizedSnapshots = self.marketSnapshots.sorted(by:
+                                                    {$0.candleSticks.volumeAvg15MPair ?? 0 >
+                                                     $1.candleSticks.volumeAvg15MPair ?? 0}).prefix(50)
+                    let prioritizedSymbols = prioritizedSnapshots.map({$0.symbol})
+                    self.symbols = prioritizedSymbols
+                }
                 callback()
             }
         }
@@ -64,7 +69,7 @@ class TradeSession {
         // use a dispatch group to keep track of how many symbols we've updated
         let dpG = DispatchGroup()
         
-        for symbol in symbols {
+        for symbol in self.symbols {
             dpG.enter() // enter dispatch queue
             let newSnapshot = MarketSnapshot(symbol: symbol)
             newSnapshot.updateData {
@@ -80,7 +85,7 @@ class TradeSession {
     }
     
     func startRegularSnapshotUpdates(callback: @escaping () -> Void) {
-        self.updateTimer = Timer.scheduledTimer(withTimeInterval: 15, repeats: true) { _ in
+        self.updateTimer = Timer.scheduledTimer(withTimeInterval: 12, repeats: true) { _ in
             let maxOpenTrades = TradeStrategy.instance.maxOpenTrades
             guard self.trades.countOnly(status: .open) < maxOpenTrades else { return }
             self.updateMarketSnapshots {
@@ -95,9 +100,10 @@ class TradeSession {
     }
     
     func investInWinners() {
+        let maxOpenTrades = TradeStrategy.instance.maxOpenTrades
+        
         for snapshot in self.marketSnapshots {
             // don't start any more trades if we've maxed out
-            let maxOpenTrades = TradeStrategy.instance.maxOpenTrades
             guard trades.countOnly(status: .open) < maxOpenTrades else { return }
             
             // only one trade open per symbol at a time

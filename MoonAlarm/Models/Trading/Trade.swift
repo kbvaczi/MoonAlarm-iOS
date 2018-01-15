@@ -18,14 +18,14 @@ class Trade {
     var enterPrice: Double? = nil
     var exitPrice: Double? = nil
     
-    var startTime: Milliseconds = TradeSession.instance.exchangeClock.currentTime
+    var startTime: Milliseconds = ExchangeClock.instance.currentTime
     var endTime: Milliseconds? = nil
     // Track how long this trade has been active
     var duration: Milliseconds {
         if let eT = self.endTime {
             return eT - self.startTime
         } else {
-            return TradeSession.instance.exchangeClock.currentTime - self.startTime
+            return ExchangeClock.instance.currentTime - self.startTime
         }
     }
     
