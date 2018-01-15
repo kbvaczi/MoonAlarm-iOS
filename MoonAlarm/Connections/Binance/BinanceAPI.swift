@@ -22,16 +22,20 @@ class BinanceAPI {
     // performRequest Method
     // General request method used as a root for other request methods to standardize error logging
     
-    private func jsonRequest(url: String, method: HTTPMethod, params: [String: Any]?,
+    private func jsonRequest(url: String, method: HTTPMethod,
+                        params: Parameters? = nil, headers: HTTPHeaders? = nil,
                         callback: @escaping (_ isSuccessful: Bool, _ jsonResponse: JSON) -> Void) {
         
-        Alamofire.request(url, method: method, parameters: params).responseSwiftyJSON { response in
+        Alamofire.request(url, method: method, parameters: params, headers: headers)
+                        .responseSwiftyJSON { response in
+                            
             guard response.result.isSuccess else {
                 print("*** Request to \(url) unsuccessful ***")
                 print("Parameters:")
                 print(params ?? "no parameters")
                 print("Response:")
                 let jsonResponse = response.result.value ?? JSON.null
+                print("JSON:")
                 print(jsonResponse)
                 callback(false, jsonResponse)
                 return
@@ -54,7 +58,51 @@ class BinanceAPI {
                 // Example data:
                 // { "code" : -1003, "msg" : "Way too many requests; IP banned until 1515547977300." }
             }
-            
+            callback(true, jsonResponse)
+        }
+    }
+    
+    private func signedJsonRequest(url: String, method: HTTPMethod,
+                                   params: Parameters? = nil, headers: HTTPHeaders? = nil, secretKey: String,
+                                   callback: @escaping (_ isSuccessful: Bool, _ jsonResponse: JSON) -> Void) {
+        
+        let signedParams = params?.signForBinance(withSecretKey: secretKey)
+        
+        Alamofire.request(url, method: method, parameters: signedParams, encoding: BinanceSignedEncoding(), headers: headers)
+            .responseSwiftyJSON { response in
+                
+            guard response.result.isSuccess else {
+                print("*** Request to \(url) unsuccessful ***")
+                print("Parameters:")
+                print(params ?? "no parameters")
+                print("Response:")
+                let jsonResponse = response.result.value ?? JSON.null
+                print("JSON:")
+                print(jsonResponse)
+                callback(false, jsonResponse)
+                return
+            }
+            guard let jsonResponse = response.result.value else {
+                print("*** Request to \(url) returned no data ***")
+                print("Parameters:")
+                print(params ?? "no parameters")
+                callback(false, JSON.null)
+                return
+            }
+            guard jsonResponse["code"].int == nil else {
+                print("*** Error in request to \(url) ***")
+                print("Parameters:")
+                print(params ?? "no parameters")
+                print("Code: \(jsonResponse["code"].intValue) Error: \(jsonResponse["msg"].stringValue)")
+                /// REMOVE
+                print(response.request?.url?.absoluteString)
+                ////
+                callback(false, JSON.null)
+                return
+                
+                // Example data:
+                // { "code" : -1003, "msg" : "Way too many requests; IP banned until 1515547977300." }
+            }
             callback(true, jsonResponse)
         }
     }
@@ -133,20 +181,7 @@ class BinanceAPI {
             callback(true, candleSticks)
         }
     }
-    
-    // KLineInterval
-    // duration of each candlestick
-    enum KLineInterval: String {
-        case m1 = "1m"
-        case m3 = "3m"
-        case m5 = "5m"
-        case m15 = "15m"
-        case m30 = "30m"
-        case h1 = "1h"
-        case h12 = "12h"
-        case d1 = "1d"
-    }
-    
+
     // getOrderBook Method
     // Returns candlestick data from a given symbol pair
     // Parameters:
@@ -169,6 +204,45 @@ class BinanceAPI {
             
             callback(true, newOrderBook)
         }
+    }
+    
+    ///////// SIGNED REQUESTS ///////////
+    
+    func getOpenOrders(forSymbolPair sP: String, apiKey: String, secretKey: String,
+                       callback: @escaping (_ isSuccess: Bool, _ orders: TraderOrders) -> Void) {
+        
+        let url = rootURLString + "/api/v3/openOrders"
+        let head = ["X-MBX-APIKEY": apiKey]
+        
+        let params: Parameters = ["symbol": sP,
+                                  "timestamp": ExchangeClock.instance.currentTime]
+        
+        signedJsonRequest(url: url, method: .get, params: params, headers: head, secretKey: secretKey) {
+            (isSuccessful, jsonResponse) in
+
+            print("JSON \(jsonResponse)")
+        }
+    }
+    
+    ///////// DATA STREAMS //////////
+    
+    func startUserDataStream(forSymbolPair sP: String, apiKey: String,
+                             callback: @escaping (_ isSuccess: Bool, _ listenKey: String) -> Void) {
+        
+        let url = rootURLString + "/api/v1/userDataStream"
+        let head = ["X-MBX-APIKEY": apiKey]
+        
+        jsonRequest(url: url, method: .post, headers: head) {
+            (isSuccessful, jsonResponse) in
+            
+            // Example Data:
+            // {"listenKey": "pqia91ma19a5s61cv6a81va65sdf19v8a65a1a5s61cv6a81va65sdf19v8a65a1"}
+            
+            let listenKey = jsonResponse["listenKey"].stringValue
+            print("listenKey \(listenKey)")
+            callback(true, listenKey)
+        }
+        
     }
 
 }
