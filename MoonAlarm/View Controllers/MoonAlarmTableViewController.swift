@@ -17,14 +17,15 @@ class MoonAlarmTableViewController: UITableViewController {
         let srC = SpareRunwayCriterion(minRunwayPercent: 1.0)
         let fsC = FallwaySupportCriterion(maxFallwayPercent: 0.5)
         let mvC = MinVolumeCriterion(minVolume: 10 * TradeStrategy.instance.tradeAmountTarget)
-        
+
         TradeStrategy.instance.entranceCriteria = [ivC, srC, mvC, fsC]
         TradeStrategy.instance.exitCriteria = [TimeLimitProfitableCriterion(), TimeLimitUnprofitableCriterion(), ProfitPercentCriterion(), LossPercentCriterion()]
+
         TradeSession.instance.start {
             self.updateDisplay()
-            TradeSession.instance.investInWinners()
+            //TradeSession.instance.investInWinners()
         }
-
+        
     }
 
     override func didReceiveMemoryWarning() {
