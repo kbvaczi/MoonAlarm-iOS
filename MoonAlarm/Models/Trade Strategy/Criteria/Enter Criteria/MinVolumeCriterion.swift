@@ -19,7 +19,7 @@ class MinVolumeCriterion: TradeEnterCriterion {
     }
     
     override func passedFor(snapshot: MarketSnapshot) -> Bool {
-        guard let avgVol = snapshot.candleSticks.volumeAvg15M else { return false }
+        guard let avgVol = snapshot.candleSticks.volumeAvg15MPair else { return false }
         
         return avgVol > self.minVolume
     }
