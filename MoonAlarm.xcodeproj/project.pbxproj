@@ -18,7 +18,6 @@
 		BE390BA020015AD500CFD46B /* BinanceAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE390B9F20015AD500CFD46B /* BinanceAPI.swift */; };
 		BE390BA220024B0100CFD46B /* CandleStick.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE390BA120024B0100CFD46B /* CandleStick.swift */; };
 		BE390BA62002507B00CFD46B /* MoonAlarmTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE390BA52002507B00CFD46B /* MoonAlarmTableViewController.swift */; };
-		BE5F8590200BB3080042EE0A /* TradeOrders.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5F858F200BB3080042EE0A /* TradeOrders.swift */; };
 		BE5F8592200BB4C70042EE0A /* BinanceEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5F8591200BB4C70042EE0A /* BinanceEnums.swift */; };
 		BE9E3C9420043429005D531C /* CandleSticks.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E3C9320043429005D531C /* CandleSticks.swift */; };
 		BE9E3C9620044CD9005D531C /* TimeAliases.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E3C9520044CD9005D531C /* TimeAliases.swift */; };
@@ -46,7 +45,6 @@
 		BEF49640200AA6A400501C5C /* TimeLimitUnprofitableCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF4963F200AA6A400501C5C /* TimeLimitUnprofitableCriterion.swift */; };
 		BEF49646200AABC400501C5C /* ProfitPercentCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF49645200AABC400501C5C /* ProfitPercentCriterion.swift */; };
 		BEF49648200AAC4E00501C5C /* LossPercentCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF49647200AAC4E00501C5C /* LossPercentCriterion.swift */; };
-		BEF4964A200AC60300501C5C /* TradeOrder.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF49649200AC60300501C5C /* TradeOrder.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -65,7 +63,6 @@
 		BE390B9F20015AD500CFD46B /* BinanceAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinanceAPI.swift; sourceTree = "<group>"; };
 		BE390BA120024B0100CFD46B /* CandleStick.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CandleStick.swift; sourceTree = "<group>"; };
 		BE390BA52002507B00CFD46B /* MoonAlarmTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoonAlarmTableViewController.swift; sourceTree = "<group>"; };
-		BE5F858F200BB3080042EE0A /* TradeOrders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradeOrders.swift; sourceTree = "<group>"; };
 		BE5F8591200BB4C70042EE0A /* BinanceEnums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinanceEnums.swift; sourceTree = "<group>"; };
 		BE9E3C9320043429005D531C /* CandleSticks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CandleSticks.swift; sourceTree = "<group>"; };
 		BE9E3C9520044CD9005D531C /* TimeAliases.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeAliases.swift; sourceTree = "<group>"; };
@@ -93,7 +90,6 @@
 		BEF4963F200AA6A400501C5C /* TimeLimitUnprofitableCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeLimitUnprofitableCriterion.swift; sourceTree = "<group>"; };
 		BEF49645200AABC400501C5C /* ProfitPercentCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfitPercentCriterion.swift; sourceTree = "<group>"; };
 		BEF49647200AAC4E00501C5C /* LossPercentCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LossPercentCriterion.swift; sourceTree = "<group>"; };
-		BEF49649200AC60300501C5C /* TradeOrder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradeOrder.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -209,8 +205,6 @@
 				BE9E3CA0200588BA005D531C /* TradeSession.swift */,
 				BE9E3CA320058F3B005D531C /* Trade.swift */,
 				BE9E3CA620059458005D531C /* Trades.swift */,
-				BEF49649200AC60300501C5C /* TradeOrder.swift */,
-				BE5F858F200BB3080042EE0A /* TradeOrders.swift */,
 			);
 			path = Trading;
 			sourceTree = "<group>";
@@ -429,11 +423,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				BE390BA020015AD500CFD46B /* BinanceAPI.swift in Sources */,
-				BE5F8590200BB3080042EE0A /* TradeOrders.swift in Sources */,
 				BE07C0DB200EBE35000F5A38 /* MACDEnterCriterion.swift in Sources */,
 				BE9E3CA420058F3B005D531C /* Trade.swift in Sources */,
 				BEF496262009791900501C5C /* TradeEnterExitCriteria.swift in Sources */,
-				BEF4964A200AC60300501C5C /* TradeOrder.swift in Sources */,
 				BE9E3CA1200588BA005D531C /* TradeSession.swift in Sources */,
 				BEF4963A200A621A00501C5C /* FallwaySupportCriterion.swift in Sources */,
 				BEF49624200978CE00501C5C /* TradeStrategy.swift in Sources */,
