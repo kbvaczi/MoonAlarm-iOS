@@ -16,10 +16,11 @@ class MACDExitCriterion: TradeExitCriterion {
         let count = trade.marketSnapshot.candleSticks.count
         let sticks = trade.marketSnapshot.candleSticks
         guard   let currentMacdHistogram = sticks.last?.macdHistogram,
-                let prevMacdHistogram = sticks[count - 1].macdHistogram else {
+                let prevMacdHistogram = sticks[count - 2].macdHistogram else {
                     return false
         }
         // MACD Crosses above the signal line, or Histogram goes from - to +
+        print("current MACD:\(currentMacdHistogram) prev MACD:\(prevMacdHistogram)")
         return currentMacdHistogram < 0 && prevMacdHistogram > 0
     }
     
