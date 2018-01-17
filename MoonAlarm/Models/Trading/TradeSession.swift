@@ -49,9 +49,7 @@ class TradeSession {
                 self.symbols = allSymbols
                 self.updateMarketSnapshots {
                     // Get first 50 snapshots based on 15M volume
-                    let prioritizedSnapshots = self.marketSnapshots.sorted(by:
-                                                    {$0.candleSticks.volumeAvg15MPair ?? 0 >
-                                                     $1.candleSticks.volumeAvg15MPair ?? 0}).prefix(50)
+                    let prioritizedSnapshots = self.marketSnapshots.filter({$0.candleSticks.volumeAvg15MPair ?? 0 > 5 * TradeStrategy.instance.tradeAmountTarget}).prefix(50)
                     let prioritizedSymbols = prioritizedSnapshots.map({$0.symbol})
                     self.symbols = prioritizedSymbols
                 }
