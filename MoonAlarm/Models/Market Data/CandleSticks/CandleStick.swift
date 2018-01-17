@@ -10,8 +10,17 @@ import Foundation
 
 class CandleStick {
     
+    ////////// Time //////////
+    
     let openTime: Milliseconds
     let closeTime: Milliseconds
+    
+    var duration: Seconds {
+        // candlesticks are 1ms less than standard size to prevent overlap (e.g. 1m stick is 999ms)
+        return (self.closeTime - self.openTime + 1 as Milliseconds).msToSeconds
+    }
+    
+    ////////// Price //////////
     
     let openPrice: Double
     let closePrice: Double
@@ -19,15 +28,14 @@ class CandleStick {
     let highPrice: Double
     let lowPrice: Double
     
+    ////////// Volume & Count //////////
+    
     let volume: Double
     let pairVolume: Double
     
     let tradesCount: Int
     
-    var duration: Seconds {
-        // candlesticks are 1ms less than standard size to prevent overlap (e.g. 1m stick is 999ms)
-        return (self.closeTime - self.openTime + 1 as Milliseconds).msToSeconds
-    }
+    ////////// Initializer //////////
     
     init(openTime: Milliseconds, closeTime: Milliseconds, openPrice: Double, closePrice: Double,
          highPrice: Double, lowPrice: Double, volume: Double, pairVolume: Double, tradesCount: Int) {
@@ -46,5 +54,17 @@ class CandleStick {
         
         self.tradesCount = tradesCount
     }
-
+    
+    ////////// MACD Indicator //////////
+    
+    var macd: Double? = nil
+    var macdSignal: Double? = nil
+    
+    var macdHistogram: Double? {
+        guard   let macd = self.macd,
+                let macdSignal = self.macdSignal else { return nil }
+        return macd - macdSignal
+    }
+    
+    
 }

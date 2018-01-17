@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		1DE8080564805DD63BDED175 /* Pods_MoonAlarm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB536FAF4678E609899C8429 /* Pods_MoonAlarm.framework */; };
 		BE07C0D5200E8C0E000F5A38 /* CandlesticksMACD.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE07C0D4200E8C0E000F5A38 /* CandlesticksMACD.swift */; };
+		BE07C0D9200EBE26000F5A38 /* MACDExitCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE07C0D8200EBE26000F5A38 /* MACDExitCriterion.swift */; };
+		BE07C0DB200EBE35000F5A38 /* MACDEnterCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE07C0DA200EBE35000F5A38 /* MACDEnterCriterion.swift */; };
 		BE390B8D2001488D00CFD46B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE390B8C2001488D00CFD46B /* AppDelegate.swift */; };
 		BE390B922001488D00CFD46B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BE390B902001488D00CFD46B /* Main.storyboard */; };
 		BE390B942001488D00CFD46B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BE390B932001488D00CFD46B /* Assets.xcassets */; };
@@ -52,6 +54,8 @@
 		3C27DFFC651EBF346E22BAD9 /* Pods-MoonAlarm.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MoonAlarm.release.xcconfig"; path = "Pods/Target Support Files/Pods-MoonAlarm/Pods-MoonAlarm.release.xcconfig"; sourceTree = "<group>"; };
 		BB536FAF4678E609899C8429 /* Pods_MoonAlarm.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MoonAlarm.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE07C0D4200E8C0E000F5A38 /* CandlesticksMACD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CandlesticksMACD.swift; sourceTree = "<group>"; };
+		BE07C0D8200EBE26000F5A38 /* MACDExitCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MACDExitCriterion.swift; sourceTree = "<group>"; };
+		BE07C0DA200EBE35000F5A38 /* MACDEnterCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MACDEnterCriterion.swift; sourceTree = "<group>"; };
 		BE390B892001488D00CFD46B /* MoonAlarm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MoonAlarm.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE390B8C2001488D00CFD46B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		BE390B912001488D00CFD46B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -214,12 +218,12 @@
 		BE9E3CA220058E09005D531C /* Market Data */ = {
 			isa = PBXGroup;
 			children = (
-				BEC755F8200D86000092B316 /* CandleSticks */,
 				BE9E3C9A20045189005D531C /* MarketSnapshot.swift */,
 				BE9E3C9E20045467005D531C /* MarketSnapshots.swift */,
 				BE9E3CA82006867E005D531C /* OrderBook.swift */,
 				BE9E3CAA200686CE005D531C /* Order.swift */,
 				BEF49635200A336500501C5C /* ExchangeClock.swift */,
+				BEC755F8200D86000092B316 /* CandleSticks */,
 			);
 			path = "Market Data";
 			sourceTree = "<group>";
@@ -261,6 +265,7 @@
 				BEF49631200989B800501C5C /* SpareRunwayCriterion.swift */,
 				BEF4963320098E4600501C5C /* MinVolumeCriterion.swift */,
 				BEF49639200A621A00501C5C /* FallwaySupportCriterion.swift */,
+				BE07C0DA200EBE35000F5A38 /* MACDEnterCriterion.swift */,
 			);
 			path = "Enter Criteria";
 			sourceTree = "<group>";
@@ -272,6 +277,7 @@
 				BEF4963F200AA6A400501C5C /* TimeLimitUnprofitableCriterion.swift */,
 				BEF49645200AABC400501C5C /* ProfitPercentCriterion.swift */,
 				BEF49647200AAC4E00501C5C /* LossPercentCriterion.swift */,
+				BE07C0D8200EBE26000F5A38 /* MACDExitCriterion.swift */,
 			);
 			path = "Exit Criteria";
 			sourceTree = "<group>";
@@ -424,6 +430,7 @@
 			files = (
 				BE390BA020015AD500CFD46B /* BinanceAPI.swift in Sources */,
 				BE5F8590200BB3080042EE0A /* TradeOrders.swift in Sources */,
+				BE07C0DB200EBE35000F5A38 /* MACDEnterCriterion.swift in Sources */,
 				BE9E3CA420058F3B005D531C /* Trade.swift in Sources */,
 				BEF496262009791900501C5C /* TradeEnterExitCriteria.swift in Sources */,
 				BEF4964A200AC60300501C5C /* TradeOrder.swift in Sources */,
@@ -437,6 +444,7 @@
 				BE9E3C9620044CD9005D531C /* TimeAliases.swift in Sources */,
 				BE9E3CAB200686CE005D531C /* Order.swift in Sources */,
 				BE9E3C9B20045189005D531C /* MarketSnapshot.swift in Sources */,
+				BE07C0D9200EBE26000F5A38 /* MACDExitCriterion.swift in Sources */,
 				BE9E3CA92006867E005D531C /* OrderBook.swift in Sources */,
 				BED95530200BBCA60094C1BD /* BinanceSignature.swift in Sources */,
 				BE390BA62002507B00CFD46B /* MoonAlarmTableViewController.swift in Sources */,
