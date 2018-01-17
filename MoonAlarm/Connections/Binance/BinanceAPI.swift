@@ -208,21 +208,21 @@ class BinanceAPI {
     
     ///////// SIGNED REQUESTS ///////////
     
-    func getOpenOrders(forSymbolPair sP: String, apiKey: String, secretKey: String,
-                       callback: @escaping (_ isSuccess: Bool, _ orders: TraderOrders) -> Void) {
-        
-        let url = rootURLString + "/api/v3/openOrders"
-        let head = ["X-MBX-APIKEY": apiKey]
-        
-        let params: Parameters = ["symbol": sP,
-                                  "timestamp": ExchangeClock.instance.currentTime]
-        
-        signedJsonRequest(url: url, method: .get, params: params, headers: head, secretKey: secretKey) {
-            (isSuccessful, jsonResponse) in
-
-            print("JSON \(jsonResponse)")
-        }
-    }
+//    func getOpenOrders(forSymbolPair sP: String, apiKey: String, secretKey: String,
+//                       callback: @escaping (_ isSuccess: Bool, _ orders: TraderOrders) -> Void) {
+//        
+//        let url = rootURLString + "/api/v3/openOrders"
+//        let head = ["X-MBX-APIKEY": apiKey]
+//        
+//        let params: Parameters = ["symbol": sP,
+//                                  "timestamp": ExchangeClock.instance.currentTime]
+//        
+//        signedJsonRequest(url: url, method: .get, params: params, headers: head, secretKey: secretKey) {
+//            (isSuccessful, jsonResponse) in
+//
+//            print("JSON \(jsonResponse)")
+//        }
+//    }
     
     ///////// DATA STREAMS //////////
     
