@@ -24,6 +24,11 @@ extension Array where Element : Trade {
         return tPP
     }
     
+    func selectOnly(status: Trade.Status) -> Trades {
+        let selection = self.filter { $0.status == status }
+        return selection
+    }
+    
     func countOnly(status: Trade.Status) -> Int {
         let count = self.filter { $0.status == status }.count
         return count

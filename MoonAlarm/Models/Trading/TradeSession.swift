@@ -22,7 +22,7 @@ class TradeSession {
     var trades = Trades()
     
     // Conditions //
-    var status: Status = .running // TODO: implement toggle
+    var status: Status = .stopped
     enum Status: String {
         case running = "Running"
         case stopped = "Stopped"
@@ -32,14 +32,16 @@ class TradeSession {
         self.status = .running
         TradeSession.instance.updateSymbolsAndPrioritize {
             self.startRegularSnapshotUpdates {
-                callback()
+                self.investInWinners()
             }
+            callback()
         }
     }
     
     func stop(callback: @escaping () -> Void) {
         self.status = .stopped
         self.stopRegularSnapshotUpdates()
+        callback()
     }
     
     func updateSymbolsAndPrioritize(callback: @escaping () -> Void) {

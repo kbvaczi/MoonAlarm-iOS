@@ -10,22 +10,33 @@ import UIKit
 
 class MoonAlarmTableViewController: UITableViewController {
     
+    @IBAction func startStopButtonPushed(_ sender: UIButton) {
+        switch TradeSession.instance.status {
+        case .running:
+            sender.setTitle("Start Trading", for: .normal)
+            TradeSession.instance.stop { }
+        case .stopped:
+            sender.setTitle("Stop Trading", for: .normal)
+            TradeSession.instance.start { }
+        }
+    }
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.startRegularDisplayUpdates()
         
-        let ivC = IncreaseVolumeCriterion(minVolRatio: 2.0)
-        let srC = SpareRunwayCriterion(minRunwayPercent: 1.0)
-        let fsC = FallwaySupportCriterion(maxFallwayPercent: 0.5)
-        let mvC = MinVolumeCriterion(minVolume: 10 * TradeStrategy.instance.tradeAmountTarget)
-
-        TradeStrategy.instance.entranceCriteria = [ivC, srC, mvC, fsC]
-        TradeStrategy.instance.exitCriteria = [TimeLimitProfitableCriterion(), TimeLimitUnprofitableCriterion(), ProfitPercentCriterion(), LossPercentCriterion()]
-
-        TradeSession.instance.start {
-            self.updateDisplay()
-            //TradeSession.instance.investInWinners()
-        }
-        
+//        let srC = SpareRunwayCriterion(minRunwayPercent: 1.0)
+//        let fsC = FallwaySupportCriterion(maxFallwayPercent: 1.0)
+        let mvC = MinVolumeCriterion(minVolume: 5 * TradeStrategy.instance.tradeAmountTarget)
+        let macdC = MACDEnterCriterion()
+        let vrC = IncreaseVolumeCriterion(minVolRatio: 0.5)
+            
+        TradeStrategy.instance.entranceCriteria = [macdC, mvC, vrC]
+        TradeStrategy.instance.exitCriteria = [TimeLimitProfitableCriterion(timeLimit: 20.minutesToMilliseconds),
+                                               TimeLimitUnprofitableCriterion(timeLimit: 30.minutesToMilliseconds),
+                                               LossPercentCriterion(percent: 2.0),
+                                               MACDExitCriterion()]
     }
 
     override func didReceiveMemoryWarning() {
@@ -36,32 +47,69 @@ class MoonAlarmTableViewController: UITableViewController {
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        return 3
     }
 
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        switch section {
+        case 0: return "Summary"
+        case 1: return "Open Trades"
+        case 2: return "Completed Trades"
+        default: return nil
+        }
+    }
+    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return TradeSession.instance.marketSnapshots.count
+        switch section {
+        case 0: return 3
+        case 1: return TradeSession.instance.trades.countOnly(status: .open)
+        case 2: return TradeSession.instance.trades.countOnly(status: .complete)
+        default: return 0
+        }
+        
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "tradeDetailCell", for: indexPath)
-        let snapshot = TradeSession.instance.marketSnapshots[indexPath.row]
-        
-        cell.textLabel?.text = snapshot.symbol
-        
-        guard   let currentVol = snapshot.candleSticks.currentStickVolume,
-                let currentPrice = snapshot.currentPrice else { return cell }
-        
-        guard   let runwayPrice = snapshot.orderBook.runwayPrice(forVolume: currentVol),
-                let fallwayPrice = snapshot.orderBook.fallwayPrice(forVolume: currentVol)
-                else { return cell }
-        
-        let runwayPercent = (runwayPrice / currentPrice - 1).doubleToPercent
-        let fallwayPercent = (currentPrice / fallwayPrice - 1).doubleToPercent
-        
-        cell.detailTextLabel?.text = "Run:\(runwayPercent)%  Fall:\(fallwayPercent)% VRat:\(snapshot.volumeRatio1To15M!) tRat:\(snapshot.tradesRatio1To15M!)"
-
-        return cell
+        switch indexPath.section {
+        case 0:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "tradeDetailCell", for: indexPath)
+            switch indexPath.row {
+            case 0:
+                cell.textLabel?.text = "Total Trades:"
+                cell.detailTextLabel?.text = "\(TradeSession.instance.trades.countOnly(status: .complete))"
+            case 1:
+                cell.textLabel?.text = "Success Rate:"
+                cell.detailTextLabel?.text = "\(TradeSession.instance.trades.successRate)%"
+            case 2:
+                cell.textLabel?.text = "Total Profit:"
+                cell.detailTextLabel?.text = "\(TradeSession.instance.trades.totalProfitPercent)%"
+            default: return cell
+            }
+            return cell
+        case 1:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "tradeDetailCell", for: indexPath)
+            let trades = TradeSession.instance.trades.selectOnly(status: .open)
+            cell.textLabel?.text = trades[indexPath.row].symbol
+            if let profitPercent = trades[indexPath.row].profitPercent {
+                cell.detailTextLabel?.text = "\(profitPercent)%"
+            }
+            return cell
+        case 2:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "tradeDetailCell", for: indexPath)
+            let trades = TradeSession.instance.trades.selectOnly(status: .complete)
+            cell.textLabel?.text = trades[indexPath.row].symbol
+            if let profitPercent = trades[indexPath.row].profitPercent {
+                cell.detailTextLabel?.text = "\(profitPercent)%"
+            }
+            return cell
+        default: return UITableViewCell()
+        }
+    }
+    
+    private func startRegularDisplayUpdates() {
+        let timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true){ _ in
+            self.updateDisplay()
+        }
     }
     
     private func updateDisplay() {
