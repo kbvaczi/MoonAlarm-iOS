@@ -12,6 +12,7 @@
 		BE07C0D9200EBE26000F5A38 /* MACDExitCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE07C0D8200EBE26000F5A38 /* MACDExitCriterion.swift */; };
 		BE07C0DB200EBE35000F5A38 /* MACDEnterCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE07C0DA200EBE35000F5A38 /* MACDEnterCriterion.swift */; };
 		BE1867482012215B00E275E4 /* BidAskGapCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE1867472012215B00E275E4 /* BidAskGapCriterion.swift */; };
+		BE18674C201279EB00E275E4 /* ProfitCutoffCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE18674B201279EB00E275E4 /* ProfitCutoffCriterion.swift */; };
 		BE390B8D2001488D00CFD46B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE390B8C2001488D00CFD46B /* AppDelegate.swift */; };
 		BE390B922001488D00CFD46B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BE390B902001488D00CFD46B /* Main.storyboard */; };
 		BE390B942001488D00CFD46B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BE390B932001488D00CFD46B /* Assets.xcassets */; };
@@ -56,6 +57,7 @@
 		BE07C0D8200EBE26000F5A38 /* MACDExitCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MACDExitCriterion.swift; sourceTree = "<group>"; };
 		BE07C0DA200EBE35000F5A38 /* MACDEnterCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MACDEnterCriterion.swift; sourceTree = "<group>"; };
 		BE1867472012215B00E275E4 /* BidAskGapCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BidAskGapCriterion.swift; sourceTree = "<group>"; };
+		BE18674B201279EB00E275E4 /* ProfitCutoffCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfitCutoffCriterion.swift; sourceTree = "<group>"; };
 		BE390B892001488D00CFD46B /* MoonAlarm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MoonAlarm.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE390B8C2001488D00CFD46B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		BE390B912001488D00CFD46B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -270,6 +272,7 @@
 		BEF49629200979A100501C5C /* Exit Criteria */ = {
 			isa = PBXGroup;
 			children = (
+				BE18674B201279EB00E275E4 /* ProfitCutoffCriterion.swift */,
 				BEF4963D200A9FC600501C5C /* TimeLimitProfitableCriterion.swift */,
 				BEF4963F200AA6A400501C5C /* TimeLimitUnprofitableCriterion.swift */,
 				BEF49645200AABC400501C5C /* ProfitPercentCriterion.swift */,
@@ -449,6 +452,7 @@
 				BEF4962E2009826400501C5C /* TradeEnterCriterion.swift in Sources */,
 				BEC755F7200C30700092B316 /* RegularExpression.swift in Sources */,
 				BE9E3C9D200452A9005D531C /* PercentAlias.swift in Sources */,
+				BE18674C201279EB00E275E4 /* ProfitCutoffCriterion.swift in Sources */,
 				BE9E3CA720059458005D531C /* Trades.swift in Sources */,
 				BE07C0D5200E8C0E000F5A38 /* CandlesticksMACD.swift in Sources */,
 				BE5F8592200BB4C70042EE0A /* BinanceEnums.swift in Sources */,
