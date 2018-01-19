@@ -21,10 +21,8 @@ extension Array where Element : CandleStick {
     }
     
     var stickDuration: Seconds? {
-        guard   self.count > 1 else { return nil }
-        let openT = self[0].openTime as Milliseconds
-        let closeT = self[1].openTime as Milliseconds
-        return (closeT - openT).msToSeconds
+        guard  let stick = self.first else { return nil }
+        return stick.duration
     }
     
     var currentStickDuration: Seconds? {
@@ -44,7 +42,7 @@ extension Array where Element : CandleStick {
                 let currentStickVolume = self.currentStickVolume else { return nil }
         
         // prorating less than 10 seconds of data can lead to scewed results
-        let minStickDur: Seconds = 10
+        let minStickDur: Seconds = 20
         let proRateFactor = stickDuration / Swift.max(minStickDur, currentStickDuration)
         return (currentStickVolume * proRateFactor)
     }
@@ -59,7 +57,7 @@ extension Array where Element : CandleStick {
             let currentStickTrades = self.currentStickTradesCount else { return nil }
         
         // prorating less than 10 seconds of data can lead to scewed results
-        let minStickDur: Seconds = 10
+        let minStickDur: Seconds = 20
         let proRateFactor = stickDuration / Swift.max(minStickDur, currentStickDuration)
         return Int(Double(currentStickTrades) * proRateFactor)
     }

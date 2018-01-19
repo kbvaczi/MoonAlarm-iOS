@@ -25,41 +25,15 @@ class MarketSnapshot {
     }
     
     var runwayPercent1M: Double? {
-        guard   let cVol = candleSticks.currentStickVolume else { return nil }
-        guard   let runwayPrice = orderBook.runwayPrice(forVolume: cVol),
-                let firstAsk = orderBook.firstAsk else { return nil }
-        return  ((runwayPrice / firstAsk) - 1).doubleToPercent
+        guard   let cVol = candleSticks.currentStickVolumeProrated else { return nil }
+        guard   let rwPercent = orderBook.runwayPercent(forVolume: cVol) else { return nil }
+        return  rwPercent
     }
     
     var fallwayPercent1M: Double? {
-        guard   let cVol = candleSticks.currentStickVolume else { return nil }
-        guard   let fallwayPrice = orderBook.fallwayPrice(forVolume: cVol),
-                let firstAsk = orderBook.firstAsk else { return nil }
-        return  ((firstAsk / fallwayPrice) - 1).doubleToPercent
-    }
-    
-    var priceIncreasePercent3M: Double? {
-        guard   let pRatio = candleSticks.priceRatio1To3M else { return nil }
-        return round((pRatio.doubleToPercent - 100) * 100) / 100
-    }
-    
-    var priceHasIncreased: Bool? {
-        return candleSticks.priceHasIncreased
-    }
-    
-    var volumeAvg15M: Double? {
-        guard let avg = candleSticks.volumeAvg15M else { return nil }
-        return avg
-    }
-    
-    var volumeRatio1To15M: Double? {
-        guard let pRatio = candleSticks.volumeRatio1To15M else { return nil }
-        return pRatio
-    }
-    
-    var tradesRatio1To15M: Double? {
-        guard let tRatio = candleSticks.tradesRatio1To15M else { return nil }
-        return tRatio
+        guard   let cVol = candleSticks.currentStickVolumeProrated else { return nil }
+        guard   let fwPercent = orderBook.fallwayPercent(forVolume: cVol) else { return nil }
+        return  fwPercent
     }
     
     var currentPrice: Double? {
