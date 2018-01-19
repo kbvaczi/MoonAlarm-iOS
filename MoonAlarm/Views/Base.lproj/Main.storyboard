@@ -17,18 +17,68 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
-                        <button key="tableHeaderView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="VHr-D1-lpB">
-                            <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                        <view key="tableHeaderView" contentMode="scaleToFill" id="Srk-IU-jFr">
+                            <rect key="frame" x="0.0" y="0.0" width="375" height="151"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <color key="backgroundColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
-                            <state key="normal" title="Start Trading"/>
-                            <connections>
-                                <action selector="startStopButtonPushed:" destination="Vd1-LB-tze" eventType="touchUpInside" id="oKC-Gs-OIQ"/>
-                            </connections>
-                        </button>
+                            <subviews>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uAT-nI-7IM">
+                                    <rect key="frame" x="142" y="113" width="90" height="30"/>
+                                    <state key="normal" title="Start Trading"/>
+                                    <connections>
+                                        <action selector="startStopButtonPushed:" destination="Vd1-LB-tze" eventType="touchUpInside" id="DfZ-DU-Kx9"/>
+                                    </connections>
+                                </button>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Markets Monitoring:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="543-gf-Hph">
+                                    <rect key="frame" x="8" y="8" width="153" height="21"/>
+                                    <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                    <nil key="textColor"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Last Updated: " lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3iI-49-n2r">
+                                    <rect key="frame" x="8" y="37" width="112.5" height="20.5"/>
+                                    <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                    <nil key="textColor"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Completed Trades:" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="137-Zc-ou7">
+                                    <rect key="frame" x="221" y="8" width="146" height="21"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                    <nil key="textColor"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Success Rate:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NSH-FX-24w">
+                                    <rect key="frame" x="258" y="36" width="109" height="21"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                    <nil key="textColor"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Total Profit:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Tvi-od-6Vh">
+                                    <rect key="frame" x="279" y="65" width="88" height="21"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                    <nil key="textColor"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                            </subviews>
+                            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <constraints>
+                                <constraint firstItem="137-Zc-ou7" firstAttribute="top" secondItem="Srk-IU-jFr" secondAttribute="top" constant="8" id="1a3-Mm-EDM"/>
+                                <constraint firstItem="Tvi-od-6Vh" firstAttribute="top" secondItem="NSH-FX-24w" secondAttribute="bottom" constant="8" id="4hS-f0-hw8"/>
+                                <constraint firstItem="543-gf-Hph" firstAttribute="leading" secondItem="Srk-IU-jFr" secondAttribute="leading" constant="8" id="G9L-Uf-CsJ"/>
+                                <constraint firstAttribute="trailing" secondItem="Tvi-od-6Vh" secondAttribute="trailing" constant="8" id="HVV-3T-KhG"/>
+                                <constraint firstAttribute="trailing" secondItem="137-Zc-ou7" secondAttribute="trailing" constant="8" id="Vu8-nO-x2a"/>
+                                <constraint firstItem="543-gf-Hph" firstAttribute="top" secondItem="Srk-IU-jFr" secondAttribute="top" constant="8" id="Zt7-Kw-tUK"/>
+                                <constraint firstItem="3iI-49-n2r" firstAttribute="leading" secondItem="Srk-IU-jFr" secondAttribute="leading" constant="8" id="cyc-0p-sKY"/>
+                                <constraint firstItem="NSH-FX-24w" firstAttribute="top" secondItem="137-Zc-ou7" secondAttribute="bottom" constant="7" id="dKz-ZK-eWn"/>
+                                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="543-gf-Hph" secondAttribute="trailing" constant="20" symbolic="YES" id="gk9-MY-gGM"/>
+                                <constraint firstItem="uAT-nI-7IM" firstAttribute="centerX" secondItem="Srk-IU-jFr" secondAttribute="centerX" id="ok4-p1-UUu"/>
+                                <constraint firstAttribute="trailing" secondItem="NSH-FX-24w" secondAttribute="trailing" constant="8" id="rKn-0c-ewY"/>
+                                <constraint firstAttribute="bottom" secondItem="uAT-nI-7IM" secondAttribute="bottom" constant="8" id="uJ4-vE-X8d"/>
+                                <constraint firstItem="3iI-49-n2r" firstAttribute="top" secondItem="543-gf-Hph" secondAttribute="bottom" constant="8" symbolic="YES" id="vkm-Fa-7uW"/>
+                            </constraints>
+                        </view>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="tradeDetailCell" textLabel="v8g-hd-nge" detailTextLabel="9og-OE-h6a" style="IBUITableViewCellStyleValue1" id="ewh-YA-rh4">
-                                <rect key="frame" x="0.0" y="99.5" width="375" height="44"/>
+                                <rect key="frame" x="0.0" y="206.5" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="ewh-YA-rh4" id="8FM-g3-34E">
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
@@ -59,6 +109,13 @@
                     </tableView>
                     <navigationItem key="navigationItem" title="Moon Alarm" id="C9K-QD-HSG"/>
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
+                    <connections>
+                        <outlet property="completedTradesLabel" destination="137-Zc-ou7" id="DZo-WE-zZI"/>
+                        <outlet property="lastUpdatedLabel" destination="3iI-49-n2r" id="cVa-lS-t4X"/>
+                        <outlet property="successRateLabel" destination="NSH-FX-24w" id="TSP-C9-hqf"/>
+                        <outlet property="symbolsCountLabel" destination="543-gf-Hph" id="mTP-aj-Zqe"/>
+                        <outlet property="totalProfitPercentLabel" destination="Tvi-od-6Vh" id="b2m-Wx-fff"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="HiS-O5-TCr" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

@@ -9,7 +9,7 @@
 import UIKit
 
 class MoonAlarmTableViewController: UITableViewController {
-    
+
     @IBAction func startStopButtonPushed(_ sender: UIButton) {
         switch TradeSession.instance.status {
         case .running:
@@ -21,21 +21,27 @@ class MoonAlarmTableViewController: UITableViewController {
         }
     }
     
+    @IBOutlet weak var symbolsCountLabel: UILabel!
+    @IBOutlet weak var lastUpdatedLabel: UILabel!
+    @IBOutlet weak var completedTradesLabel: UILabel!
+    @IBOutlet weak var successRateLabel: UILabel!
+    @IBOutlet weak var totalProfitPercentLabel: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.startRegularDisplayUpdates()
         
-//        let srC = SpareRunwayCriterion(minRunwayPercent: 1.0)
-//        let fsC = FallwaySupportCriterion(maxFallwayPercent: 1.0)
-        let mvC = MinVolumeCriterion(minVolume: 5 * TradeStrategy.instance.tradeAmountTarget)
+        let srC = SpareRunwayCriterion(minRunwayPercent: 1.0)
+        let fsC = FallwaySupportCriterion(maxFallwayPercent: 1.5)
+        let mvC = MinVolumeCriterion(minVolume: 10 * TradeStrategy.instance.tradeAmountTarget)
+        let mgC = BidAskGapCriterion()
         let macdC = MACDEnterCriterion()
         let vrC = IncreaseVolumeCriterion(minVolRatio: 0.5)
             
-        TradeStrategy.instance.entranceCriteria = [macdC, mvC, vrC]
-        TradeStrategy.instance.exitCriteria = [TimeLimitProfitableCriterion(timeLimit: 20.minutesToMilliseconds),
-                                               TimeLimitUnprofitableCriterion(timeLimit: 30.minutesToMilliseconds),
-                                               LossPercentCriterion(percent: 2.0),
+        TradeStrategy.instance.entranceCriteria = [macdC, srC, mgC]
+        TradeStrategy.instance.exitCriteria = [TimeLimitProfitableCriterion(timeLimit: 30.minutesToMilliseconds),
+                                               TimeLimitUnprofitableCriterion(timeLimit: 60.minutesToMilliseconds),
+                                               LossPercentCriterion(percent: 5.0),
                                                MACDExitCriterion()]
     }
 
@@ -107,13 +113,23 @@ class MoonAlarmTableViewController: UITableViewController {
     }
     
     private func startRegularDisplayUpdates() {
-        let timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true){ _ in
+        let _ = Timer.scheduledTimer(withTimeInterval: 1, repeats: true){ _ in
             self.updateDisplay()
         }
     }
     
     private func updateDisplay() {
         self.tableView.reloadData()
+        self.symbolsCountLabel.text = "Markets Monitoring: \(TradeSession.instance.symbols.count)"
+        if  let marketLastUpdate = TradeSession.instance.lastUpdateTime {
+            let currentTime = ExchangeClock.instance.currentTime
+            let secondsSinceLastUpdate = (currentTime - marketLastUpdate).msToSeconds
+            let secondsSinceLastUpdateDisplay = String(format: "%.0f", arguments: [secondsSinceLastUpdate])
+            self.lastUpdatedLabel.text = "Last Updated: \(secondsSinceLastUpdateDisplay) seconds ago"
+        }
+        self.completedTradesLabel.text = "Completed Trades: \(TradeSession.instance.trades.countOnly(status: .complete))"
+        self.successRateLabel.text = "Success Rate: \(TradeSession.instance.trades.successRate)%"
+        self.totalProfitPercentLabel.text = "Total Profit: \(TradeSession.instance.trades.totalProfitPercent)%"
     }
     
    
