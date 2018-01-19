@@ -13,9 +13,9 @@ class TradeStrategy {
     static var instance = TradeStrategy() // singleton
     
     // Settings //
-    var tradingPairSymbol = "ETH"
-    var tradeAmountTarget: Double = 1
-    var maxOpenTrades: Int = 3
+    var tradingPairSymbol = "BTC"
+    var tradeAmountTarget: Double = 0.1
+    var maxOpenTrades: Int = 5
     var expectedFeePerTrade: Percent = 0.2
     var entranceCriteria = TradeEnterCriteria()
     var exitCriteria = TradeExitCriteria()

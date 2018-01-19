@@ -17,7 +17,7 @@ class TradeSession {
     var symbols = [String]()
     var marketSnapshots = MarketSnapshots()
     private var updateTimer = Timer() // Timer that periodically updates market data
-    
+    var lastUpdateTime: Milliseconds? = nil
 
     var trades = Trades()
     
@@ -51,7 +51,7 @@ class TradeSession {
                 self.symbols = allSymbols
                 self.updateMarketSnapshots {
                     // Get first 50 snapshots based on 15M volume
-                    let prioritizedSnapshots = self.marketSnapshots.filter({$0.candleSticks.volumeAvg15MPair ?? 0 > 5 * TradeStrategy.instance.tradeAmountTarget}).prefix(50)
+                    let prioritizedSnapshots = self.marketSnapshots.filter({$0.candleSticks.volumeAvg15MPair ?? 0 > 10 * TradeStrategy.instance.tradeAmountTarget}).sorted(by: {$0.candleSticks.volumeAvg15MPair ?? 0 > $1.candleSticks.volumeAvg15MPair ?? 0}).prefix(30)
                     let prioritizedSymbols = prioritizedSnapshots.map({$0.symbol})
                     self.symbols = prioritizedSymbols
                 }
@@ -61,7 +61,6 @@ class TradeSession {
     }
     
     func updateMarketSnapshots(callback: @escaping () -> Void) {
-        print("updating market snapshots")
         
         // remove outdated information
         TradeSession.instance.marketSnapshots.removeAll()
@@ -80,16 +79,16 @@ class TradeSession {
         
         // when all API calls are returned, run callback
         dpG.notify(queue: .main) {
+            self.lastUpdateTime = ExchangeClock.instance.currentTime
             callback()
         }
     }
     
     func startRegularSnapshotUpdates(callback: @escaping () -> Void) {
-        self.updateTimer = Timer.scheduledTimer(withTimeInterval: 12, repeats: true) { _ in
+        self.updateTimer = Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { _ in
             let maxOpenTrades = TradeStrategy.instance.maxOpenTrades
             guard self.trades.countOnly(status: .open) < maxOpenTrades else { return }
             self.updateMarketSnapshots {
-                self.marketSnapshots.sort { $0.volumeRatio1To15M ?? 0 > $1.volumeRatio1To15M ?? 0 }
                 callback()
             }
         }

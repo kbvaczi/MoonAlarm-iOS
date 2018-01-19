@@ -11,6 +11,7 @@
 		BE07C0D5200E8C0E000F5A38 /* CandlesticksMACD.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE07C0D4200E8C0E000F5A38 /* CandlesticksMACD.swift */; };
 		BE07C0D9200EBE26000F5A38 /* MACDExitCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE07C0D8200EBE26000F5A38 /* MACDExitCriterion.swift */; };
 		BE07C0DB200EBE35000F5A38 /* MACDEnterCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE07C0DA200EBE35000F5A38 /* MACDEnterCriterion.swift */; };
+		BE1867482012215B00E275E4 /* BidAskGapCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE1867472012215B00E275E4 /* BidAskGapCriterion.swift */; };
 		BE390B8D2001488D00CFD46B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE390B8C2001488D00CFD46B /* AppDelegate.swift */; };
 		BE390B922001488D00CFD46B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BE390B902001488D00CFD46B /* Main.storyboard */; };
 		BE390B942001488D00CFD46B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BE390B932001488D00CFD46B /* Assets.xcassets */; };
@@ -54,6 +55,7 @@
 		BE07C0D4200E8C0E000F5A38 /* CandlesticksMACD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CandlesticksMACD.swift; sourceTree = "<group>"; };
 		BE07C0D8200EBE26000F5A38 /* MACDExitCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MACDExitCriterion.swift; sourceTree = "<group>"; };
 		BE07C0DA200EBE35000F5A38 /* MACDEnterCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MACDEnterCriterion.swift; sourceTree = "<group>"; };
+		BE1867472012215B00E275E4 /* BidAskGapCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BidAskGapCriterion.swift; sourceTree = "<group>"; };
 		BE390B892001488D00CFD46B /* MoonAlarm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MoonAlarm.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE390B8C2001488D00CFD46B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		BE390B912001488D00CFD46B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -159,8 +161,8 @@
 			children = (
 				BE9E3C9820044FC1005D531C /* General */,
 				BE9E3CA220058E09005D531C /* Market Data */,
-				BEF496272009791D00501C5C /* Trade Strategy */,
 				BE9E3C9920044FC8005D531C /* Trading */,
+				BEF496272009791D00501C5C /* Trade Strategy */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -260,6 +262,7 @@
 				BEF4963320098E4600501C5C /* MinVolumeCriterion.swift */,
 				BEF49639200A621A00501C5C /* FallwaySupportCriterion.swift */,
 				BE07C0DA200EBE35000F5A38 /* MACDEnterCriterion.swift */,
+				BE1867472012215B00E275E4 /* BidAskGapCriterion.swift */,
 			);
 			path = "Enter Criteria";
 			sourceTree = "<group>";
@@ -437,6 +440,7 @@
 				BE9E3CAB200686CE005D531C /* Order.swift in Sources */,
 				BE9E3C9B20045189005D531C /* MarketSnapshot.swift in Sources */,
 				BE07C0D9200EBE26000F5A38 /* MACDExitCriterion.swift in Sources */,
+				BE1867482012215B00E275E4 /* BidAskGapCriterion.swift in Sources */,
 				BE9E3CA92006867E005D531C /* OrderBook.swift in Sources */,
 				BED95530200BBCA60094C1BD /* BinanceSignature.swift in Sources */,
 				BE390BA62002507B00CFD46B /* MoonAlarmTableViewController.swift in Sources */,

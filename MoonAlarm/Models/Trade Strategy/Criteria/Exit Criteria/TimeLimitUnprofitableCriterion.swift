@@ -21,7 +21,7 @@ class TimeLimitUnprofitableCriterion: TradeExitCriterion {
     override func passedFor(trade: Trade) -> Bool {
         // exit no matter if trade is profitable or not
         if trade.duration > self.exitAfterDuration {
-            print("Time Limit Unprofitable Exit Criteria Passed")
+            print("\(trade.symbol): Time Limit Unprofitable Exit Criteria Passed")
             return true
         }
         return false

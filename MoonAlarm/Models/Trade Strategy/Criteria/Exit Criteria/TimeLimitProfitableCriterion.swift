@@ -26,7 +26,7 @@ class TimeLimitProfitableCriterion: TradeExitCriterion {
         
         // only exit if time has expired and trade is currently in profit
         if trade.duration > self.exitAfterDurationIfProfitable {
-            print("TimeLimitProfitable Exit Criteria Passed")
+            print("\(trade.symbol): TimeLimitProfitable Exit Criteria Passed")
             return true
         }
         return false

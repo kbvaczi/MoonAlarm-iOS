@@ -22,7 +22,7 @@ class ProfitPercentCriterion: TradeExitCriterion {
         guard   let profitPercent = trade.profitPercent else { return false }
         // exit as soon as profit reaches a given percent
         if profitPercent >= self.targetProfitPercent {
-            print("Profit Percent Exit Criteria Passed")
+            print("\(trade.symbol): Profit Percent Exit Criteria Passed")
             return true
         }
         return false

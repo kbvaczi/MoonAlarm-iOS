@@ -24,7 +24,7 @@ class LossPercentCriterion: TradeExitCriterion {
         
         // exit as soon as profit reaches a given percent
         if profitPercent <= (self.maxLossPercent * -1) {
-            print("Loss Percent Criteria Passed")
+            print("\(trade.symbol): Loss Percent Criteria Passed")
             return true
         }
         return false

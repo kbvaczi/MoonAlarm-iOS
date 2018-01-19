@@ -32,13 +32,13 @@ class MoonAlarmTableViewController: UITableViewController {
         self.startRegularDisplayUpdates()
         
         let srC = SpareRunwayCriterion(minRunwayPercent: 1.0)
-        let fsC = FallwaySupportCriterion(maxFallwayPercent: 1.5)
+        let fsC = FallwaySupportCriterion(maxFallwayPercent: 1.0)
         let mvC = MinVolumeCriterion(minVolume: 10 * TradeStrategy.instance.tradeAmountTarget)
         let mgC = BidAskGapCriterion()
         let macdC = MACDEnterCriterion()
         let vrC = IncreaseVolumeCriterion(minVolRatio: 0.5)
             
-        TradeStrategy.instance.entranceCriteria = [macdC, srC, mgC]
+        TradeStrategy.instance.entranceCriteria = [macdC, srC, fsC]
         TradeStrategy.instance.exitCriteria = [TimeLimitProfitableCriterion(timeLimit: 30.minutesToMilliseconds),
                                                TimeLimitUnprofitableCriterion(timeLimit: 60.minutesToMilliseconds),
                                                LossPercentCriterion(percent: 5.0),
@@ -53,23 +53,21 @@ class MoonAlarmTableViewController: UITableViewController {
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 3
+        return 2
     }
 
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         switch section {
-        case 0: return "Summary"
-        case 1: return "Open Trades"
-        case 2: return "Completed Trades"
+        case 0: return "Open Trades"
+        case 1: return "Completed Trades"
         default: return nil
         }
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
-        case 0: return 3
-        case 1: return TradeSession.instance.trades.countOnly(status: .open)
-        case 2: return TradeSession.instance.trades.countOnly(status: .complete)
+        case 0: return TradeSession.instance.trades.countOnly(status: .open)
+        case 1: return TradeSession.instance.trades.countOnly(status: .complete)
         default: return 0
         }
         
@@ -79,28 +77,13 @@ class MoonAlarmTableViewController: UITableViewController {
         switch indexPath.section {
         case 0:
             let cell = tableView.dequeueReusableCell(withIdentifier: "tradeDetailCell", for: indexPath)
-            switch indexPath.row {
-            case 0:
-                cell.textLabel?.text = "Total Trades:"
-                cell.detailTextLabel?.text = "\(TradeSession.instance.trades.countOnly(status: .complete))"
-            case 1:
-                cell.textLabel?.text = "Success Rate:"
-                cell.detailTextLabel?.text = "\(TradeSession.instance.trades.successRate)%"
-            case 2:
-                cell.textLabel?.text = "Total Profit:"
-                cell.detailTextLabel?.text = "\(TradeSession.instance.trades.totalProfitPercent)%"
-            default: return cell
-            }
-            return cell
-        case 1:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "tradeDetailCell", for: indexPath)
             let trades = TradeSession.instance.trades.selectOnly(status: .open)
             cell.textLabel?.text = trades[indexPath.row].symbol
             if let profitPercent = trades[indexPath.row].profitPercent {
                 cell.detailTextLabel?.text = "\(profitPercent)%"
             }
             return cell
-        case 2:
+        case 1:
             let cell = tableView.dequeueReusableCell(withIdentifier: "tradeDetailCell", for: indexPath)
             let trades = TradeSession.instance.trades.selectOnly(status: .complete)
             cell.textLabel?.text = trades[indexPath.row].symbol
@@ -125,7 +108,7 @@ class MoonAlarmTableViewController: UITableViewController {
             let currentTime = ExchangeClock.instance.currentTime
             let secondsSinceLastUpdate = (currentTime - marketLastUpdate).msToSeconds
             let secondsSinceLastUpdateDisplay = String(format: "%.0f", arguments: [secondsSinceLastUpdate])
-            self.lastUpdatedLabel.text = "Last Updated: \(secondsSinceLastUpdateDisplay) seconds ago"
+            self.lastUpdatedLabel.text = "Last Updated: \(secondsSinceLastUpdateDisplay)s ago"
         }
         self.completedTradesLabel.text = "Completed Trades: \(TradeSession.instance.trades.countOnly(status: .complete))"
         self.successRateLabel.text = "Success Rate: \(TradeSession.instance.trades.successRate)%"
