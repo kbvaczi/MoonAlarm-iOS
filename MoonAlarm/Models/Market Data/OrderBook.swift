@@ -34,6 +34,13 @@ class OrderBook {
         return asks.first?.price
     }
     
+    var bidAskGapPercent: Percent? {
+        guard   let topBid = self.topBid,
+                let firstAsk = self.firstAsk else { return nil }
+        let gap = firstAsk - topBid
+        return (gap / firstAsk - 1).doubleToPercent
+    }
+    
     func runwayPrice(forVolume volume: Double) -> Double? {
         var runwayVolume = volume
         var index = 0
