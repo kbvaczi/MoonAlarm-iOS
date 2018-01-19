@@ -19,14 +19,17 @@ extension Array where Element : CandleStick {
         var initialBearAvg: Double = 0.0
         
         let initialPeriod = self.prefix(period)
-        for cStick in initialPeriod {
-            let isBull = cStick.closePrice > cStick.openPrice
-            let isBear = cStick.closePrice < cStick.openPrice
+        for (index, cStick) in initialPeriod.enumerated() {
+            let prevClosePrice = index > 0 ? self[index - 1].closePrice : cStick.openPrice
+            let deltaPrice = cStick.closePrice - prevClosePrice
+            
+            let isBull = deltaPrice > 0
+            let isBear = deltaPrice < 0
             if isBull {
-                let gain = cStick.closePrice - cStick.openPrice
+                let gain = deltaPrice
                 initialBullAvg += gain / Double(period)
             } else if isBear {
-                let loss = cStick.openPrice - cStick.closePrice
+                let loss = deltaPrice * -1
                 initialBearAvg += loss / Double(period)
             }
         }
@@ -35,14 +38,17 @@ extension Array where Element : CandleStick {
         var bearSMA = SMA(initialPrice: initialBearAvg, period)
         
         let remainingPeriods = self.dropFirst(period)
-        for cStick in remainingPeriods {
-            let isBull = cStick.closePrice > cStick.openPrice
+        for (index, cStick) in remainingPeriods.enumerated() {
+            let prevClosePrice = index > 0 ? self[index - 1].closePrice : cStick.openPrice
+            let deltaPrice = cStick.closePrice - prevClosePrice
+            
+            let isBull = deltaPrice > 0
             if isBull {
-                let gain = cStick.closePrice - cStick.openPrice
+                let gain = deltaPrice
                 bullSMA.add(next: gain)
                 bearSMA.add(next: 0)
             } else {
-                let loss = cStick.openPrice - cStick.closePrice
+                let loss = deltaPrice * -1
                 bearSMA.add(next: loss)
                 bullSMA.add(next: 0)
             }
