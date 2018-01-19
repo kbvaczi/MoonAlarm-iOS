@@ -43,8 +43,11 @@ class Trade {
         switch self.status {
         case .draft: return nil
         case .open:
+            let pairQty = TradeStrategy.instance.tradeAmountTarget
+            let orderBook = self.marketSnapshot.orderBook
             guard   let enterP = self.enterPrice,
-                    let currentP = self.marketSnapshot.currentPrice else { return nil }
+                    let currentP = orderBook.marketSellPrice(forPairVolume: pairQty)
+                    else { return nil }
             return currentP - enterP - (fee.percentToDouble * currentP)
         case .complete:
             guard   let enterP = self.enterPrice,

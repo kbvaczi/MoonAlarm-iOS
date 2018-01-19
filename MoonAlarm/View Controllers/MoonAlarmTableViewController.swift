@@ -32,11 +32,8 @@ class MoonAlarmTableViewController: UITableViewController {
         self.startRegularDisplayUpdates()
         
         let srC = SpareRunwayCriterion(minRunwayPercent: 1.0)
-        let fsC = FallwaySupportCriterion(maxFallwayPercent: 1.0)
-        let mvC = MinVolumeCriterion(minVolume: 10 * TradeStrategy.instance.tradeAmountTarget)
-        let mgC = BidAskGapCriterion()
+        let fsC = FallwaySupportCriterion(maxFallwayPercent: 0.5)
         let macdC = MACDEnterCriterion()
-        let vrC = IncreaseVolumeCriterion(minVolRatio: 0.5)
             
         TradeStrategy.instance.entranceCriteria = [macdC, srC, fsC]
         TradeStrategy.instance.exitCriteria = [TimeLimitProfitableCriterion(timeLimit: 30.minutesToMilliseconds),
@@ -103,7 +100,7 @@ class MoonAlarmTableViewController: UITableViewController {
     
     private func updateDisplay() {
         self.tableView.reloadData()
-        self.symbolsCountLabel.text = "Markets Monitoring: \(TradeSession.instance.symbols.count)"
+        self.symbolsCountLabel.text = "Markets: \(TradeSession.instance.symbols.count)"
         if  let marketLastUpdate = TradeSession.instance.lastUpdateTime {
             let currentTime = ExchangeClock.instance.currentTime
             let secondsSinceLastUpdate = (currentTime - marketLastUpdate).msToSeconds

@@ -77,15 +77,15 @@ class OrderBook {
     
     ////////// MARKET BUY/SELL AVERAGE PRICING //////////
     
-    func marketBuyPrice(forpairVolume volume: Double) -> Double? {
-        return self.marketPriceAvg(forpairVolume: volume, orders: self.asks)
+    func marketBuyPrice(forPairVolume volume: Double) -> Double? {
+        return self.marketPriceAvg(forPairVolume: volume, orders: self.asks)
     }
     
-    func marketSellPrice(forpairVolume volume: Double) -> Double? {
-        return self.marketPriceAvg(forpairVolume: volume, orders: self.bids)
+    func marketSellPrice(forPairVolume volume: Double) -> Double? {
+        return self.marketPriceAvg(forPairVolume: volume, orders: self.bids)
     }
     
-    private func marketPriceAvg(forpairVolume volume: Double, orders: [Order]) -> Double? {
+    private func marketPriceAvg(forPairVolume volume: Double, orders: [Order]) -> Double? {
         var pairVolumeCounter = volume
         var marketOrders = [Order]()
         var index = 0
