@@ -27,15 +27,15 @@ class MarketSnapshot {
     var runwayPercent1M: Double? {
         guard   let cVol = candleSticks.currentStickVolume else { return nil }
         guard   let runwayPrice = orderBook.runwayPrice(forVolume: cVol),
-                let currentPrice = self.currentPrice else { return nil }
-        return  ((runwayPrice / currentPrice) - 1).doubleToPercent
+                let firstAsk = orderBook.firstAsk else { return nil }
+        return  ((runwayPrice / firstAsk) - 1).doubleToPercent
     }
     
     var fallwayPercent1M: Double? {
         guard   let cVol = candleSticks.currentStickVolume else { return nil }
         guard   let fallwayPrice = orderBook.fallwayPrice(forVolume: cVol),
-                let currentPrice = self.currentPrice else { return nil }
-        return  ((currentPrice / fallwayPrice) - 1).doubleToPercent
+                let firstAsk = orderBook.firstAsk else { return nil }
+        return  ((firstAsk / fallwayPrice) - 1).doubleToPercent
     }
     
     var priceIncreasePercent3M: Double? {
@@ -77,7 +77,7 @@ class MarketSnapshot {
     
     private func updateCandleSticks(callback: @escaping () -> Void) {
         let symbolPair = self.symbol + TradeStrategy.instance.tradingPairSymbol
-        BinanceAPI.instance.getCandleSticks(symbolPair: symbolPair, interval: .m1, limit: 100) {
+        BinanceAPI.instance.getCandleSticks(symbolPair: symbolPair, interval: .m3, limit: 100) {
             (isSuccess, cSticks) in
             if isSuccess {
                 self.candleSticks = cSticks
