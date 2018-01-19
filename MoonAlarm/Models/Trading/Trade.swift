@@ -68,12 +68,17 @@ class Trade {
     }
     
     func execute() {
+        
+        let pairQty = TradeStrategy.instance.tradeAmountTarget
+        let orderBook = self.marketSnapshot.orderBook
+        
         // don't get into any new trades if trade session has ended
-        guard TradeSession.instance.status == .running,
-              let currentPrice = marketSnapshot.currentPrice else { return }
+        guard   TradeSession.instance.status == .running,
+                let buyPrice = orderBook.marketBuyPrice(forPairVolume: pairQty)
+                else { return }
 
         self.status = .open
-        self.enterPrice = currentPrice
+        self.enterPrice = buyPrice
         startUpdatingData()
         print("\(self.symbol) trade started")
     }
