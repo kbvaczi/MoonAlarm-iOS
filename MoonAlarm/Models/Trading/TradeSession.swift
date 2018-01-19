@@ -111,7 +111,7 @@ class TradeSession {
             // only trade if the market snapshot passes our trade enter criteria
             if TradeStrategy.instance.entranceCriteria.allPassedFor(snapshot) {
                 let newTrade = Trade(symbol: snapshot.symbol, snapshot: snapshot)
-                self.trades.append(newTrade)
+                self.trades.insert(newTrade, at: 0)
                 newTrade.execute()
             }
         }
