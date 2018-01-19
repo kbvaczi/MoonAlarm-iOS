@@ -24,19 +24,19 @@ class OrderBook {
         self.init(symbol: sym, asks: [Order](), bids: [Order]())
     }
     
-    var topBid: Double? {
+    var topBidPrice: Double? {
         guard bids.count > 0 else { return nil }
         return bids.first?.price
     }
     
-    var firstAsk: Double? {
+    var firstAskPrice: Double? {
         guard asks.count > 0 else { return nil }
         return asks.first?.price
     }
     
     var bidAskGapPercent: Percent? {
-        guard   let topBid = self.topBid,
-                let firstAsk = self.firstAsk else { return nil }
+        guard   let topBid = self.topBidPrice,
+                let firstAsk = self.firstAskPrice else { return nil }
         let gap = firstAsk - topBid
         return (gap / firstAsk - 1).doubleToPercent
     }
@@ -51,6 +51,12 @@ class OrderBook {
         return index > 0 ? asks[index - 1].price : nil
     }
     
+    func runwayPercent(forVolume volume: Double) -> Percent? {
+        guard   let runwayPrice = self.runwayPrice(forVolume: volume),
+                let firstAskPrice = self.firstAskPrice else { return nil }
+            return (runwayPrice / firstAskPrice - 1).doubleToPercent
+    }
+    
     func fallwayPrice(forVolume volume: Double) -> Double? {
         var fallwayVolume = volume
         var index = 0
@@ -59,6 +65,12 @@ class OrderBook {
             index += 1
         }
         return index > 0 ? bids[index - 1].price : nil
+    }
+    
+    func fallwayPercent(forVolume volume: Double) -> Percent? {
+        guard   let fallwayPrice = self.fallwayPrice(forVolume: volume),
+                let firstAskPrice = self.firstAskPrice else { return nil }
+        return (firstAskPrice / fallwayPrice - 1).doubleToPercent
     }
     
     func updateData(callback: @escaping () -> Void) {
