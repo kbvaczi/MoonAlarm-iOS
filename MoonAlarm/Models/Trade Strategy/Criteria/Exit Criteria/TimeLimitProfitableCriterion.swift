@@ -32,4 +32,8 @@ class TimeLimitProfitableCriterion: TradeExitCriterion {
         return false
     }
     
+    override func copy() -> TimeLimitProfitableCriterion {
+        return TimeLimitProfitableCriterion(timeLimit: self.exitAfterDurationIfProfitable)
+    }
+    
 }

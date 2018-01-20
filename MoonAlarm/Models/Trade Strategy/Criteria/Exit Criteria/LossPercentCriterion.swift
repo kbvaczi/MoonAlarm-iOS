@@ -30,4 +30,8 @@ class LossPercentCriterion: TradeExitCriterion {
         return false
     }
     
+    override func copy() -> LossPercentCriterion {
+        return LossPercentCriterion(percent: self.maxLossPercent)
+    }
+    
 }

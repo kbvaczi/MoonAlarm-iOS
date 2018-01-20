@@ -40,4 +40,12 @@ extension Array where Element : TradeExitCriterion {
         return answers.reduce(false, { $0 || $1 })
     }
     
+    func copy() -> TradeExitCriteria {
+        var copy = TradeExitCriteria()
+        for criterion in self {
+            copy.append(criterion.copy())
+        }
+        return copy        
+    }
+    
 }

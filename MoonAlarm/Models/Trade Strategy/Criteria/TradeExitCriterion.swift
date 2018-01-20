@@ -17,4 +17,9 @@ class TradeExitCriterion {
         return false
     }
     
+    // to be overridden by child classes
+    func copy() -> TradeExitCriterion {
+        return TradeExitCriterion()
+    }
+    
 }

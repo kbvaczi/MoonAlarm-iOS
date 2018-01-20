@@ -44,6 +44,10 @@ class MACDExitCriterion: TradeExitCriterion {
         return false
     }
     
+    override func copy() -> MACDExitCriterion {
+        return MACDExitCriterion()
+    }
+    
 }
 
 

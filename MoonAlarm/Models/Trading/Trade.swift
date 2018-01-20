@@ -18,6 +18,8 @@ class Trade {
     var enterPrice: Double? = nil
     var exitPrice: Double? = nil
     
+    var exitCriteria = TradeStrategy.instance.exitCriteria.copy()
+    
     var startTime: Milliseconds = ExchangeClock.instance.currentTime
     var endTime: Milliseconds? = nil
     var duration: Milliseconds { // Track how long this trade has been active
@@ -106,7 +108,7 @@ class Trade {
     }
     
     func monitorAndTerminateIfAppropriate() {
-        if TradeStrategy.instance.exitCriteriaPassedFor(trade: self) {
+        if self.exitCriteria.onePassedFor(self) {
             terminate()
         }
     }

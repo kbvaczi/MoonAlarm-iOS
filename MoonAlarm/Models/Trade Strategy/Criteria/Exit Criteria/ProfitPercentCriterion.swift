@@ -28,4 +28,7 @@ class ProfitPercentCriterion: TradeExitCriterion {
         return false
     }
     
+    override func copy() -> ProfitPercentCriterion {
+        return ProfitPercentCriterion(percent: self.targetProfitPercent)
+    }
 }

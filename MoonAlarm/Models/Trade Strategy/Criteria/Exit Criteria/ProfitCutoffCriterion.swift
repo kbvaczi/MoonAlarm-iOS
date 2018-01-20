@@ -28,4 +28,8 @@ class ProfitCutoffCriterion: TradeExitCriterion {
         return false
     }
     
+    override func copy() -> ProfitCutoffCriterion {
+        return ProfitCutoffCriterion(profitPercent: self.profitPercentCutoff)
+    }
+    
 }
