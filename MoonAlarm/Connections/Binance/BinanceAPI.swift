@@ -12,14 +12,17 @@ import SwiftyJSON
 import AlamofireSwiftyJSON
 
 class BinanceAPI {
-    // Declare singleton
-    static let instance = BinanceAPI()
-    // Disallow multiple instances
-    private init() {}
+    
+    static let instance = BinanceAPI() // Declare singleton
+    
+    private init() {} // Disallow multiple instances
     
     let rootURLString = "https:/api.binance.com"
     
-    // performRequest Method
+    // Track if we're banned for sending too many requests
+    var bannedUntil: Milliseconds? = nil
+    
+    // jsonRequest Method
     // General request method used as a root for other request methods to standardize error logging
     
     private func jsonRequest(url: String, method: HTTPMethod,
@@ -52,15 +55,26 @@ class BinanceAPI {
                 print("Parameters:")
                 print(params ?? "no parameters")
                 print("Code: \(jsonResponse["code"].intValue) Error: \(jsonResponse["msg"].stringValue)")
-                callback(false, JSON.null)
-                return
                 
                 // Example data:
                 // { "code" : -1003, "msg" : "Way too many requests; IP banned until 1515547977300." }
+                
+                let isBannedForFlooding = jsonResponse["code"].intValue == -1003
+                if isBannedForFlooding {
+                    let message = jsonResponse["msg"].stringValue
+                    self.setBannedUntilTime(fromMessage: message)
+                }
+                
+                callback(false, JSON.null)
+                return
             }
             callback(true, jsonResponse)
         }
     }
+    
+    // signedJsonRequest Method
+    // General request method used as a root for other request methods to standardize error logging
+    // Used for requests that require sending API key and encrypted message authentication
     
     private func signedJsonRequest(url: String, method: HTTPMethod,
                                    params: Parameters? = nil, headers: HTTPHeaders? = nil, secretKey: String,
@@ -94,14 +108,18 @@ class BinanceAPI {
                 print("Parameters:")
                 print(params ?? "no parameters")
                 print("Code: \(jsonResponse["code"].intValue) Error: \(jsonResponse["msg"].stringValue)")
-                /// REMOVE
-                print(response.request?.url?.absoluteString)
-                ////
-                callback(false, JSON.null)
-                return
                 
                 // Example data:
                 // { "code" : -1003, "msg" : "Way too many requests; IP banned until 1515547977300." }
+                
+                let isBannedForFlooding = jsonResponse["code"].intValue == -1003
+                if isBannedForFlooding {
+                    let message = jsonResponse["msg"].stringValue
+                    self.setBannedUntilTime(fromMessage: message)
+                }
+                
+                callback(false, JSON.null)
+                return
             }
             callback(true, jsonResponse)
         }
@@ -124,6 +142,32 @@ class BinanceAPI {
         
         // Example Data:
         // { "serverTime": 1499827319559 }
+    }
+    
+    // isBannedForRequestFlooding Method
+    // Check to see if we're banned for flooding before sending requests
+    
+    func isBannedForRequestFlooding() -> Bool {
+        guard let bannedUntil = self.bannedUntil else { return false }
+        let currentTime = ExchangeClock.instance.currentTime
+        if currentTime > bannedUntil {
+            self.bannedUntil = nil
+            return false
+        }
+        return true
+    }
+    
+    // setIsBannedTime Method
+    // When server response with message saying we're banned, determine when ban is lifted
+    
+    func setBannedUntilTime(fromMessage msg: String) {
+        let timeNumberLength = 13
+        let regex = "\\d{\(timeNumberLength)}"
+        
+        guard   let bannedUntil = msg.matches(for: regex).first
+                else { return }
+        
+        self.bannedUntil = Milliseconds(bannedUntil)
     }
     
     // getAllSymbols Method
@@ -156,12 +200,13 @@ class BinanceAPI {
     // get24HrPairVolume Method
     // Returns 24hr pair volume of given symbol
     
-    func get24HrPairVolume(forTradingPair tradingPairSymbol: String,
+    func get24HrPairVolume(forTradingPair tradingPair: String,
                        callback: @escaping (_ isSuccessful: Bool, _ volume: Double) -> Void) {
         
         let url = rootURLString + "/api/v1/ticker/24hr"
+        let params = ["symbol": tradingPair]
         
-        jsonRequest(url: url, method: .get, params: nil) {
+        jsonRequest(url: url, method: .get, params: params) {
             (isSuccessful, jsonResponse) in
             
             // Data is a dictionary
