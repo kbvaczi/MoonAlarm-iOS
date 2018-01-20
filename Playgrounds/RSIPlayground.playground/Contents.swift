@@ -1,21 +1,25 @@
-//
-//  CandleSticksRSI.swift
-//  MoonAlarm
-//
-//  Created by Kenneth Vaczi on 1/15/18.
-//  Copyright © 2018 Vaczoway Solutions. All rights reserved.
-//
-
 import Foundation
+
+class CandleStick {
+    
+    ////////// Price //////////
+    
+    let closePrice: Double
+    
+    ////////// Initializer //////////
+    
+    init(_ closePrice: Double) {
+        self.closePrice = closePrice
+    }
+    
+}
 
 extension Array where Element : CandleStick {
     
-    func calculateRSI(_ period: Int = 14) {
+    func currentRSI(_ period: Int = 14) -> Double? {
         
         // RSI needs a minimum of 2 * period to be accurate
-        guard   self.count > (2 * period),
-                period > 0
-                else { return }
+        guard self.count > (2 * period) else { return nil }
         
         var initialBullAvg: Double = 0.0
         var initialBearAvg: Double = 0.0
@@ -40,9 +44,9 @@ extension Array where Element : CandleStick {
         var bearSMA = SMA(initialPrice: initialBearAvg, period)
         
         let remainingPeriods = self.dropFirst(period + 1)
+        let rpStartIndex = remainingPeriods.startIndex
         for (index, cStick) in remainingPeriods.enumerated() {
-            let indexInSelf = remainingPeriods.startIndex + index
-            let prevClosePrice = self[indexInSelf - 1].closePrice
+            let prevClosePrice = self[index + rpStartIndex - 1].closePrice
             let deltaPrice = cStick.closePrice - prevClosePrice
             
             let isBull = deltaPrice > 0
@@ -55,17 +59,16 @@ extension Array where Element : CandleStick {
                 bearSMA.add(next: loss)
                 bullSMA.add(next: 0)
             }
-
-            guard   let bullSMAValue = bullSMA.currentAvg,
-                    let bearSMAValue = bearSMA.currentAvg
-                    else { return }
-            
-            let rs = bullSMAValue / bearSMAValue
-            let rsi = (100 - (100 / (1 + rs)))
-            
-            self[indexInSelf].rsi = rsi
         }
-    
+        
+        guard   let bullSMAValue = bullSMA.currentAvg,
+                let bearSMAValue = bearSMA.currentAvg
+                else { return nil }
+        
+        let rs = bullSMAValue / bearSMAValue
+        let rsi = (100 - (100 / (1 + rs)))
+        
+        return rsi
     }
     
     struct SMA {
@@ -88,3 +91,13 @@ extension Array where Element : CandleStick {
         }
     }
 }
+
+var sticks = [CandleStick]()
+let closePrices  = [44.34,44.09,44.15,43.61,44.33,44.83,45.10,45.42,45.84,46.08,45.89,46.03,45.61,46.28,46.28,46.00,46.03,46.41,46.22,45.64,46.21,46.25,45.71,46.45,45.78,45.35,44.03,44.18,44.22,44.57,43.42,42.66,43.13]
+
+for cp in closePrices {
+    sticks.append(CandleStick(cp))
+}
+
+sticks.currentRSI()
+

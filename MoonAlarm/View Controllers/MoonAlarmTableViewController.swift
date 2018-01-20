@@ -31,15 +31,21 @@ class MoonAlarmTableViewController: UITableViewController {
         super.viewDidLoad()
         self.startRegularDisplayUpdates()
         
-        let srC = SpareRunwayCriterion(minRunwayPercent: 1.0)
-        let fsC = FallwaySupportCriterion(maxFallwayPercent: 0.5)
-        let macdC = MACDEnterCriterion()
-            
-        TradeStrategy.instance.entranceCriteria = [macdC, srC, fsC]
-        TradeStrategy.instance.exitCriteria = [TimeLimitProfitableCriterion(timeLimit: 30.minutesToMilliseconds),
-                                               TimeLimitUnprofitableCriterion(timeLimit: 60.minutesToMilliseconds),
-                                               LossPercentCriterion(percent: 5.0),
-                                               MACDExitCriterion()]
+        TradeStrategy.instance.entranceCriteria = [
+            MACDEnterCriterion(incTrendFor: 3, requireCross: true),
+            RSIEnterCriterion(max: 35, lookInLast: 3),
+//            SpareRunwayCriterion(minRunwayPercent: 1.0),
+//            IncreaseVolumeCriterion(minVolRatio: 2.0),
+//            BidAskGapCriterion(maxGapPercent: 0.5),
+//            MarketyBuyLossCriterion(maxLossPercent: 0.3)
+        ]
+        TradeStrategy.instance.exitCriteria = [
+            TimeLimitProfitableCriterion(timeLimit: 3.minutesToMilliseconds),
+            TimeLimitUnprofitableCriterion(timeLimit: 15.minutesToMilliseconds),
+            LossPercentCriterion(percent: 1.5),
+//            ProfitCutoffCriterion(profitPercent: 1.5),
+            MACDExitCriterion()
+        ]
     }
 
     override func didReceiveMemoryWarning() {

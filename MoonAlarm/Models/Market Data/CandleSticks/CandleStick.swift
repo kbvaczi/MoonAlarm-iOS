@@ -66,5 +66,8 @@ class CandleStick {
         return macd - macdSignal
     }
     
+    ////////// RSI Indicator //////////
+    
+    var rsi: Double? = nil
     
 }

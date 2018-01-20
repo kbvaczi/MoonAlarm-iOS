@@ -18,7 +18,7 @@ class BidAskGapCriterion: TradeEnterCriterion {
     
     override func passedFor(snapshot: MarketSnapshot) -> Bool {
         guard let currentGapPercent = snapshot.orderBook.bidAskGapPercent else { return false }
-        return currentGapPercent > self.maxGapPercent
+        return currentGapPercent < self.maxGapPercent
     }
     
 }

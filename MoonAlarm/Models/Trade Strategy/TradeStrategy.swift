@@ -17,6 +17,9 @@ class TradeStrategy {
     var tradeAmountTarget: Double = 0.1
     var maxOpenTrades: Int = 5
     var expectedFeePerTrade: Percent = 0.2
+    
+    var candleStickPeriod: BinanceAPI.KLineInterval = .m3
+    
     var entranceCriteria = TradeEnterCriteria()
     var exitCriteria = TradeExitCriteria()
     

@@ -10,20 +10,21 @@ import Foundation
 
 class ProfitCutoffCriterion: TradeExitCriterion {
     
-    var profitCutoffPercent: Percent
+    var profitPercentCutoff: Percent
     
-    init(profitCutoffPercent pcp: Percent = 1.0) {
-        self.profitCutoffPercent = pcp
+    init(profitPercent pp: Percent = 1.0) {
+        self.profitPercentCutoff = pp
     }
     
     override func passedFor(trade: Trade) -> Bool {
         // exit if trade reaches a certain profit
-        guard let profit = trade.profit else { return false }
+        guard let profitPercent = trade.profitPercent else { return false }
         
-        if profit >= profitCutoffPercent {
+        if profitPercent >= profitPercentCutoff {
             print("\(trade.symbol): Profit Cutoff Criteria Passed")
             return true
         }
+        
         return false
     }
     

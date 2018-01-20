@@ -10,7 +10,7 @@ import Foundation
 
 class Trade {
     
-    let symbol: String
+    let symbol: Symbol
     var marketSnapshot: MarketSnapshot
     var updateTimer = Timer()
     
@@ -20,8 +20,7 @@ class Trade {
     
     var startTime: Milliseconds = ExchangeClock.instance.currentTime
     var endTime: Milliseconds? = nil
-    // Track how long this trade has been active
-    var duration: Milliseconds {
+    var duration: Milliseconds { // Track how long this trade has been active
         if let eT = self.endTime {
             return eT - self.startTime
         } else {
@@ -29,14 +28,24 @@ class Trade {
         }
     }
     
-    init(symbol sym: String, snapshot: MarketSnapshot) {
+    enum Status: String {
+        case draft = "Draft" // trade order hasn't been filled yet on market
+        case open = "Open"  // trade has been at least partially filled
+        case complete = "Complete"  // asset sold, trade is complete
+    }
+    
+    ////////// INIT //////////
+    
+    init(symbol sym: Symbol, snapshot: MarketSnapshot) {
         self.symbol = sym
         self.marketSnapshot = snapshot
     }
     
-    convenience init(symbol sym: String) {
+    convenience init(symbol sym: Symbol) {
         self.init(symbol: sym, snapshot:  MarketSnapshot(symbol: sym))
     }
+    
+    ////////// PROFIT CALCULATIONS //////////
     
     var profit: Double? {
         let fee = TradeStrategy.instance.expectedFeePerTrade
@@ -67,8 +76,9 @@ class Trade {
         return profit > 0
     }
     
+    ////////// EXECUTE / TERMINATE //////////
+    
     func execute() {
-        
         let pairQty = TradeStrategy.instance.tradeAmountTarget
         let orderBook = self.marketSnapshot.orderBook
         
@@ -79,13 +89,17 @@ class Trade {
 
         self.status = .open
         self.enterPrice = buyPrice
-        startUpdatingData()
+        self.startUpdatingData()
         print("\(self.symbol) trade started")
     }
     
     func terminate() {
         self.status = .complete
-        self.exitPrice = marketSnapshot.currentPrice ?? 0
+        let pairQty = TradeStrategy.instance.tradeAmountTarget
+        let orderBook = self.marketSnapshot.orderBook
+        let marketSellPrice = orderBook.marketSellPrice(forPairVolume: pairQty)
+        let currentPrice = marketSnapshot.currentPrice
+        self.exitPrice = marketSellPrice ?? currentPrice ?? 0
         self.stopUpdatingData()
         print("\(self.symbol) trade ended: \(String(describing: self.profitPercent))% profit")
         print("Session Trades:\(TradeSession.instance.trades.countOnly(status: .complete)) Success: \(TradeSession.instance.trades.successRate)% Total Profit: \(TradeSession.instance.trades.totalProfitPercent)%")
@@ -96,6 +110,8 @@ class Trade {
             terminate()
         }
     }
+    
+    ////////// DATA UPDATES //////////
     
     private func startUpdatingData() {
         self.stopUpdatingData()
@@ -109,11 +125,5 @@ class Trade {
     private func stopUpdatingData() {
         self.updateTimer.invalidate()
     }
-    
-    enum Status: String {
-        case draft = "Draft" // trade order hasn't been filled yet on market
-        case open = "Open"  // trade has been at least partially filled
-        case complete = "Complete"  // asset sold, trade is complete
-    }
-    
+
 }

@@ -46,16 +46,32 @@ class TradeSession {
     
     func updateSymbolsAndPrioritize(callback: @escaping () -> Void) {
         let tradingPairSymbol = TradeStrategy.instance.tradingPairSymbol
-        BinanceAPI.instance.getAllSymbols(forTradingPair: tradingPairSymbol) { (isSuccess, allSymbols) in
+        BinanceAPI.instance.getAllSymbols(forTradingPair: tradingPairSymbol) {
+            (isSuccess, allSymbols) in
             if isSuccess {
-                self.symbols = allSymbols
-                self.updateMarketSnapshots {
-                    // Get first 50 snapshots based on 15M volume
-                    let prioritizedSnapshots = self.marketSnapshots.filter({$0.candleSticks.volumeAvg15MPair ?? 0 > 10 * TradeStrategy.instance.tradeAmountTarget}).sorted(by: {$0.candleSticks.volumeAvg15MPair ?? 0 > $1.candleSticks.volumeAvg15MPair ?? 0}).prefix(30)
-                    let prioritizedSymbols = prioritizedSnapshots.map({$0.symbol})
-                    self.symbols = prioritizedSymbols
+                
+                // use a dispatch group to keep track of how many symbols we've updated
+                let dpG = DispatchGroup()
+                
+                // clear out old symbols
+                self.symbols.removeAll()
+                
+                for symbol in allSymbols {
+                    dpG.enter()
+                    BinanceAPI.instance.get24HrPairVolume(forTradingPair: symbol.symbolPair) {
+                        (isSuccessful, pairVolume) in
+                        let min24HrVol = TradeStrategy.instance.tradingPairSymbol == "BTC" ? 1000.0 : 3000.0
+                        if  pairVolume > min24HrVol,
+                            self.symbols.count < 50 {
+                            self.symbols.append(symbol)
+                        }
+                        dpG.leave()
+                    }
                 }
-                callback()
+                
+                dpG.notify(queue: .main) {
+                    callback()
+                }
             }
         }
     }
@@ -63,7 +79,7 @@ class TradeSession {
     func updateMarketSnapshots(callback: @escaping () -> Void) {
         
         // remove outdated information
-        TradeSession.instance.marketSnapshots.removeAll()
+        self.marketSnapshots.removeAll()
         
         // use a dispatch group to keep track of how many symbols we've updated
         let dpG = DispatchGroup()
