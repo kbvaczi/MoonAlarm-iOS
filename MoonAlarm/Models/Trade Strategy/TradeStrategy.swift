@@ -12,6 +12,9 @@ class TradeStrategy {
     
     static var instance = TradeStrategy() // singleton
     
+    private init() { } // prevent declaring instances of this class
+    
+    
     // Settings //
     var tradingPairSymbol = "BTC"
     var tradeAmountTarget: Double = 0.1
@@ -23,13 +26,8 @@ class TradeStrategy {
     var entranceCriteria = TradeEnterCriteria()
     var exitCriteria = TradeExitCriteria()
     
-    private init() { } // prevent declaring instances of this class
-    
     func entranceCriteriaPassedFor(snapshot: MarketSnapshot) -> Bool {
         return entranceCriteria.allPassedFor(snapshot)
     }
     
-    func exitCriteriaPassedFor(trade: Trade) -> Bool {
-        return exitCriteria.onePassedFor(trade)
-    }
 }
