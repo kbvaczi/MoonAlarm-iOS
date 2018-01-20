@@ -33,7 +33,7 @@ class MoonAlarmTableViewController: UITableViewController {
         
         TradeStrategy.instance.entranceCriteria = [
             MACDEnterCriterion(incTrendFor: 3, requireCross: true, inLast: 3),
-            RSIEnterCriterion(max: 35, lookInLast: 4),
+//            RSIEnterCriterion(max: 35, lookInLast: 4),
 //            SpareRunwayCriterion(minRunwayPercent: 1.0),
 //            IncreaseVolumeCriterion(minVolRatio: 2.0),
 //            BidAskGapCriterion(maxGapPercent: 0.5),
