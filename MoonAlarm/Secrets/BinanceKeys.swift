@@ -18,4 +18,5 @@ class BinanceKeys {
     // TODO: This is an example secret.  Replace with your own.
     static let apiSecret: String = "NhqPtmdSJYdKjVHjA7PZj4Mge3R5YNiP1e3UZjInClVN65XAbvqqM6A7H5fATj0j"
     
+    asdfsdaf
 }
