@@ -160,7 +160,6 @@
 				BE390B932001488D00CFD46B /* Assets.xcassets */,
 				BE390B952001488D00CFD46B /* LaunchScreen.storyboard */,
 				BE390B982001488D00CFD46B /* Info.plist */,
-				BE3BA14E2013EF4900458621 /* Secrets */,
 				BE9E3C9720044FA1005D531C /* Connections */,
 				BE390B9E20015ABE00CFD46B /* Models */,
 				BE390BA320024F8100CFD46B /* View Controllers */,
@@ -194,14 +193,6 @@
 				BE390B902001488D00CFD46B /* Main.storyboard */,
 			);
 			path = Views;
-			sourceTree = "<group>";
-		};
-		BE3BA14E2013EF4900458621 /* Secrets */ = {
-			isa = PBXGroup;
-			children = (
-				BE3BA14C2013E8D100458621 /* BinanceKeys.swift */,
-			);
-			path = Secrets;
 			sourceTree = "<group>";
 		};
 		BE9E3C9720044FA1005D531C /* Connections */ = {
@@ -263,6 +254,7 @@
 				BE390B9F20015AD500CFD46B /* BinanceAPI.swift */,
 				BE5F8591200BB4C70042EE0A /* BinanceEnums.swift */,
 				BED9552F200BBCA60094C1BD /* BinanceSignature.swift */,
+				BE3BA14C2013E8D100458621 /* BinanceKeys.swift */,
 			);
 			path = Binance;
 			sourceTree = "<group>";
