@@ -130,7 +130,7 @@ class BinanceAPI {
     // Returns list of all available symbols with selected trading pair
     
     func getAllSymbols(forTradingPair tradingPairSymbol: String,
-                       callback: @escaping (_ isSuccessful: Bool, _ symbols: [String]) -> Void) {
+                       callback: @escaping (_ isSuccessful: Bool, _ symbols: [Symbol]) -> Void) {
         
         let url = rootURLString + "/api/v1/ticker/allPrices"
         var symbolsList = [String]()
@@ -150,6 +150,46 @@ class BinanceAPI {
             }
             
             callback(true, symbolsList)
+        }
+    }
+    
+    // get24HrPairVolume Method
+    // Returns 24hr pair volume of given symbol
+    
+    func get24HrPairVolume(forTradingPair tradingPairSymbol: String,
+                       callback: @escaping (_ isSuccessful: Bool, _ volume: Double) -> Void) {
+        
+        let url = rootURLString + "/api/v1/ticker/24hr"
+        
+        jsonRequest(url: url, method: .get, params: nil) {
+            (isSuccessful, jsonResponse) in
+            
+            // Data is a dictionary
+            /*
+            {
+                "priceChange": "-94.99999800",
+                "priceChangePercent": "-95.960",
+                "weightedAvgPrice": "0.29628482",
+                "prevClosePrice": "0.10002000",
+                "lastPrice": "4.00000200",
+                "bidPrice": "4.00000000",
+                "askPrice": "4.00000200",
+                "openPrice": "99.00000000",
+                "highPrice": "100.00000000",
+                "lowPrice": "0.10000000",
+                "volume": "8913.30000000",
+                "openTime": 1499783499040,
+                "closeTime": 1499869899040,
+                "fristId": 28385,   // First tradeId
+                "lastId": 28460,    // Last tradeId
+                "count": 76         // Trade count
+            }
+            */
+            
+            let volume = jsonResponse["volume"].doubleValue
+            let price = jsonResponse["lastPrice"].doubleValue
+            let pairVolume = volume * price
+            callback(true, pairVolume)
         }
     }
     
