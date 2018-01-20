@@ -11,21 +11,21 @@ import Foundation
 class RSIEnterCriterion: TradeEnterCriterion {
     
     var maxRSI: Double
-    var lookInLastPeriods: Int
+    var inLastPeriods: Int
     
-    init(max rsi: Double = 30, lookInLast periods: Int = 1) {
-        self.lookInLastPeriods = periods
+    init(max rsi: Double = 30, inLast periods: Int = 1) {
+        self.inLastPeriods = periods
         self.maxRSI = rsi
     }
     
     override func passedFor(snapshot: MarketSnapshot) -> Bool {
         
         // Check for valid inputs
-        guard self.maxRSI > 0, self.lookInLastPeriods > 0 else { return false }
+        guard self.maxRSI > 0, self.inLastPeriods > 0 else { return false }
         
         // Check for valid data
-        let sticks = snapshot.candleSticks.suffix(self.lookInLastPeriods)
-        guard  sticks.count >= self.lookInLastPeriods else { return false }
+        let sticks = snapshot.candleSticks.suffix(self.inLastPeriods)
+        guard  sticks.count >= self.inLastPeriods else { return false }
         
         var atLeastOneBelowMax = false
 
