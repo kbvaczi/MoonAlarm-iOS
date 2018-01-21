@@ -33,14 +33,14 @@ class MoonAlarmTableViewController: UITableViewController {
         
         TradeStrategy.instance.entranceCriteria = [
             MACDEnterCriterion(incTrendFor: 3, requireCross: true, inLast: 3),
-            RSIEnterCriterion(max: 35, inLast: 4),
+            RSIEnterCriterion(max: 30, inLast: 5),
 //            SpareRunwayCriterion(minRunwayPercent: 1.0),
 //            IncreaseVolumeCriterion(minVolRatio: 2.0),
 //            BidAskGapCriterion(maxGapPercent: 0.5),
 //            MarketyBuyLossCriterion(maxLossPercent: 0.3)
         ]
         TradeStrategy.instance.exitCriteria = [
-            TimeLimitProfitableCriterion(timeLimit: 20.minutesToMilliseconds),
+            TimeLimitProfitableCriterion(timeLimit: 45.minutesToMilliseconds),
             TimeLimitUnprofitableCriterion(timeLimit: 60.minutesToMilliseconds),
             LossPercentCriterion(percent: 2.0),
             ProfitCutoffCriterion(profitPercent: 5.0),

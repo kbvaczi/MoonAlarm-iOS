@@ -53,7 +53,7 @@ struct BinanceSignedEncoding: ParameterEncoding {
             print("no signature found")
             return try URLEncoding().encode(urlRequest, with: parameters)
         }
-        
+
         params.removeValue(forKey: "signature")
         var request = try URLEncoding().encode(urlRequest, with: params)
 

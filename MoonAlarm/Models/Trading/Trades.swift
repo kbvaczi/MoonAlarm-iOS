@@ -30,7 +30,7 @@ extension Array where Element : Trade {
     }
     
     func countOnly(status: Trade.Status) -> Int {
-        let count = self.filter { $0.status == status }.count
+        let count = self.selectOnly(status: status).count
         return count
     }
     
