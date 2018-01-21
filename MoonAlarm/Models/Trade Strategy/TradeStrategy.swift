@@ -17,7 +17,7 @@ class TradeStrategy {
     
     // Settings //
     var tradingPairSymbol = "BTC"
-    var tradeAmountTarget: Double = 0.1
+    var tradeAmountTarget: Double = 0.05
     var maxOpenTrades: Int = 5
     var expectedFeePerTrade: Percent = 0.2
     

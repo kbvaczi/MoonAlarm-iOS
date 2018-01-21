@@ -39,7 +39,7 @@ class MACDEnterCriterion: TradeEnterCriterion {
             
             guard   let macdH = stick.macdHistogram,
                     let macdHPrev = sticks[sticksIndex - 1].macdHistogram,
-                    macdH > macdHPrev
+                    macdH >= macdHPrev
                     else { return false }
         }
         
