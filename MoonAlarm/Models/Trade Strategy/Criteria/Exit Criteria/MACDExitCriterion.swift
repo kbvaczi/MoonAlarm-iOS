@@ -11,9 +11,11 @@ import Foundation
 class MACDExitCriterion: TradeExitCriterion {
       
     var decreasingTrendPeriod: Int
+    var lookForDecreasingTrend: Bool
     
-    init(decreasingTrendFor trendLength: Int = 1) {
+    init(decreasingTrend dt: Bool = false, for trendLength: Int = 1) {
         self.decreasingTrendPeriod = trendLength
+        self.lookForDecreasingTrend = dt
     }
     
     override func passedFor(trade: Trade) -> Bool {
@@ -29,19 +31,21 @@ class MACDExitCriterion: TradeExitCriterion {
                 else { return false }
         
         // look for decreasing trend
-        var isDecreasingTrend = true
-        let trendSticks = sticks.suffix(requiredSticks)
-        for (index, stick) in trendSticks.enumerated() {
-            let sticksIndex = index + trendSticks.startIndex
-            if  let macdH = stick.macdHistogram,
-                let macdHPrev = sticks[sticksIndex - 1].macdHistogram,
-                macdH >= macdHPrev {
-                isDecreasingTrend = false
+        if lookForDecreasingTrend {
+            var isDecreasingTrend = true
+            let trendSticks = sticks.suffix(requiredSticks)
+            for (index, stick) in trendSticks.enumerated() {
+                let sticksIndex = index + trendSticks.startIndex
+                if  let macdH = stick.macdHistogram,
+                    let macdHPrev = sticks[sticksIndex - 1].macdHistogram,
+                    macdH >= macdHPrev {
+                    isDecreasingTrend = false
+                }
             }
-        }
-        if isDecreasingTrend {
-            print("\(trade.symbol): MACD Exit Decreasing Trend")
-            return true
+            if isDecreasingTrend {
+                print("\(trade.symbol): MACD Exit Decreasing Trend")
+                return true
+            }
         }
         
         // Look for MACD cross below signal line, histogram goes from + to -

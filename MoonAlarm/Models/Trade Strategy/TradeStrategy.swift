@@ -17,11 +17,11 @@ class TradeStrategy {
     
     // Settings //
     var tradingPairSymbol = "BTC"
-    var tradeAmountTarget: Double = 0.05
+    var tradeAmountTarget: Double = 0.01
     var maxOpenTrades: Int = 5
     var expectedFeePerTrade: Percent = 0.2
     
-    var candleStickPeriod: BinanceAPI.KLineInterval = .m3
+    var candleStickPeriod: BinanceAPI.KLineInterval = .m5
     
     var entranceCriteria = TradeEnterCriteria()
     var exitCriteria = TradeExitCriteria()

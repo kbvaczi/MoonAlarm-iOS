@@ -18,6 +18,18 @@ extension Milliseconds {
         return Double(self) / 1000.0
     }
     
+    var msToMinutes: Minutes {
+        return self.msToSeconds.secondsToMinutes
+    }
+    
+    var displayMsToHHMM: String {
+        let hours = self / (60 as Minutes).minutesToMilliseconds
+        let hoursFormatted = String(format: "%02d", arguments: [hours])
+        let minutes = hours > 0 ? self.msToMinutes.truncatingRemainder(dividingBy: 60) : self.msToMinutes
+        let minutesFormatted = String(format: "%02.0f", arguments: [minutes])
+        return hoursFormatted + ":" + minutesFormatted
+    }
+    
 }
 
 extension Minutes {

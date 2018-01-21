@@ -26,26 +26,29 @@ class MoonAlarmTableViewController: UITableViewController {
     @IBOutlet weak var completedTradesLabel: UILabel!
     @IBOutlet weak var successRateLabel: UILabel!
     @IBOutlet weak var totalProfitPercentLabel: UILabel!
+    @IBOutlet weak var sessionTimeLabel: UILabel!
+    @IBOutlet weak var tradeAmountLabel: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.startRegularDisplayUpdates()
         
         TradeStrategy.instance.entranceCriteria = [
-            MACDEnterCriterion(incTrendFor: 3, requireCross: true, inLast: 3),
-            RSIEnterCriterion(max: 30, inLast: 5),
+            MACDEnterCriterion(incTrendFor: 2, requireCross: false, inLast: 1),
+            RSIEnterCriterion(max: 35, inLast: 5),
 //            SpareRunwayCriterion(minRunwayPercent: 1.0),
 //            IncreaseVolumeCriterion(minVolRatio: 2.0),
 //            BidAskGapCriterion(maxGapPercent: 0.5),
-//            MarketyBuyLossCriterion(maxLossPercent: 0.3)
+//            MarketyBuyLossCriterion(maxLossPercent: 0.5)
         ]
         TradeStrategy.instance.exitCriteria = [
-            TimeLimitProfitableCriterion(timeLimit: 45.minutesToMilliseconds),
-            TimeLimitUnprofitableCriterion(timeLimit: 60.minutesToMilliseconds),
-            LossPercentCriterion(percent: 2.0),
-            ProfitCutoffCriterion(profitPercent: 5.0),
+//            TimeLimitProfitableCriterion(timeLimit: 60.minutesToMilliseconds),
+//            TimeLimitUnprofitableCriterion(timeLimit: 30.minutesToMilliseconds),
+            LossPercentCriterion(percent: 3.0),
+//            ProfitCutoffCriterion(profitPercent: 5.0),
             TrailingLossPercentCriterion(loss: 1.0, after: 2.0),
-            MACDExitCriterion()
+            RSIExitCriterion(max: 60),
+//            MACDExitCriterion()
         ]
     }
 
@@ -82,7 +85,12 @@ class MoonAlarmTableViewController: UITableViewController {
         case 0:
             let cell = tableView.dequeueReusableCell(withIdentifier: "tradeDetailCell", for: indexPath)
             let trades = TradeSession.instance.trades.selectOnly(status: .open)
-            cell.textLabel?.text = trades[indexPath.row].symbol
+            let currentTrade = trades[indexPath.row]
+            let entPriceString =    (currentTrade.enterPrice != nil) ?
+                                    String(format: "%0.5f", arguments: [currentTrade.enterPrice!]) : "?"
+            let exitPriceString =   (currentTrade.exitPrice != nil) ?
+                                    String(format: "%0.5f", arguments: [currentTrade.exitPrice!]) : "?"
+            cell.textLabel?.text = "\(currentTrade.symbol) \(entPriceString) -> \(exitPriceString)"
             if let profitPercent = trades[indexPath.row].profitPercent {
                 cell.detailTextLabel?.text = "\(profitPercent)%"
             }
@@ -90,7 +98,17 @@ class MoonAlarmTableViewController: UITableViewController {
         case 1:
             let cell = tableView.dequeueReusableCell(withIdentifier: "tradeDetailCell", for: indexPath)
             let trades = TradeSession.instance.trades.selectOnly(status: .complete)
-            cell.textLabel?.text = trades[indexPath.row].symbol
+            let currentTrade = trades[indexPath.row]
+            let entPriceString =    (currentTrade.enterPrice != nil) ?
+                                    String(format: "%0.5f", arguments: [currentTrade.enterPrice!]) : "?"
+            let pairVolume = TradeStrategy.instance.tradeAmountTarget
+            let marketExitPrice = currentTrade.marketSnapshot.orderBook.marketSellPrice(forPairVolume: pairVolume)
+            let exitPriceString =   (currentTrade.exitPrice != nil) ?
+                                        String(format: "%0.5f", arguments: [currentTrade.exitPrice!]) :
+                                        (marketExitPrice != nil) ?
+                                            String(format: "%0.5f", arguments: [marketExitPrice!]) :
+                                            "?"
+            cell.textLabel?.text = "\(currentTrade.symbol) \(entPriceString) -> \(exitPriceString)"
             if let profitPercent = trades[indexPath.row].profitPercent {
                 cell.detailTextLabel?.text = "\(profitPercent)%"
             }
@@ -112,11 +130,13 @@ class MoonAlarmTableViewController: UITableViewController {
             let currentTime = ExchangeClock.instance.currentTime
             let secondsSinceLastUpdate = (currentTime - marketLastUpdate).msToSeconds
             let secondsSinceLastUpdateDisplay = String(format: "%.0f", arguments: [secondsSinceLastUpdate])
-            self.lastUpdatedLabel.text = "Last Updated: \(secondsSinceLastUpdateDisplay)s ago"
+            self.lastUpdatedLabel.text = "Last Refresh: \(secondsSinceLastUpdateDisplay)"
         }
-        self.completedTradesLabel.text = "Completed Trades: \(TradeSession.instance.trades.countOnly(status: .complete))"
+        self.completedTradesLabel.text = "Complete Trades: \(TradeSession.instance.trades.countOnly(status: .complete))"
         self.successRateLabel.text = "Success Rate: \(TradeSession.instance.trades.successRate)%"
         self.totalProfitPercentLabel.text = "Total Profit: \(TradeSession.instance.trades.totalProfitPercent)%"
+        self.sessionTimeLabel.text = "Session Time: \(TradeSession.instance.duration.displayMsToHHMM)"
+        self.tradeAmountLabel.text = "Trade Amount: \(TradeStrategy.instance.tradeAmountTarget) \(TradeStrategy.instance.tradingPairSymbol)"
     }
     
    

@@ -41,7 +41,7 @@ class TrailingLossPercentCriterion: TradeExitCriterion {
         if self.hasExceededGain {
             let lossAfterGain = self.afterGainPercent - profitPercent
             if lossAfterGain >= self.maxLossPercent {
-                print("\(trade.symbol): Trailling Loss Passed \(self.afterGainPercent)%")
+                print("\(trade.symbol): Trailing Loss Exit Criterion Passed \(self.afterGainPercent)%")
                 return true
             }
         }

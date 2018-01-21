@@ -16,10 +16,17 @@ class TradeSession {
     // Market Data //
     var symbols = [String]()
     var marketSnapshots = MarketSnapshots()
+    
+    // TIME //
+    var startTime: Milliseconds? = nil
+    var duration: Milliseconds {
+        guard   let st = self.startTime
+                else { return 0 }
+        return Date().millisecondsSince1970 - st
+    }
+    
     private var updateTimer = Timer() // Timer that periodically updates market data
     var lastUpdateTime: Milliseconds? = nil
-
-    var trades = Trades()
     
     // Conditions //
     var status: Status = .stopped
@@ -28,8 +35,12 @@ class TradeSession {
         case stopped = "Stopped"
     }
     
+    // Children //
+    var trades = Trades()
+    
     func start(callback: @escaping () -> Void) {
         self.status = .running
+        self.startTime = Date().millisecondsSince1970
         TradeSession.instance.updateSymbolsAndPrioritize {
             self.startRegularSnapshotUpdates {
                 self.investInWinners()
@@ -101,7 +112,7 @@ class TradeSession {
     }
     
     func startRegularSnapshotUpdates(callback: @escaping () -> Void) {
-        self.updateTimer = Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { _ in
+        self.updateTimer = Timer.scheduledTimer(withTimeInterval: 15, repeats: true) { _ in
             let maxOpenTrades = TradeStrategy.instance.maxOpenTrades
             guard self.trades.countOnly(status: .open) < maxOpenTrades else { return }
             self.updateMarketSnapshots {
