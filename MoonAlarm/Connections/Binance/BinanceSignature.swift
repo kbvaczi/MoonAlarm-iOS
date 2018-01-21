@@ -48,7 +48,7 @@ extension BinanceAPI {
             
             // Generate signature and add on end of query string
             if let signature = hmacSignature(forBytes: messageBytes) {
-                let needToAddQMark = urlString.matches(for: "?").first == nil
+                let needToAddQMark = urlString.matches(for: "[?]").first == nil
                 var urlStringWithSignature = ""
                 if needToAddQMark {
                     urlStringWithSignature = urlString + "?signature=" + signature
