@@ -10,65 +10,74 @@ import Foundation
 import Alamofire
 import CryptoSwift
 
-extension Dictionary where Key == String, Value == Any {
+//  HMAC SHA256 Signature used to sign requests
+//  SIGNED endpoints require an additional parameter, signature, to be sent in the query string or request body.
+//  Endpoints use HMAC SHA256 signatures. The HMAC SHA256 signature is a keyed HMAC SHA256 operation. Use your secretKey as the key and totalParams as the value for the HMAC operation.
+//  The signature is not case sensitive.
+//  totalParams is defined as the query string concatenated with the request body.
+
+extension BinanceAPI {
     
-    // HMAC SHA256 Signature used to sign requests
-//    SIGNED endpoints require an additional parameter, signature, to be sent in the query string or request body.
-//    Endpoints use HMAC SHA256 signatures. The HMAC SHA256 signature is a keyed HMAC SHA256 operation. Use your secretKey as the key and totalParams as the value for the HMAC operation.
-//    The signature is not case sensitive.
-//    totalParams is defined as the query string concatenated with the request body.
-    
-    func signForBinance(withSecretKey secretKey: String) -> Parameters {
+    struct SignedEncoding: ParameterEncoding {
+        func encode(_ urlRequest: URLRequestConvertible, with parameters: Parameters?) throws -> URLRequest {
+            
+            // Check to see if there are parameters
+            guard   let params = parameters
+                    else { return try URLEncoding().encode(urlRequest, with: nil) }
+            
+            var request = try URLEncoding().encode(urlRequest, with: params)
+            
+            // Get bytes from query string
+            var queryBytes = [UInt8]()
+            guard   let urlString = request.url?.absoluteString,
+                    let querySubString = urlString.matches(for: "[?].+").first?.dropFirst()
+                    else {
+                    print("error retrieving url string for signing")
+                    return request
+            }
+            let queryString = String(querySubString)
+            queryBytes = queryString.bytes
+            
+            // Get bytes from request body
+            var bodyBytes = [UInt8]()
+            if let bodyData = request.httpBody {
+                bodyBytes = bodyData.bytes
+            }
+
+            let messageBytes = queryBytes + bodyBytes
+            
+            // Generate signature and add on end of query string
+            if let signature = hmacSignature(forBytes: messageBytes) {
+                let needToAddQMark = urlString.matches(for: "?").first == nil
+                var urlStringWithSignature = ""
+                if needToAddQMark {
+                    urlStringWithSignature = urlString + "?signature=" + signature
+                } else {
+                    urlStringWithSignature = urlString + "&signature=" + signature
+                }
+                request.url = URL(string: urlStringWithSignature)
+            }
+            
+            return request
+        }
         
-        let encoding = URLEncoding.queryString
-        let url = URL(string: "https://nothing.com/")
-        let request = URLRequest(url: url!)
-        do {
-            let encoded = try encoding.encode(request, with: self)
-            let queryString = String(describing: encoded).split(separator: "?").last
-            if let qString = queryString {
-                print(qString)
-                let qStringData = String(qString).bytes
-                let sigBytes = try HMAC(key: secretKey, variant: .sha256).authenticate(qStringData)
+        private func hmacSignature(forBytes bytes: [UInt8]) -> String? {
+            let secretKey = BinanceKeys.apiSecret
+            do {
+                let sigBytes = try HMAC(key: secretKey, variant: .sha256).authenticate(bytes)
                 let sigData = Data(bytes: sigBytes)
                 let sigString = sigData.toHexString()
-                var signedParams = self
-                signedParams["signature"] = sigString
-                return signedParams
+                return sigString
+            } catch {
+                print("error calculating HMAC signature")
+                return nil
             }
-        } catch {
-            print("error calculating HMAC signature")
         }
-        return self
     }
     
 }
 
-// Remove square brackets for GET request
-struct BinanceSignedEncoding: ParameterEncoding {
-    func encode(_ urlRequest: URLRequestConvertible, with parameters: Parameters?) throws -> URLRequest {
-        
-        guard   var params = parameters,
-                let signature = params["signature"] as? String else {
-            print("no signature found")
-            return try URLEncoding().encode(urlRequest, with: parameters)
-        }
 
-        params.removeValue(forKey: "signature")
-        var request = try URLEncoding().encode(urlRequest, with: params)
-
-        guard   let urlString = request.url?.absoluteString else { return request }
-        
-        let urlStringWithSignature = urlString + "&signature=" + signature
-        request.url = URL(string: urlStringWithSignature)
-        
-//        let signatureInUrl = urlString.matches(for: "(/?|&)signature=.{64}").first else { return request }
-//        let urlWithoutSignature = urlString.replacingOccurrences(of: signatureInUrl, with: "")
-//        let urlWithSignatureAtEnd = urlWithoutSignature + signatureInUrl
-        
-        return request
-    }
-}
 
 /*
  

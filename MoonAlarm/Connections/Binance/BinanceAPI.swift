@@ -77,12 +77,10 @@ class BinanceAPI {
     // Used for requests that require sending API key and encrypted message authentication
     
     private func signedJsonRequest(url: String, method: HTTPMethod,
-                                   params: Parameters? = nil, headers: HTTPHeaders? = nil, secretKey: String,
+                                   params: Parameters? = nil, headers: HTTPHeaders? = nil,
                                    callback: @escaping (_ isSuccessful: Bool, _ jsonResponse: JSON) -> Void) {
-        
-        let signedParams = params?.signForBinance(withSecretKey: secretKey)
-        
-        Alamofire.request(url, method: method, parameters: signedParams, encoding: BinanceSignedEncoding(), headers: headers)
+
+        Alamofire.request(url, method: method, parameters: params, encoding: SignedEncoding(), headers: headers)
             .responseSwiftyJSON { response in
                 
             guard response.result.isSuccess else {
@@ -293,21 +291,21 @@ class BinanceAPI {
     
     ///////// SIGNED REQUESTS ///////////
     
-//    func getOpenOrders(forSymbolPair sP: String, apiKey: String, secretKey: String,
-//                       callback: @escaping (_ isSuccess: Bool, _ orders: TraderOrders) -> Void) {
-//        
-//        let url = rootURLString + "/api/v3/openOrders"
-//        let head = ["X-MBX-APIKEY": apiKey]
-//        
-//        let params: Parameters = ["symbol": sP,
-//                                  "timestamp": ExchangeClock.instance.currentTime]
-//        
-//        signedJsonRequest(url: url, method: .get, params: params, headers: head, secretKey: secretKey) {
-//            (isSuccessful, jsonResponse) in
-//
-//            print("JSON \(jsonResponse)")
-//        }
-//    }
+    func getOpenOrders(forSymbolPair sP: String,
+                       callback: @escaping (_ isSuccess: Bool, _ orders: TradeOrders) -> Void) {
+        
+        let url = rootURLString + "/api/v3/openOrders"
+        let head = ["X-MBX-APIKEY": BinanceKeys.apiKey]
+        
+        let params: Parameters = ["symbol": sP,
+                                  "timestamp": ExchangeClock.instance.currentTime]
+        
+        signedJsonRequest(url: url, method: .get, params: params, headers: head) {
+            (isSuccessful, jsonResponse) in
+
+            print("JSON \(jsonResponse)")
+        }
+    }
     
     ///////// DATA STREAMS //////////
     
