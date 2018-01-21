@@ -62,7 +62,7 @@ extension BinanceAPI {
         }
         
         private func hmacSignature(forBytes bytes: [UInt8]) -> String? {
-            let secretKey = BinanceKeys.apiSecret
+            let secretKey = BinanceAPI.apiSecret
             do {
                 let sigBytes = try HMAC(key: secretKey, variant: .sha256).authenticate(bytes)
                 let sigData = Data(bytes: sigBytes)

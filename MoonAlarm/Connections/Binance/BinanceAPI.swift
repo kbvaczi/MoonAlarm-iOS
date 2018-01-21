@@ -295,7 +295,7 @@ class BinanceAPI {
                        callback: @escaping (_ isSuccess: Bool, _ orders: TradeOrders) -> Void) {
         
         let url = rootURLString + "/api/v3/openOrders"
-        let head = ["X-MBX-APIKEY": BinanceKeys.apiKey]
+        let head = ["X-MBX-APIKEY": BinanceAPI.apiKey]
         
         let params: Parameters = ["symbol": sP,
                                   "timestamp": ExchangeClock.instance.currentTime]
