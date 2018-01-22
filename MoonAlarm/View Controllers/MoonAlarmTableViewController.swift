@@ -94,12 +94,12 @@ class MoonAlarmTableViewController: UITableViewController {
             let pairVolume = TradeStrategy.instance.tradeAmountTarget
             let marketExitPrice = currentTrade.marketSnapshot.orderBook.marketSellPrice(forPairVolume: pairVolume)
             let entPriceString =    (currentTrade.enterPrice != nil) ?
-                                    String(format: "%0.8f", arguments: [currentTrade.enterPrice!]) :
+                                    String(currentTrade.exitPrice!.rounded8) :
                                     "?"
             let exitPriceString =   (currentTrade.exitPrice != nil) ?
-                                    String(format: "%0.8f", arguments: [currentTrade.exitPrice!]) :
+                                    String(currentTrade.exitPrice!.rounded8) :
                                     (marketExitPrice != nil) ?
-                                    String(format: "%0.8f", arguments: [marketExitPrice!]) :
+                                    String(marketExitPrice!.rounded8) :
                                     "?"
             cell.textLabel?.text = "\(currentTrade.symbol) \(entPriceString) -> \(exitPriceString)"
             if let profitPercent = trades[indexPath.row].profitPercent {
@@ -111,9 +111,9 @@ class MoonAlarmTableViewController: UITableViewController {
             let trades = TradeSession.instance.trades.selectOnly(status: .complete)
             let currentTrade = trades[indexPath.row]
             let entPriceString =    (currentTrade.enterPrice != nil) ?
-                                    String(format: "%0.8f", arguments: [currentTrade.enterPrice!]) : "?"
+                                    String(currentTrade.enterPrice!.rounded8) : "?"
             let exitPriceString =   (currentTrade.exitPrice != nil) ?
-                                    String(format: "%0.8f", arguments: [currentTrade.exitPrice!]) :
+                                    String(currentTrade.exitPrice!.rounded8) :
                                     "?"
             cell.textLabel?.text = "\(currentTrade.symbol) \(entPriceString) -> \(exitPriceString)"
             if let profitPercent = trades[indexPath.row].profitPercent {

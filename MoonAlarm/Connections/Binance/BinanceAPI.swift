@@ -320,7 +320,7 @@ class BinanceAPI {
         
         if order.type != .market {
             params["timeInForce"] = order.timeInForce.rawValue
-            params["price"] = order.price?.rounded
+            params["price"] = order.price?.rounded8
         }
         
         signedJsonRequest(url: url, method: .post, params: params, headers: head) {

@@ -21,7 +21,7 @@ extension Double {
 
 extension Price {
     
-    var rounded: Price {
+    var rounded8: Price {
         return self.roundTo(8)
     }
     
