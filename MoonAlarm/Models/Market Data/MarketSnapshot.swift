@@ -26,14 +26,14 @@ class MarketSnapshot {
                   orderBook: OrderBook(symbol: sym))
     }
     
-    var runwayPercent1M: Double? {
+    var runwayPercent1Period: Double? {
         guard   let cVol = candleSticks.currentStickVolumeProrated,
                 let rwPercent = orderBook.runwayPercent(forVolume: cVol)
                 else { return nil }
         return  rwPercent
     }
     
-    var fallwayPercent1M: Double? {
+    var fallwayPercent1Period: Double? {
         guard   let cVol = candleSticks.currentStickVolumeProrated,
                 let fwPercent = orderBook.fallwayPercent(forVolume: cVol)
                 else { return nil }

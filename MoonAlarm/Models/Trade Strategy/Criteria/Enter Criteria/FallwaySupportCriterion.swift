@@ -20,7 +20,7 @@ class FallwaySupportCriterion: TradeEnterCriterion {
     }
     
     override func passedFor(snapshot: MarketSnapshot) -> Bool {
-        guard   let fallwayPercent = snapshot.fallwayPercent1M else { return false }
+        guard   let fallwayPercent = snapshot.fallwayPercent1Period else { return false }
         
         return fallwayPercent < self.maxFallwayPercent
     }
