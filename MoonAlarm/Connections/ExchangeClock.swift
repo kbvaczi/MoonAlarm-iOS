@@ -44,7 +44,7 @@ class ExchangeClock {
     }
     
     func startRegularSync() {
-        syncTimer = Timer.init(timeInterval: 60, repeats: true) { _ in
+        syncTimer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { _ in
             self.syncTimeWithServer()
         }
     }
