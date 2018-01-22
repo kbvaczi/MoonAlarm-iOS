@@ -10,7 +10,7 @@ import Foundation
 
 class Order {
     
-    let price: Double
+    let price: Price
     let quantity: Double
     
     init (price p: Double, quantity qty: Double ) {

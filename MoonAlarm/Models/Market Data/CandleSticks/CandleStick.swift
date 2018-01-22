@@ -22,11 +22,11 @@ class CandleStick {
     
     ////////// Price //////////
     
-    let openPrice: Double
-    let closePrice: Double
+    let openPrice: Price
+    let closePrice: Price
     
-    let highPrice: Double
-    let lowPrice: Double
+    let highPrice: Price
+    let lowPrice: Price
     
     ////////// Volume & Count //////////
     
@@ -37,8 +37,8 @@ class CandleStick {
     
     ////////// Initializer //////////
     
-    init(openTime: Milliseconds, closeTime: Milliseconds, openPrice: Double, closePrice: Double,
-         highPrice: Double, lowPrice: Double, volume: Double, pairVolume: Double, tradesCount: Int) {
+    init(openTime: Milliseconds, closeTime: Milliseconds, openPrice: Price, closePrice: Price,
+         highPrice: Price, lowPrice: Price, volume: Double, pairVolume: Double, tradesCount: Int) {
         
         self.openTime = openTime
         self.closeTime = closeTime

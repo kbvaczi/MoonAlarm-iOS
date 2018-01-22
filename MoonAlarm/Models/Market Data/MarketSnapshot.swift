@@ -40,7 +40,7 @@ class MarketSnapshot {
         return  fwPercent
     }
     
-    var currentPrice: Double? {
+    var currentPrice: Price? {
         guard let lastStick = self.candleSticks.last else { return nil }
         return lastStick.closePrice
     }

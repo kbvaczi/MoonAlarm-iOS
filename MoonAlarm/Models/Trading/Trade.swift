@@ -15,8 +15,8 @@ class Trade {
     var updateTimer = Timer()
     
     var status: Status = .draft
-    var enterPrice: Double? = nil
-    var exitPrice: Double? = nil
+    var enterPrice: Price? = nil
+    var exitPrice: Price? = nil
     
     var exitCriteria = TradeStrategy.instance.exitCriteria.copy()
     

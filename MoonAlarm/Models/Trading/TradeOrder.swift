@@ -30,7 +30,7 @@ class TradeOrder {
     var quantityFilled: Double = 0
     
     init(pair: String, side: BinanceAPI.OrderSide, type: BinanceAPI.OrderType = .market,
-         price: Double?, quantity: Double, isTest: Bool = true) {
+         price: Price?, quantity: Double, isTest: Bool = true) {
         self.symbolPair = pair
         self.side = side
         self.type = type

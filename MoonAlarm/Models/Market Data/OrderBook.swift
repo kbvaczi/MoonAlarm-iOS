@@ -26,12 +26,12 @@ class OrderBook {
     
     ////////// PRICING //////////
     
-    var topBidPrice: Double? {
+    var topBidPrice: Price? {
         guard bids.count > 0 else { return nil }
         return bids.first?.price
     }
     
-    var firstAskPrice: Double? {
+    var firstAskPrice: Price? {
         guard asks.count > 0 else { return nil }
         return asks.first?.price
     }

@@ -73,7 +73,7 @@ extension Array where Element : CandleStick {
         
         var currentAvg: Double?
         
-        init(initialPrice: Double? = nil, _ period: Int) {
+        init(initialPrice: Price? = nil, _ period: Int) {
             self.currentAvg = initialPrice
             self.period = period
         }
