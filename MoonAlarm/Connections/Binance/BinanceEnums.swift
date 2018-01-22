@@ -23,4 +23,33 @@ extension BinanceAPI {
         case d1 = "1d"
     }
     
+    // Order Status
+    enum OrderStatus: String {
+        case new = "NEW"
+        case filledPartial = "PARTIALLY_FILLED"
+        case filled = "FILLED"
+        case cancelled = "CANCELED"
+        case cancelPending = "PENDING_CANCEL"
+        case rejected = "REJECTED"
+        case expired = "EXPIRED"
+    }
+    
+    // Order Types
+    enum OrderType: String {
+        case limit = "LIMIT"
+        case market = "MARKET"
+    }
+    
+    // Order Side
+    enum OrderSide: String {
+        case buy = "BUY"
+        case sell = "SELL"
+    }
+    
+    // Time in force
+    enum TimeInForce: String {
+        case gtg = "GTC"  // Good until cancelled
+        case ioc = "IOC"  // Immediate or cancel
+    }
+    
 }

@@ -27,17 +27,20 @@ extension BinanceAPI {
             
             var request = try URLEncoding().encode(urlRequest, with: params)
             
-            // Get bytes from query string
-            var queryBytes = [UInt8]()
-            guard   let urlString = request.url?.absoluteString,
-                    let querySubString = urlString.matches(for: "[?].+").first?.dropFirst()
-                    else {
+            // Check to see if we can find a URL
+            guard   let urlString = request.url?.absoluteString else {
                     print("error retrieving url string for signing")
                     return request
             }
-            let queryString = String(querySubString)
-            queryBytes = queryString.bytes
             
+            // Get bytes from query string
+            var queryBytes = [UInt8]()
+            // If we can find a query string, lets include it for signature
+            if let querySubString = urlString.matches(for: "[?].+").first?.dropFirst() {
+                let queryString = String(querySubString)
+                queryBytes = queryString.bytes
+            }
+
             // Get bytes from request body
             var bodyBytes = [UInt8]()
             if let bodyData = request.httpBody {

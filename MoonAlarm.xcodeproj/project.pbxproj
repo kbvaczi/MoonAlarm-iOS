@@ -42,6 +42,7 @@
 		BEE6B0B7201503AE0068DDCB /* TradeOrder.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEE6B0B6201503AE0068DDCB /* TradeOrder.swift */; };
 		BEE6B0B9201503C70068DDCB /* TradeOrders.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEE6B0B8201503C70068DDCB /* TradeOrders.swift */; };
 		BEE6B0BD201513B40068DDCB /* RSIExitCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEE6B0BC201513B40068DDCB /* RSIExitCriterion.swift */; };
+		BEE6B0BF201564340068DDCB /* Price.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEE6B0BE201564340068DDCB /* Price.swift */; };
 		BEF49624200978CE00501C5C /* TradeStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF49623200978CE00501C5C /* TradeStrategy.swift */; };
 		BEF496262009791900501C5C /* TradeEnterExitCriteria.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF496252009791900501C5C /* TradeEnterExitCriteria.swift */; };
 		BEF4962C20097ED000501C5C /* IncreasedVolumeCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF4962B20097ED000501C5C /* IncreasedVolumeCriterion.swift */; };
@@ -97,6 +98,7 @@
 		BEE6B0B6201503AE0068DDCB /* TradeOrder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradeOrder.swift; sourceTree = "<group>"; };
 		BEE6B0B8201503C70068DDCB /* TradeOrders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradeOrders.swift; sourceTree = "<group>"; };
 		BEE6B0BC201513B40068DDCB /* RSIExitCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RSIExitCriterion.swift; sourceTree = "<group>"; };
+		BEE6B0BE201564340068DDCB /* Price.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Price.swift; sourceTree = "<group>"; };
 		BEF49623200978CE00501C5C /* TradeStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradeStrategy.swift; sourceTree = "<group>"; };
 		BEF496252009791900501C5C /* TradeEnterExitCriteria.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradeEnterExitCriteria.swift; sourceTree = "<group>"; };
 		BEF4962B20097ED000501C5C /* IncreasedVolumeCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncreasedVolumeCriterion.swift; sourceTree = "<group>"; };
@@ -216,6 +218,7 @@
 				BE9E3C9520044CD9005D531C /* TimeAliases.swift */,
 				BE9E3C9C200452A9005D531C /* PercentAlias.swift */,
 				BEC755F6200C30700092B316 /* RegularExpression.swift */,
+				BEE6B0BE201564340068DDCB /* Price.swift */,
 			);
 			path = General;
 			sourceTree = "<group>";
@@ -475,6 +478,7 @@
 				BE9E3CA92006867E005D531C /* OrderBook.swift in Sources */,
 				BED95530200BBCA60094C1BD /* BinanceSignature.swift in Sources */,
 				BE390BA62002507B00CFD46B /* MoonAlarmTableViewController.swift in Sources */,
+				BEE6B0BF201564340068DDCB /* Price.swift in Sources */,
 				BEF4963420098E4600501C5C /* MinVolumeCriterion.swift in Sources */,
 				BE390B8D2001488D00CFD46B /* AppDelegate.swift in Sources */,
 				BEF4962E2009826400501C5C /* TradeEnterCriterion.swift in Sources */,
@@ -637,6 +641,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 9TGE3BXSJD;
 				INFOPLIST_FILE = MoonAlarm/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = vaczoway.MoonAlarm;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -655,6 +660,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 9TGE3BXSJD;
 				INFOPLIST_FILE = MoonAlarm/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = vaczoway.MoonAlarm;
 				PRODUCT_NAME = "$(TARGET_NAME)";

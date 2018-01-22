@@ -307,6 +307,30 @@ class BinanceAPI {
         }
     }
     
+    func postNewOrder(for order: TradeOrder,
+                       callback: @escaping (_ isSuccess: Bool, _ order: TradeOrder) -> Void) {
+        
+        let url = rootURLString + "/api/v3/order" + (order.isTestOrder ? "/test" : "")
+        let head = ["X-MBX-APIKEY": BinanceAPI.apiKey]
+        var params: Parameters = ["symbol": order.symbolPair,
+                                  "side": order.side.rawValue,
+                                  "type": order.type.rawValue,
+                                  "quantity": order.quantity,
+                                  "timestamp": ExchangeClock.instance.currentTime]
+        
+        if order.type != .market {
+            params["timeInForce"] = order.timeInForce.rawValue
+            params["price"] = order.price?.rounded
+        }
+        
+        signedJsonRequest(url: url, method: .post, params: params, headers: head) {
+            (isSuccess, jsonResponse) in
+            
+            print("JSON \(jsonResponse)")
+            callback(isSuccess, order)
+        }
+    }
+    
     ///////// DATA STREAMS //////////
     
     func startUserDataStream(forSymbolPair sP: String, apiKey: String,
