@@ -315,7 +315,7 @@ class BinanceAPI {
         var params: Parameters = ["symbol": order.symbolPair,
                                   "side": order.side.rawValue,
                                   "type": order.type.rawValue,
-                                  "quantity": order.quantity,
+                                  "quantity": order.quantityOrdered,
                                   "timestamp": ExchangeClock.instance.currentTime]
         
         if order.type != .market {
@@ -325,6 +325,15 @@ class BinanceAPI {
         
         signedJsonRequest(url: url, method: .post, params: params, headers: head) {
             (isSuccess, jsonResponse) in
+            
+            // Example Response:
+            // {  "symbol":"LTCBTC",
+            //    "orderId": 1,
+            //    "clientOrderId": "myOrder1" // Will be newClientOrderId
+            //    "transactTime": 1499827319559 }
+            
+            let clientOrderID = jsonResponse["clientOrderId"].stringValue
+            order.uid = clientOrderID
             
             print("JSON \(jsonResponse)")
             callback(isSuccess, order)

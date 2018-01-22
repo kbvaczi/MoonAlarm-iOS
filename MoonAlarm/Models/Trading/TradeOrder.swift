@@ -18,7 +18,7 @@ class TradeOrder {
     let isTestOrder: Bool
     // assume processed immediately
     let timeInForce: BinanceAPI.TimeInForce = .ioc
-    let quantity: Double
+    let quantityOrdered: Double
     
     // Mutating Settings //
     
@@ -35,7 +35,7 @@ class TradeOrder {
         self.side = side
         self.type = type
         self.price = price
-        self.quantity = quantity
+        self.quantityOrdered = quantity
         self.isTestOrder = isTest
     }
     

@@ -44,7 +44,7 @@ class MoonAlarmTableViewController: UITableViewController {
         TradeStrategy.instance.exitCriteria = [
 //            TimeLimitProfitableCriterion(timeLimit: 60.minutesToMilliseconds),
 //            TimeLimitUnprofitableCriterion(timeLimit: 30.minutesToMilliseconds),
-            LossPercentCriterion(percent: 3.0),
+            LossPercentCriterion(percent: 2.5),
 //            ProfitCutoffCriterion(profitPercent: 5.0),
             TrailingLossPercentCriterion(loss: 1.0, after: 2.0),
             RSIExitCriterion(max: 60),
@@ -94,7 +94,7 @@ class MoonAlarmTableViewController: UITableViewController {
             let pairVolume = TradeStrategy.instance.tradeAmountTarget
             let marketExitPrice = currentTrade.marketSnapshot.orderBook.marketSellPrice(forPairVolume: pairVolume)
             let entPriceString =    (currentTrade.enterPrice != nil) ?
-                                    String(currentTrade.exitPrice!.rounded8) :
+                                    String(currentTrade.enterPrice!.rounded8) :
                                     "?"
             let exitPriceString =   (currentTrade.exitPrice != nil) ?
                                     String(currentTrade.exitPrice!.rounded8) :
