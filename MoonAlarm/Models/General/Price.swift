@@ -25,5 +25,10 @@ extension Price {
         return self.roundTo(8)
     }
     
+    var toDisplay: String {
+        return String(format: "%0.8f", arguments: [self.rounded8])
+        
+    }
+    
 }
 
