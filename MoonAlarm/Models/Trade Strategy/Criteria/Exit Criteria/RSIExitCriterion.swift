@@ -22,10 +22,17 @@ class RSIExitCriterion: TradeExitCriterion {
         guard   self.maxRSI > 0 else { return false }
         
         // Check for valid data
-        guard   let lastRSI = trade.marketSnapshot.candleSticks.last?.rsi
-                else { return false }
+        let lastTwoSticks = trade.marketSnapshot.candleSticks.suffix(2)
         
-        if lastRSI > maxRSI {
+        var allAboveMax = true
+        for stick in lastTwoSticks {
+            if  let rsi = stick.rsi,
+                rsi < maxRSI {
+                allAboveMax = false
+            }
+        }
+        
+        if allAboveMax {
             print("\(trade.symbol): RSI Exit Criterion Passed")
             return true
         }
