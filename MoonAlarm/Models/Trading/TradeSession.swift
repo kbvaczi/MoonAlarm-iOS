@@ -89,9 +89,6 @@ class TradeSession {
     
     func updateMarketSnapshots(callback: @escaping () -> Void) {
         
-        // remove outdated information
-        self.marketSnapshots.removeAll()
-        
         // use a dispatch group to keep track of how many symbols we've updated
         let dpG = DispatchGroup()
         
@@ -99,7 +96,7 @@ class TradeSession {
             dpG.enter() // enter dispatch queue
             let newSnapshot = MarketSnapshot(symbol: symbol)
             newSnapshot.updateData {
-                self.marketSnapshots.append(newSnapshot)
+                self.marketSnapshots.updateSnapshotFor(symbol, with: newSnapshot)
                 dpG.leave()
             }
         }
