@@ -93,6 +93,9 @@ class TradeSession {
         let dpG = DispatchGroup()
         
         for symbol in self.symbols {
+            // don't need to evaluate for coins already trading
+            if trades.openTradeFor(symbol) { continue }
+            
             dpG.enter() // enter dispatch queue
             let newSnapshot = MarketSnapshot(symbol: symbol)
             newSnapshot.updateData {
