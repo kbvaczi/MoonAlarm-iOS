@@ -37,14 +37,16 @@ extension Array where Element : CandleStick {
     }
     
     var currentStickVolumeProrated: Double? {
-        guard   let stickDuration = self.stickDuration,
-                let currentStickDuration = self.currentStickDuration,
-                let currentStickVolume = self.currentStickVolume else { return nil }
+        guard   let stickDur = self.stickDuration,
+                let currentStickDur = self.currentStickDuration,
+                let currentStickVol = self.currentStickVolume,
+                let prevStickVol = self.suffix(2).first?.volume else { return nil }
         
-        // prorating less than 10 seconds of data can lead to scewed results
-        let minStickDur: Seconds = 20
-        let proRateFactor = stickDuration / Swift.max(minStickDur, currentStickDuration)
-        return (currentStickVolume * proRateFactor)
+        let portionCompleteCurrentStick = currentStickDur / stickDur
+        let portionPrevStickUsed = 1 - portionCompleteCurrentStick
+        let proratedVol = currentStickVol + (prevStickVol * portionPrevStickUsed)
+        
+        return proratedVol
     }
     
     var currentStickTradesCount: Int? {
@@ -52,14 +54,17 @@ extension Array where Element : CandleStick {
     }
     
     var currentStickTradesCountProrated: Int? {
-        guard   let stickDuration = self.stickDuration,
-            let currentStickDuration = self.currentStickDuration,
-            let currentStickTrades = self.currentStickTradesCount else { return nil }
-        
-        // prorating less than 10 seconds of data can lead to scewed results
-        let minStickDur: Seconds = 20
-        let proRateFactor = stickDuration / Swift.max(minStickDur, currentStickDuration)
-        return Int(Double(currentStickTrades) * proRateFactor)
+        guard   let stickDur = self.stickDuration,
+                let currentStickDur = self.currentStickDuration,
+                let currentStickTrades = self.currentStickTradesCount,
+                let prevStickTrades = self.suffix(2).first?.tradesCount else { return nil }
+     
+        let portionCompleteCurrentStick = currentStickDur / stickDur
+        let portionPrevStickUsed = 1 - portionCompleteCurrentStick
+        let proratedTrades = Double(currentStickTrades) +
+                            (Double(prevStickTrades) * portionPrevStickUsed)
+     
+        return Int(proratedTrades)
     }
     
     // Price of current stick is higher than previous stick
