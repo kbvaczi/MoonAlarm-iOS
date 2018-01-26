@@ -20,7 +20,12 @@ class RunwayExitCriterion: TradeExitCriterion {
         guard   let runwayPercent = trade.marketSnapshot.runwayPercent1Period
                 else { return false }
         
-        return runwayPercent < self.minRunwayPercent
+        if runwayPercent < self.minRunwayPercent {
+            print("\(trade.symbol): Runway Exit Criterion Passed (\(runwayPercent.roundTo(2)))")
+            return true
+        }
+        
+        return false
     }
     
     override func copy() -> TradeExitCriterion {
