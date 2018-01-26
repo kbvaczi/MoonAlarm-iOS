@@ -51,10 +51,11 @@ class MarketSnapshot {
         let dpG = DispatchGroup()
         
         dpG.enter()
-        self.updateCandleSticks { dpG.leave() }
-        
-        dpG.enter()
-        self.updateOrderBook { dpG.leave() }
+        self.updateCandleSticks {
+            self.updateOrderBook {
+                dpG.leave()
+            }
+        }
         
         // when all API calls are returned, run callback
         dpG.notify(queue: .main) {
@@ -69,10 +70,10 @@ class MarketSnapshot {
                                             interval: stickInterval,
                                             limit: 100) {
             (isSuccess, cSticks) in
-            if isSuccess {
+            if isSuccess, let cSticks = cSticks {
+                cSticks.calculateMACD()
+                cSticks.calculateRSI()
                 self.candleSticks = cSticks
-                self.candleSticks.calculateMACD()
-                self.candleSticks.calculateRSI()
             }
             callback()
         }
