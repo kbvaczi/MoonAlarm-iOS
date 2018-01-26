@@ -115,7 +115,7 @@ extension Array where Element : CandleStick {
     }
     
     // average trades per stick over 15 minutes
-    var tradesAvg15M: Double? {
+    var tradesAvg15M: Int? {
         guard   let stickDuration = self.stickDuration else { return nil }
         guard   stickDuration > 0 else { return nil }
         
