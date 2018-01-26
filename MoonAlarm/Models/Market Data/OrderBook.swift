@@ -66,13 +66,15 @@ class OrderBook {
     func runwayPercent(forVolume volume: Double) -> Percent? {
         guard   let runwayPrice = self.runwayPrice(forVolume: volume),
                 let firstAskPrice = self.firstAskPrice else { return nil }
-            return (runwayPrice / firstAskPrice - 1).doubleToPercent
+        
+        return (runwayPrice / firstAskPrice - 1).doubleToPercent
     }
     
     func fallwayPercent(forVolume volume: Double) -> Percent? {
         guard   let fallwayPrice = self.fallwayPrice(forVolume: volume),
-                let firstAskPrice = self.firstAskPrice else { return nil }
-        return (firstAskPrice / fallwayPrice - 1).doubleToPercent
+                let topBidPrice = self.topBidPrice else { return nil }
+        
+        return (topBidPrice / fallwayPrice - 1).doubleToPercent
     }
     
     ////////// MARKET BUY/SELL AVERAGE PRICING //////////
