@@ -118,7 +118,7 @@ class OrderBook {
         BinanceAPI.instance.getOrderBook(symbolPair: symbolPair,
                                          limit: 50) {
             (isSuccess, oBook) in
-            if isSuccess {
+            if isSuccess, let oBook = oBook {
                 self.asks = oBook.asks
                 self.bids = oBook.bids
             }

@@ -59,8 +59,8 @@ class TradeSession {
         let tradingPairSymbol = TradeStrategy.instance.tradingPairSymbol
         BinanceAPI.instance.getAllSymbols(forTradingPair: tradingPairSymbol) {
             (isSuccess, allSymbols) in
-            if isSuccess {
-                
+            
+            if isSuccess, let allSymbols = allSymbols {
                 // use a dispatch group to keep track of how many symbols we've updated
                 let dpG = DispatchGroup()
                 
@@ -71,10 +71,13 @@ class TradeSession {
                     dpG.enter()
                     BinanceAPI.instance.get24HrPairVolume(forTradingPair: symbol.symbolPair) {
                         (isSuccessful, pairVolume) in
-                        let min24HrVol = TradeStrategy.instance.tradingPairSymbol == "BTC" ? 1000.0 : 3000.0
-                        if  pairVolume > min24HrVol,
-                            self.symbols.count < 50 {
-                            self.symbols.append(symbol)
+                        
+                        if isSuccessful, let pairVolume = pairVolume {
+                            let min24HrVol = TradeStrategy.instance.tradingPairSymbol == "BTC" ? 1000.0 : 3000.0
+                            if  pairVolume > min24HrVol,
+                                self.symbols.count < 50 {
+                                self.symbols.append(symbol)
+                            }
                         }
                         dpG.leave()
                     }
@@ -97,10 +100,17 @@ class TradeSession {
             if trades.openTradeFor(symbol) { continue }
             
             dpG.enter() // enter dispatch queue
-            let newSnapshot = MarketSnapshot(symbol: symbol)
-            newSnapshot.updateData {
-                self.marketSnapshots.updateSnapshotFor(symbol, with: newSnapshot)
-                dpG.leave()
+            
+            if let existingSnapshot = self.marketSnapshots.first(where: {$0.symbol == symbol}) {
+                existingSnapshot.updateData {
+                    dpG.leave()
+                }
+            } else {
+                let newSnapshot = MarketSnapshot(symbol: symbol)
+                newSnapshot.updateData {
+                    self.marketSnapshots.append(newSnapshot)
+                    dpG.leave()
+                }
             }
         }
         
