@@ -30,17 +30,17 @@ class BinanceAPI {
                         callback: @escaping (_ isSuccessful: Bool, _ jsonResponse: JSON) -> Void) {
         
         Alamofire.request(url, method: method, parameters: params, headers: headers)
-                        .responseSwiftyJSON { response in
+                .validate(statusCode: 200..<300)
+                .validate(contentType: ["application/json"])
+                .responseSwiftyJSON { response in
                             
             guard response.result.isSuccess else {
                 print("*** Request to \(url) unsuccessful ***")
-                print("Parameters:")
-                print(params ?? "no parameters")
-                print("Response:")
-                let jsonResponse = response.result.value ?? JSON.null
-                print("JSON:")
-                print(jsonResponse)
-                callback(false, jsonResponse)
+                print("Parameters: \(params ?? [:])")
+                if let error = response.result.error {
+                    print("Error: \(error)")
+                }
+                callback(false, JSON.null)
                 return
             }
             guard let jsonResponse = response.result.value else {
@@ -81,17 +81,17 @@ class BinanceAPI {
                                    callback: @escaping (_ isSuccessful: Bool, _ jsonResponse: JSON) -> Void) {
 
         Alamofire.request(url, method: method, parameters: params, encoding: SignedEncoding(), headers: headers)
-            .responseSwiftyJSON { response in
+                .validate(statusCode: 200..<300)
+                .validate(contentType: ["application/json"])
+                .responseSwiftyJSON { response in
                 
             guard response.result.isSuccess else {
                 print("*** Request to \(url) unsuccessful ***")
-                print("Parameters:")
-                print(params ?? "no parameters")
-                print("Response:")
-                let jsonResponse = response.result.value ?? JSON.null
-                print("JSON:")
-                print(jsonResponse)
-                callback(false, jsonResponse)
+                print("Parameters: \(params ?? [:])")
+                if let error = response.result.error {
+                    print("Error: \(error)")
+                }
+                callback(false, JSON.null)
                 return
             }
             guard let jsonResponse = response.result.value else {
@@ -172,13 +172,18 @@ class BinanceAPI {
     // Returns list of all available symbols with selected trading pair
     
     func getAllSymbols(forTradingPair tradingPairSymbol: String,
-                       callback: @escaping (_ isSuccessful: Bool, _ symbols: [Symbol]) -> Void) {
+                       callback: @escaping (_ isSuccessful: Bool, _ symbols: [Symbol]?) -> Void) {
         
         let url = rootURLString + "/api/v1/ticker/allPrices"
         var symbolsList = [String]()
         
         jsonRequest(url: url, method: .get, params: nil) {
             (isSuccessful, jsonResponse) in
+            
+            guard isSuccessful else {
+                callback(false, nil)
+                return
+            }
             
             // Data is an array of dictionaries
             // Example data: [{"price" : "0.05919500","symbol" : "ETHBTC"}]
@@ -199,13 +204,18 @@ class BinanceAPI {
     // Returns 24hr pair volume of given symbol
     
     func get24HrPairVolume(forTradingPair tradingPair: String,
-                       callback: @escaping (_ isSuccessful: Bool, _ volume: Double) -> Void) {
+                       callback: @escaping (_ isSuccessful: Bool, _ volume: Double?) -> Void) {
         
         let url = rootURLString + "/api/v1/ticker/24hr"
         let params = ["symbol": tradingPair]
         
         jsonRequest(url: url, method: .get, params: params) {
             (isSuccessful, jsonResponse) in
+            
+            guard isSuccessful else {
+                callback(false, nil)
+                return
+            }
             
             // Data is a dictionary
             /*
@@ -244,7 +254,7 @@ class BinanceAPI {
     //      limit - number of candlesticks to get, starting from present time going backwards
     
     func getCandleSticks(symbolPair: String, interval: KLineInterval, limit: Int = 2,
-                      callback: @escaping (_ isSuccessful: Bool, _ candleSticks: CandleSticks) -> Void) {
+                      callback: @escaping (_ isSuccessful: Bool, _ candleSticks: CandleSticks?) -> Void) {
         
         let url = rootURLString + "/api/v1/klines"
         let params = ["symbol": symbolPair,
@@ -255,6 +265,11 @@ class BinanceAPI {
         
         jsonRequest(url: url, method: .get, params: params) {
             (isSuccessful, jsonResponse) in
+            
+            guard isSuccessful else {
+                callback(false, nil)
+                return
+            }
             
             // Data is an array of array (see example data in Candlestick initializer)
             for (_ ,cStickJson):(String, JSON) in jsonResponse {
@@ -272,7 +287,7 @@ class BinanceAPI {
     //      limit - number of orders in book (5, 10, 20, 50, 100, 500, 1000 permitted)
     
     func getOrderBook(symbolPair: String, limit: Int = 50,
-                      callback: @escaping (_ isSuccessful: Bool, _ orderBook: OrderBook) -> Void) {
+                      callback: @escaping (_ isSuccessful: Bool, _ orderBook: OrderBook?) -> Void) {
         
         let url = rootURLString + "/api/v1/depth"
         let params = ["symbol": symbolPair,
@@ -280,6 +295,11 @@ class BinanceAPI {
         
         jsonRequest(url: url, method: .get, params: params) {
             (isSuccessful, jsonResponse) in
+            
+            guard isSuccessful else {
+                callback(false, nil)
+                return
+            }
             
             let pairSymbol = TradeStrategy.instance.tradingPairSymbol
             let symbol = symbolPair.replacingOccurrences(of: pairSymbol, with: "")
@@ -292,7 +312,7 @@ class BinanceAPI {
     ///////// SIGNED REQUESTS ///////////
     
     func getOpenOrders(forSymbolPair sP: String,
-                       callback: @escaping (_ isSuccess: Bool, _ orders: TradeOrders) -> Void) {
+                       callback: @escaping (_ isSuccess: Bool, _ orders: TradeOrders?) -> Void) {
         
         let url = rootURLString + "/api/v3/openOrders"
         let head = ["X-MBX-APIKEY": BinanceAPI.apiKey]
@@ -302,13 +322,18 @@ class BinanceAPI {
         
         signedJsonRequest(url: url, method: .get, params: params, headers: head) {
             (isSuccessful, jsonResponse) in
+            
+            guard isSuccessful else {
+                callback(false, nil)
+                return
+            }
 
             print("JSON \(jsonResponse)")
         }
     }
     
     func postNewOrder(for order: TradeOrder,
-                       callback: @escaping (_ isSuccess: Bool, _ order: TradeOrder) -> Void) {
+                       callback: @escaping (_ isSuccess: Bool, _ order: TradeOrder?) -> Void) {
         
         let url = rootURLString + "/api/v3/order" + (order.isTestOrder ? "/test" : "")
         let head = ["X-MBX-APIKEY": BinanceAPI.apiKey]
@@ -324,7 +349,12 @@ class BinanceAPI {
         }
         
         signedJsonRequest(url: url, method: .post, params: params, headers: head) {
-            (isSuccess, jsonResponse) in
+            (isSuccessful, jsonResponse) in
+            
+            guard isSuccessful else {
+                callback(false, nil)
+                return
+            }
             
             // Example Response:
             // {  "symbol":"LTCBTC",
@@ -336,20 +366,25 @@ class BinanceAPI {
             order.uid = clientOrderID
             
             print("JSON \(jsonResponse)")
-            callback(isSuccess, order)
+            callback(true, order)
         }
     }
     
     ///////// DATA STREAMS //////////
     
     func startUserDataStream(forSymbolPair sP: String, apiKey: String,
-                             callback: @escaping (_ isSuccess: Bool, _ listenKey: String) -> Void) {
+                             callback: @escaping (_ isSuccess: Bool, _ listenKey: String?) -> Void) {
         
         let url = rootURLString + "/api/v1/userDataStream"
         let head = ["X-MBX-APIKEY": apiKey]
         
         jsonRequest(url: url, method: .post, headers: head) {
             (isSuccessful, jsonResponse) in
+            
+            guard isSuccessful else {
+                callback(false, nil)
+                return
+            }
             
             // Example Data:
             // {"listenKey": "pqia91ma19a5s61cv6a81va65sdf19v8a65a1a5s61cv6a81va65sdf19v8a65a1"}
