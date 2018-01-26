@@ -40,11 +40,11 @@ extension Array where Element : CandleStick {
         guard   let stickDur = self.stickDuration,
                 let currentStickDur = self.currentStickDuration,
                 let currentStickVol = self.currentStickVolume,
-                let prevStickVol = self.suffix(2).first?.volume else { return nil }
+                let prevVol = self.volumeAvg15M else { return nil }
         
         let portionCompleteCurrentStick = currentStickDur / stickDur
         let portionPrevStickUsed = 1 - portionCompleteCurrentStick
-        let proratedVol = currentStickVol + (prevStickVol * portionPrevStickUsed)
+        let proratedVol = currentStickVol + (prevVol * portionPrevStickUsed)
         
         return proratedVol
     }
@@ -57,12 +57,12 @@ extension Array where Element : CandleStick {
         guard   let stickDur = self.stickDuration,
                 let currentStickDur = self.currentStickDuration,
                 let currentStickTrades = self.currentStickTradesCount,
-                let prevStickTrades = self.suffix(2).first?.tradesCount else { return nil }
+                let prevTrades = self.tradesAvg15M else { return nil }
      
         let portionCompleteCurrentStick = currentStickDur / stickDur
         let portionPrevStickUsed = 1 - portionCompleteCurrentStick
         let proratedTrades = Double(currentStickTrades) +
-                            (Double(prevStickTrades) * portionPrevStickUsed)
+                            (Double(prevTrades) * portionPrevStickUsed)
      
         return Int(proratedTrades)
     }
@@ -94,7 +94,7 @@ extension Array where Element : CandleStick {
         guard   stickDuration > 0 else { return nil }
         
         let M15 = (15 as Minutes).minutesToSeconds
-        let sticks15MCount = Int(M15 / round(stickDuration))
+        let sticks15MCount = Int(round(M15 / stickDuration))
         let sticks15M = self.suffix(sticks15MCount)
         let volume15MAvg = sticks15M.map({ $0.volume }).reduce(0, { $0 + $1 / Double(sticks15MCount) })
         
@@ -107,11 +107,25 @@ extension Array where Element : CandleStick {
         guard   stickDuration > 0 else { return nil }
         
         let M15 = (15 as Minutes).minutesToSeconds
-        let sticks15MCount = Int(M15 / round(stickDuration))
+        let sticks15MCount = Int(round(M15 / stickDuration))
         let sticks15M = self.suffix(sticks15MCount)
         let volume15MAvgPair = sticks15M.map({ $0.pairVolume }).reduce(0, { $0 + $1 / Double(sticks15MCount) })
         
         return volume15MAvgPair
+    }
+    
+    // average trades per stick over 15 minutes
+    var tradesAvg15M: Double? {
+        guard   let stickDuration = self.stickDuration else { return nil }
+        guard   stickDuration > 0 else { return nil }
+        
+        let M15 = (15 as Minutes).minutesToSeconds
+        let sticks15MCount = Int(round(M15 / stickDuration))
+        let sticks15M = self.suffix(sticks15MCount)
+        let trades15MAvg = sticks15M.map({ Double($0.tradesCount) })
+                                    .reduce(0, { $0 + $1 / Double(sticks15MCount) })
+        
+        return Int(trades15MAvg)
     }
     
     // number of trades conducted within last minute vs 15-minute running average
