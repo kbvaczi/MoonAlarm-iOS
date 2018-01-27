@@ -1,5 +1,5 @@
 //
-//  SpareRunwayCriterion.swift
+//  SpareRunway.swift
 //  MoonAlarm
 //
 //  Created by Kenneth Vaczi on 1/12/18.
@@ -8,13 +8,13 @@
 
 import Foundation
 
-class SpareRunwayCriterion: TradeEnterCriterion {
+class SpareRunwayEnter: TradeEnterCriterion {
     
     var minRunwayPercent: Percent = 1.0
     
     override init() { }
     
-    init(minRunwayPercent mrp: Double) {
+    init(percent mrp: Percent) {
         self.minRunwayPercent = mrp
     }
     

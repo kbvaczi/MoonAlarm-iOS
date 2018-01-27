@@ -8,7 +8,7 @@
 
 import Foundation
 
-class MinVolumeCriterion: TradeEnterCriterion {
+class MinVolumeEnter: TradeEnterCriterion {
     
     var minVolume: Double = TradeStrategy.instance.tradeAmountTarget * 10
     

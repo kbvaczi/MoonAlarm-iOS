@@ -9,13 +9,13 @@
 import Foundation
 
 // Runway ratio is the ratio of runway price to sell wall vs fallway price to buy walls
-class FallwaySupportCriterion: TradeEnterCriterion {
+class FallwaySupportEnter: TradeEnterCriterion {
     
     var maxFallwayPercent: Percent = 0.4
     
     override init() { }
     
-    init(maxFallwayPercent mfp: Double) {
+    init(percent mfp: Percent) {
         self.maxFallwayPercent = mfp
     }
     

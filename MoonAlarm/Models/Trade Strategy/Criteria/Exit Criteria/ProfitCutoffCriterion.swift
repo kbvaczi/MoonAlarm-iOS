@@ -8,11 +8,11 @@
 
 import Foundation
 
-class ProfitCutoffCriterion: TradeExitCriterion {
+class ProfitCutoffExit: TradeExitCriterion {
     
     var profitPercentCutoff: Percent
     
-    init(profitPercent pp: Percent = 1.0) {
+    init(percent pp: Percent = 1.0) {
         self.profitPercentCutoff = pp
     }
     
@@ -28,8 +28,8 @@ class ProfitCutoffCriterion: TradeExitCriterion {
         return false
     }
     
-    override func copy() -> ProfitCutoffCriterion {
-        return ProfitCutoffCriterion(profitPercent: self.profitPercentCutoff)
+    override func copy() -> ProfitCutoffExit {
+        return ProfitCutoffExit(percent: self.profitPercentCutoff)
     }
     
 }

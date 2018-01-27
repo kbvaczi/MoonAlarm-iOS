@@ -9,7 +9,7 @@
 import Foundation
 
 
-class LossPercentCriterion: TradeExitCriterion {
+class LossExit: TradeExitCriterion {
     
     var maxLossPercent: Percent = 0.5
     
@@ -30,8 +30,8 @@ class LossPercentCriterion: TradeExitCriterion {
         return false
     }
     
-    override func copy() -> LossPercentCriterion {
-        return LossPercentCriterion(percent: self.maxLossPercent)
+    override func copy() -> LossExit {
+        return LossExit(percent: self.maxLossPercent)
     }
     
 }

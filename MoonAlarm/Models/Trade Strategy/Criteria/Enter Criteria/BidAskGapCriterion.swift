@@ -8,7 +8,7 @@
 
 import Foundation
 
-class BidAskGapCriterion: TradeEnterCriterion {
+class BidAskGapEnter: TradeEnterCriterion {
     
     var maxGapPercent: Percent
     

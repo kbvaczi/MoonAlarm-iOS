@@ -8,14 +8,14 @@
 
 import Foundation
 
-class TrailingLossPercentCriterion: TradeExitCriterion {
+class TrailingLossExit: TradeExitCriterion {
     
     var afterGainPercent: Percent = 2.0
     var hasExceededGain: Bool = false
     
     var maxLossPercent: Percent = 1.0
     
-    init(loss: Percent = 1.0, after gain: Percent = 2.0) {
+    init(percent loss: Percent = 1.0, after gain: Percent = 2.0) {
         self.maxLossPercent = loss
         self.afterGainPercent = gain
     }
@@ -49,8 +49,7 @@ class TrailingLossPercentCriterion: TradeExitCriterion {
         return false
     }
     
-    override func copy() -> TrailingLossPercentCriterion {
-        return TrailingLossPercentCriterion(loss: self.maxLossPercent,
-                                            after: self.afterGainPercent)
+    override func copy() -> TrailingLossExit {
+        return TrailingLossExit(percent: self.maxLossPercent, after: self.afterGainPercent)
     }
 }

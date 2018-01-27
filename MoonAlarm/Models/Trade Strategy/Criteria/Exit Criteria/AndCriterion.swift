@@ -8,7 +8,7 @@
 
 import Foundation
 
-class AndCriterion: TradeExitCriterion {
+class AndExit: TradeExitCriterion {
     
     var andCriteria: [TradeExitCriterion]
     
@@ -33,8 +33,8 @@ class AndCriterion: TradeExitCriterion {
         return false
     }
     
-    override func copy() -> AndCriterion {
-        return AndCriterion(andCriteria)
+    override func copy() -> AndExit {
+        return AndExit(andCriteria)
     }
     
 }

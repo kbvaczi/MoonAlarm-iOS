@@ -8,7 +8,7 @@
 
 import Foundation
 
-class MACDEnterCriterion: TradeEnterCriterion {
+class MACDEnter: TradeEnterCriterion {
     
     var increasingTrendPeriod: Int
     var requireSignalCross: Bool

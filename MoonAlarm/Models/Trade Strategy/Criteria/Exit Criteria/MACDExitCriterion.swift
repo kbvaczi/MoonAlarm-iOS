@@ -8,12 +8,12 @@
 
 import Foundation
 
-class MACDExitCriterion: TradeExitCriterion {
+class MACDExit: TradeExitCriterion {
       
     var decreasingTrendPeriod: Int
     var lookForDecreasingTrend: Bool
     
-    init(decreasingTrend dt: Bool = false, for trendLength: Int = 1) {
+    init(trend dt: Bool = false, for trendLength: Int = 1) {
         self.decreasingTrendPeriod = trendLength
         self.lookForDecreasingTrend = dt
     }
@@ -62,8 +62,8 @@ class MACDExitCriterion: TradeExitCriterion {
         return false
     }
     
-    override func copy() -> MACDExitCriterion {
-        return MACDExitCriterion()
+    override func copy() -> MACDExit {
+        return MACDExit(trend: self.lookForDecreasingTrend, for: self.decreasingTrendPeriod)
     }
     
 }

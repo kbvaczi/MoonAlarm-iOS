@@ -8,7 +8,7 @@
 
 import Foundation
 
-class IncreaseVolumeCriterion: TradeEnterCriterion {
+class IncreasedVolumeEnter: TradeEnterCriterion {
     
     var minVolRatio: Double = 2.0
     

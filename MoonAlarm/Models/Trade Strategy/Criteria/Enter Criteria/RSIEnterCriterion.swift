@@ -8,7 +8,7 @@
 
 import Foundation
 
-class RSIEnterCriterion: TradeEnterCriterion {
+class RSIEnter: TradeEnterCriterion {
     
     var maxRSI: Double
     var inLastPeriods: Int

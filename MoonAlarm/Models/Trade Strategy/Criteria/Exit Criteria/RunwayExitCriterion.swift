@@ -8,11 +8,11 @@
 
 import Foundation
 
-class RunwayExitCriterion: TradeExitCriterion {
+class MinRunwayExit: TradeExitCriterion {
     
     var minRunwayPercent: Percent
     
-    init(min runway: Percent) {
+    init(percent runway: Percent) {
         self.minRunwayPercent = runway
     }
     
@@ -28,8 +28,8 @@ class RunwayExitCriterion: TradeExitCriterion {
         return false
     }
     
-    override func copy() -> TradeExitCriterion {
-        return RunwayExitCriterion(min: self.minRunwayPercent)
+    override func copy() -> MinRunwayExit {
+        return MinRunwayExit(percent: self.minRunwayPercent)
     }
     
 }

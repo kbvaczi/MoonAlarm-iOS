@@ -8,7 +8,7 @@
 
 import Foundation
 
-class RSIExitCriterion: TradeExitCriterion {
+class RSIExit: TradeExitCriterion {
     
     var maxRSI: Double
     
@@ -40,8 +40,8 @@ class RSIExitCriterion: TradeExitCriterion {
         return false
     }
     
-    override func copy() -> RSIExitCriterion {
-        return RSIExitCriterion(max: maxRSI)
+    override func copy() -> RSIExit {
+        return RSIExit(max: maxRSI)
     }
     
 }

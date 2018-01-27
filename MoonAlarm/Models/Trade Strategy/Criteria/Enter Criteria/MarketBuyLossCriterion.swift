@@ -8,7 +8,7 @@
 
 import Foundation
 
-class MarketyBuyLossCriterion: TradeEnterCriterion {
+class MarketBuyLossEnter: TradeEnterCriterion {
     
     var maxLossPercent: Percent
     

@@ -57,7 +57,6 @@
 		BEF4963A200A621A00501C5C /* FallwaySupportCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF49639200A621A00501C5C /* FallwaySupportCriterion.swift */; };
 		BEF4963E200A9FC600501C5C /* TimeLimitProfitableCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF4963D200A9FC600501C5C /* TimeLimitProfitableCriterion.swift */; };
 		BEF49640200AA6A400501C5C /* TimeLimitUnprofitableCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF4963F200AA6A400501C5C /* TimeLimitUnprofitableCriterion.swift */; };
-		BEF49646200AABC400501C5C /* ProfitPercentCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF49645200AABC400501C5C /* ProfitPercentCriterion.swift */; };
 		BEF49648200AAC4E00501C5C /* LossPercentCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF49647200AAC4E00501C5C /* LossPercentCriterion.swift */; };
 /* End PBXBuildFile section */
 
@@ -116,7 +115,6 @@
 		BEF49639200A621A00501C5C /* FallwaySupportCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FallwaySupportCriterion.swift; sourceTree = "<group>"; };
 		BEF4963D200A9FC600501C5C /* TimeLimitProfitableCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeLimitProfitableCriterion.swift; sourceTree = "<group>"; };
 		BEF4963F200AA6A400501C5C /* TimeLimitUnprofitableCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeLimitUnprofitableCriterion.swift; sourceTree = "<group>"; };
-		BEF49645200AABC400501C5C /* ProfitPercentCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfitPercentCriterion.swift; sourceTree = "<group>"; };
 		BEF49647200AAC4E00501C5C /* LossPercentCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LossPercentCriterion.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -306,7 +304,6 @@
 				BE18674B201279EB00E275E4 /* ProfitCutoffCriterion.swift */,
 				BEF4963D200A9FC600501C5C /* TimeLimitProfitableCriterion.swift */,
 				BEF4963F200AA6A400501C5C /* TimeLimitUnprofitableCriterion.swift */,
-				BEF49645200AABC400501C5C /* ProfitPercentCriterion.swift */,
 				BEF49647200AAC4E00501C5C /* LossPercentCriterion.swift */,
 				BE07C0D8200EBE26000F5A38 /* MACDExitCriterion.swift */,
 				BE3BA148201399F400458621 /* TrailingLossPercentCriterion.swift */,
@@ -511,7 +508,6 @@
 				BE3BA14720138F4D00458621 /* RSIEnterCriterion.swift in Sources */,
 				BE9E3C9420043429005D531C /* CandleSticks.swift in Sources */,
 				BEF4962C20097ED000501C5C /* IncreasedVolumeCriterion.swift in Sources */,
-				BEF49646200AABC400501C5C /* ProfitPercentCriterion.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

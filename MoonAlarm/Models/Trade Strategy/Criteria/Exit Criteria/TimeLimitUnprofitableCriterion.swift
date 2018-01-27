@@ -8,14 +8,14 @@
 
 import Foundation
 
-class TimeLimitUnprofitableCriterion: TradeExitCriterion {
+class TimeLimitExit: TradeExitCriterion {
     
     var exitAfterDuration: Milliseconds = 5.minutesToMilliseconds
     
     override init() { }
     
-    init(timeLimit: Milliseconds) {
-        self.exitAfterDuration = timeLimit
+    init(_ timeLimit: Minutes = 60) {
+        self.exitAfterDuration = timeLimit.minutesToMilliseconds
     }
     
     override func passedFor(trade: Trade) -> Bool {
@@ -27,8 +27,8 @@ class TimeLimitUnprofitableCriterion: TradeExitCriterion {
         return false
     }
     
-    override func copy() -> TimeLimitUnprofitableCriterion {
-        return TimeLimitUnprofitableCriterion(timeLimit: self.exitAfterDuration)
+    override func copy() -> TimeLimitExit {
+        return TimeLimitExit(self.exitAfterDuration.msToMinutes)
     }
     
 }

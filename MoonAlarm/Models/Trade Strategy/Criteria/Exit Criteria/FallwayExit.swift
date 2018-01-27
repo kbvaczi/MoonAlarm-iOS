@@ -12,7 +12,7 @@ class FallwayExit: TradeExitCriterion {
     
     var maxFallwayPercent: Percent
     
-    init(max fallway: Percent) {
+    init(percent fallway: Percent) {
         self.maxFallwayPercent = fallway
     }
     
@@ -29,7 +29,7 @@ class FallwayExit: TradeExitCriterion {
     }
     
     override func copy() -> FallwayExit {
-        return FallwayExit(max: self.maxFallwayPercent)
+        return FallwayExit(percent: self.maxFallwayPercent)
     }
     
 }
