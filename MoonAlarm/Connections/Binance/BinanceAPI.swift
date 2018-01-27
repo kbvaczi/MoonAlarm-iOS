@@ -38,44 +38,39 @@ class BinanceAPI {
         }
         
         sessionMgr.request(url, method: method, parameters: params, headers: headers)
-                .validate(statusCode: 200..<300)
                 .validate(contentType: ["application/json"])
                 .responseSwiftyJSON { response in
-                            
-            guard response.result.isSuccess else {
+                    
+            guard   let jsonResponse = response.result.value else {
                 print("*** Request to \(url) unsuccessful ***")
-                print("Parameters: \(params ?? [:])")
-                if let error = response.result.error {
-                    print("Error: \(error)")
+                print("no data returned")
+                callback(false, JSON.null)
+                return
+            }
+            guard   response.result.isSuccess else {
+                        
+                // HTTP 5XX return codes are used for binance errors
+                guard response.response?.statusCode != 502 else {
+                    callback(false, JSON.null)
+                    return
                 }
-                callback(false, JSON.null)
-                return
-            }
-            guard let jsonResponse = response.result.value else {
-                print("*** Request to \(url) returned no data ***")
-                print("Parameters:")
-                print(params ?? "no parameters")
-                callback(false, JSON.null)
-                return
-            }
-            guard jsonResponse["code"].int == nil else {
-                print("*** Error in request to \(url) ***")
-                print("Parameters:")
-                print(params ?? "no parameters")
-                print("Code: \(jsonResponse["code"].intValue) Error: \(jsonResponse["msg"].stringValue)")
-                
-                // Example data:
-                // { "code" : -1003, "msg" : "Way too many requests; IP banned until 1515547977300." }
-                
-                let isBannedForFlooding = jsonResponse["code"].intValue == -1003
-                if isBannedForFlooding {
+                // HTTP 429 return code is used when breaking a request rate limit.
+                if response.response?.statusCode == 429 {
                     let message = jsonResponse["msg"].stringValue
                     self.setBannedUntilTime(fromMessage: message)
                 }
                 
+                print("*** Request to \(url) unsuccessful ***")
+                print("Parameters: \(params ?? [:])")
+                if let error = response.error {
+                    print("Error: \(error)")
+                }
+                print("Code: \(jsonResponse["code"].intValue) Error: \(jsonResponse["msg"].stringValue)")
+                        
                 callback(false, JSON.null)
                 return
             }
+
             callback(true, jsonResponse)
         }
     }
@@ -94,44 +89,43 @@ class BinanceAPI {
         }
         
         sessionMgr.request(url, method: method, parameters: params, encoding: SignedEncoding(), headers: headers)
-                .validate(statusCode: 200..<300)
                 .validate(contentType: ["application/json"])
                 .responseSwiftyJSON { response in
                 
-            guard response.result.isSuccess else {
-                print("*** Request to \(url) unsuccessful ***")
-                print("Parameters: \(params ?? [:])")
-                if let error = response.result.error {
-                    print("Error: \(error)")
-                }
+            // HTTP 5XX return codes are used for binance errors
+            guard response.response?.statusCode != 502 else {
                 callback(false, JSON.null)
                 return
             }
+                    
             guard let jsonResponse = response.result.value else {
-                print("*** Request to \(url) returned no data ***")
-                print("Parameters:")
-                print(params ?? "no parameters")
+                print("*** Request to \(url) unsuccessful ***")
+                print("no data returned")
                 callback(false, JSON.null)
                 return
             }
+                    
+            // HTTP 429 return code is used when breaking a request rate limit.
+            guard response.response?.statusCode != 429 else {
+                let message = jsonResponse["msg"].stringValue
+                self.setBannedUntilTime(fromMessage: message)
+                callback(false, JSON.null)
+                return
+            }
+                    
+            print(jsonResponse)
+                    
             guard jsonResponse["code"].int == nil else {
-                print("*** Error in request to \(url) ***")
-                print("Parameters:")
-                print(params ?? "no parameters")
-                print("Code: \(jsonResponse["code"].intValue) Error: \(jsonResponse["msg"].stringValue)")
-                
-                // Example data:
-                // { "code" : -1003, "msg" : "Way too many requests; IP banned until 1515547977300." }
-                
-                let isBannedForFlooding = jsonResponse["code"].intValue == -1003
-                if isBannedForFlooding {
-                    let message = jsonResponse["msg"].stringValue
-                    self.setBannedUntilTime(fromMessage: message)
+                print("*** Request to \(url) unsuccessful ***")
+                if let statusCode = response.response?.statusCode {
+                    print("HTTP Status Code: \(statusCode)")
                 }
-                
+                print("Parameters: \(params ?? [:])")
+                print("Code: \(jsonResponse["code"].intValue) Error: \(jsonResponse["msg"].stringValue)")
                 callback(false, JSON.null)
                 return
             }
+                    
             callback(true, jsonResponse)
         }
     }
@@ -258,14 +252,14 @@ class BinanceAPI {
             callback(true, pairVolume)
         }
     }
-    
-    // getCandleSticks Method
-    // Returns candlestick data from a given symbol pair
-    // Parameters:
-    //      symbolPair - what symbol to return candlestick data from
-    //      interval - time interval for candlesticks
-    //      limit - number of candlesticks to get, starting from present time going backwards
-    
+
+    /// Returns candlestick data from a given symbol pair
+    ///
+    /// - Parameters:
+    ///   - symbolPair: what symbol to return candlestick data from
+    ///   - interval: time interval for candlesticks
+    ///   - limit: number of candlesticks to get, starting from present time going backwards
+    ///   - callback: Do this after retrieval
     func getCandleSticks(symbolPair: String, interval: KLineInterval, limit: Int = 2,
                       callback: @escaping (_ isSuccessful: Bool, _ candleSticks: CandleSticks?) -> Void) {
         
@@ -293,12 +287,13 @@ class BinanceAPI {
         }
     }
 
-    // getOrderBook Method
-    // Returns candlestick data from a given symbol pair
-    // Parameters:
-    //      symbolPair - what symbol to return order book data from
-    //      limit - number of orders in book (5, 10, 20, 50, 100, 500, 1000 permitted)
     
+    /// Returns orderbook data from a given symbol pair
+    ///
+    /// - Parameters:
+    ///   - symbolPair: what symbol to return order book data from
+    ///   - limit: number of orders in book (5, 10, 20, 50, 100, 500, 1000 permitted)
+    ///   - callback: Perform this after retrieval of orderbook
     func getOrderBook(symbolPair: String, limit: Int = 50,
                       callback: @escaping (_ isSuccessful: Bool, _ orderBook: OrderBook?) -> Void) {
         
@@ -322,15 +317,87 @@ class BinanceAPI {
         }
     }
     
+    /*
+    /////////////////////////////////////
     ///////// SIGNED REQUESTS ///////////
+    /////////////////////////////////////
+    */
     
-    func getOpenOrders(forSymbolPair sP: String,
+    /// Retrieve balance available to trade for specified coin
+    ///
+    /// - Parameters:
+    ///   - symbol: symbol of coin to retrieve balance for
+    ///   - callback: do this after retrieving balance
+    func getBalance(for symbol: Symbol,
+                    callback: @escaping (_ isSuccess: Bool, _ balance: Double?) -> Void) {
+        
+        let url = rootURLString + "/api/v3/account"
+        let head = ["X-MBX-APIKEY": BinanceAPI.apiKey]
+        
+        let params: Parameters = ["timestamp": ExchangeClock.instance.currentTime]
+        
+        signedJsonRequest(url: url, method: .get, params: params, headers: head) {
+            (isSuccessful, jsonResponse) in
+            
+            guard isSuccessful else {
+                callback(false, nil)
+                return
+            }
+            
+            // Data is an array of dictionary
+            for (_ , assetJson):(String, JSON) in jsonResponse["balances"] {
+                
+                if  let assetSymbol = assetJson["asset"].string,
+                    assetSymbol == symbol {
+                    
+                    let balance = assetJson["free"].doubleValue
+                    callback(true, balance)
+                    return
+                }
+            }
+            
+            callback(false, nil)
+            
+            /* Example Response:
+            {
+                "makerCommission": 15,
+                "takerCommission": 15,
+                "buyerCommission": 0,
+                "sellerCommission": 0,
+                "canTrade": true,
+                "canWithdraw": true,
+                "canDeposit": true,
+                "updateTime": 123456789,
+                "balances": [
+                {
+                "asset": "BTC",
+                "free": "4723846.89208129",
+                "locked": "0.00000000"
+                },
+                {
+                "asset": "LTC",
+                "free": "4763368.68006011",
+                "locked": "0.00000000"
+                }
+                ]
+            }
+            */            
+        }
+    }
+    
+    
+    /// Get open orders for specified symbol pair
+    ///
+    /// - Parameters:
+    ///   - symbolPair: Symbol pair to retrieve orders for
+    ///   - callback: Do this after retrieving orders
+    func getOpenOrders(for symbolPair: String,
                        callback: @escaping (_ isSuccess: Bool, _ orders: TradeOrders?) -> Void) {
         
         let url = rootURLString + "/api/v3/openOrders"
         let head = ["X-MBX-APIKEY": BinanceAPI.apiKey]
         
-        let params: Parameters = ["symbol": sP,
+        let params: Parameters = ["symbol": symbolPair,
                                   "timestamp": ExchangeClock.instance.currentTime]
         
         signedJsonRequest(url: url, method: .get, params: params, headers: head) {
@@ -345,6 +412,11 @@ class BinanceAPI {
         }
     }
     
+    /// Send a new order to Binance
+    ///
+    /// - Parameters:
+    ///   - order: Order object describing order
+    ///   - callback: Do this after order placed
     func postNewOrder(for order: TradeOrder,
                        callback: @escaping (_ isSuccess: Bool, _ order: TradeOrder?) -> Void) {
         
@@ -358,7 +430,11 @@ class BinanceAPI {
         
         if order.type != .market {
             params["timeInForce"] = order.timeInForce.rawValue
-            params["price"] = order.price?.rounded8
+            guard let price = order.orderPrice else {
+                callback(false, nil)
+                return
+            }
+            params["price"] = price.toDisplay
         }
         
         signedJsonRequest(url: url, method: .post, params: params, headers: head) {
@@ -369,17 +445,25 @@ class BinanceAPI {
                 return
             }
             
-            // Example Response:
-            // {  "symbol":"LTCBTC",
-            //    "orderId": 1,
-            //    "clientOrderId": "myOrder1" // Will be newClientOrderId
-            //    "transactTime": 1499827319559 }
-            
             let clientOrderID = jsonResponse["clientOrderId"].stringValue
             order.uid = clientOrderID
             
-            print("JSON \(jsonResponse)")
             callback(true, order)
+            
+            // Example Response:
+            //    {
+            //        "orderId" : 21819402,
+            //        "status" : "NEW",
+            //        "clientOrderId" : "CRfopIxdIAKnVXbFkkyQc8",
+            //        "symbol" : "LTCBTC",
+            //        "side" : "BUY",
+            //        "price" : "0.00900000",
+            //        "transactTime" : 1517096241155,
+            //        "origQty" : "1.00000000",
+            //        "timeInForce" : "GTC",
+            //        "type" : "LIMIT",
+            //        "executedQty" : "0.00000000"
+            //    }
         }
     }
     
@@ -432,8 +516,8 @@ extension CandleStick {
              "17928899.62484339"] // Can be ignored
          ]*/
     
-        self.init(openTime: (json[0].intValue as Milliseconds),
-                  closeTime: (json[6].intValue as Milliseconds),
+        self.init(openTime: (json[0].int64Value as Milliseconds),
+                  closeTime: (json[6].int64Value as Milliseconds),
                   openPrice: json[1].doubleValue, closePrice: json[4].doubleValue,
                   highPrice: json[2].doubleValue, lowPrice: json[3].doubleValue,
                   volume: json[5].doubleValue, pairVolume: json[7].doubleValue,

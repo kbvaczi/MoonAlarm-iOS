@@ -48,7 +48,7 @@ extension BinanceAPI {
     
     // Time in force
     enum TimeInForce: String {
-        case gtg = "GTC"  // Good until cancelled
+        case gtc = "GTC"  // Good until cancelled
         case ioc = "IOC"  // Immediate or cancel
     }
     
