@@ -12,6 +12,10 @@ class ProfitCutoffExit: TradeExitCriterion {
     
     var profitPercentCutoff: Percent
     
+    override var logMessage: String {
+        return "ProfitCutoffExit (\(self.profitPercentCutoff.roundTo(1))%)"
+    }
+    
     init(percent pp: Percent = 1.0) {
         self.profitPercentCutoff = pp
     }
@@ -21,7 +25,6 @@ class ProfitCutoffExit: TradeExitCriterion {
         guard let profitPercent = trade.profitPercent else { return false }
         
         if profitPercent >= profitPercentCutoff {
-            print("\(trade.symbol): Profit Cutoff Criteria Passed")
             return true
         }
         

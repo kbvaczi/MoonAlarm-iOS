@@ -86,7 +86,10 @@ class Trade {
         
         // don't get into any new trades if trade session has ended
         guard   TradeSession.instance.status == .running,
-                let buyPrice = orderBook.marketBuyPrice(forPairVolume: pairQty)
+        // trying lower entrance price to see if can maintain profit
+        // TODO: Remove this
+//                let buyPrice = orderBook.marketBuyPrice(forPairVolume: pairQty)
+                let buyPrice = orderBook.topBidPrice
                 else { return }
 
         self.status = .open
@@ -103,8 +106,15 @@ class Trade {
         let currentPrice = marketSnapshot.currentPrice
         self.exitPrice = marketSellPrice ?? currentPrice ?? 0
         self.stopUpdatingData()
-        print("\(self.symbol) trade ended: \(String(describing: self.profitPercent))% profit")
-        print("Session Trades:\(TradeSession.instance.trades.countOnly(status: .complete)) Success: \(TradeSession.instance.trades.successRate)% Total Profit: \(TradeSession.instance.trades.totalProfitPercent)%")
+        
+        let tradeProfitDisplay = (self.profitPercent != nil) ?
+                                 String(self.profitPercent!.roundTo(1)) : "???"
+        print("\(self.symbol) trade ended: \(tradeProfitDisplay)% profit")
+        
+        let tradesCount = TradeSession.instance.trades.countOnly(status: .complete)
+        let successRate = TradeSession.instance.trades.successRate
+        let sessionProfit = TradeSession.instance.trades.totalProfitPercent.roundTo(1)
+        print("Session Trades:\(tradesCount) Success:\(successRate)% Profit:\(sessionProfit)%")
     }
     
     func monitorAndTerminateIfAppropriate() {

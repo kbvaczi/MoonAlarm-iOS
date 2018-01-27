@@ -11,11 +11,13 @@ import Foundation
 
 class LossExit: TradeExitCriterion {
     
-    var maxLossPercent: Percent = 0.5
+    var maxLossPercent: Percent
     
-    override init() { }
+    override var logMessage: String {
+        return "LossExit (\(maxLossPercent)%)"
+    }
     
-    init(percent: Percent) {
+    init(percent: Percent = 1.0) {
         self.maxLossPercent = percent
     }
     
@@ -24,7 +26,6 @@ class LossExit: TradeExitCriterion {
         
         // exit as soon as profit reaches a given percent
         if profitPercent <= (self.maxLossPercent * -1) {
-            print("\(trade.symbol): Loss Percent Criteria Passed")
             return true
         }
         return false

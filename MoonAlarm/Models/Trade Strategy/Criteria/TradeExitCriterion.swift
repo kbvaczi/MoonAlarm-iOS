@@ -10,15 +10,21 @@ import Foundation
 
 class TradeExitCriterion {
     
-    // passed Method
+    // to be overridden by child classes
+    var logMessage: String {
+        return "Log Message Not Overridden"
+    }
+    
     // to be overridden by child classes
     // does this criteria pass based on provided market data?
     func passedFor(trade: Trade) -> Bool {
+        print("passedFor method in TradeExitCriterion not overridden")
         return false
     }
     
     // to be overridden by child classes
     func copy() -> TradeExitCriterion {
+        print("copy method in TradeExitCriterion not overridden")
         return TradeExitCriterion()
     }
     

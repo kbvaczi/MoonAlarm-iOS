@@ -13,6 +13,11 @@ class MACDExit: TradeExitCriterion {
     var decreasingTrendPeriod: Int
     var lookForDecreasingTrend: Bool
     
+    override var logMessage: String {
+        let trend = self.lookForDecreasingTrend ? ", Trend for \(self.decreasingTrendPeriod)" : ""
+        return "MACDExit (Negative Cross\(trend))"
+    }
+    
     init(trend dt: Bool = false, for trendLength: Int = 1) {
         self.decreasingTrendPeriod = trendLength
         self.lookForDecreasingTrend = dt
@@ -43,7 +48,6 @@ class MACDExit: TradeExitCriterion {
                 }
             }
             if isDecreasingTrend {
-                print("\(trade.symbol): MACD Exit Decreasing Trend")
                 return true
             }
         }
@@ -55,7 +59,6 @@ class MACDExit: TradeExitCriterion {
         
         let isSignalCross = macdH < 0 && macdHPrev > 0
         if isSignalCross  {
-            print("\(trade.symbol): MACD Exit Signal Cross")
             return true
         }
         

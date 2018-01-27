@@ -12,6 +12,15 @@ class AndExit: TradeExitCriterion {
     
     var andCriteria: [TradeExitCriterion]
     
+    override var logMessage: String {
+        var logM = "And("
+        for criterion in self.andCriteria {
+            logM += criterion.logMessage + "; "
+        }
+        logM += ")"
+        return logM
+    }
+    
     init(_ criteria: [TradeExitCriterion]) {
         self.andCriteria = criteria
     }
@@ -26,7 +35,6 @@ class AndExit: TradeExitCriterion {
         }
         
         if allCriteriaPassed {
-            print("\(trade.symbol): And Criterion Passed")
             return true
         }
         

@@ -12,6 +12,10 @@ class FallwayExit: TradeExitCriterion {
     
     var maxFallwayPercent: Percent
     
+    override var logMessage: String {
+        return "FallwayExit (\(self.maxFallwayPercent)%)"
+    }
+    
     init(percent fallway: Percent) {
         self.maxFallwayPercent = fallway
     }
@@ -21,7 +25,6 @@ class FallwayExit: TradeExitCriterion {
                 else { return false }
         
         if fallwayPercent > self.maxFallwayPercent {
-            print("\(trade.symbol): Fallway Exit Criterion Passed (\(fallwayPercent.roundTo(2)))")
             return true
         }
         

@@ -12,6 +12,11 @@ class TimeLimitProfitExit: TradeExitCriterion {
     
     var exitAfterDurationIfProfitable: Milliseconds
     
+    override var logMessage: String {
+        let minutes = self.exitAfterDurationIfProfitable.msToMinutes.roundTo(1)
+        return "TimeLimitProfitExit (\(minutes) minutes)"
+    }
+    
     init(_ timeLimit: Minutes = 60) {
         self.exitAfterDurationIfProfitable = timeLimit.minutesToMilliseconds
     }
@@ -24,7 +29,6 @@ class TimeLimitProfitExit: TradeExitCriterion {
         
         // only exit if time has expired and trade is currently in profit
         if trade.duration > self.exitAfterDurationIfProfitable {
-            print("\(trade.symbol): TimeLimitProfitable Exit Criteria Passed")
             return true
         }
         return false

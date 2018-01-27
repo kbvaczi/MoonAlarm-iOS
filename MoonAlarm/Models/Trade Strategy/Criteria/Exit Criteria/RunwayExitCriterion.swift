@@ -12,6 +12,10 @@ class MinRunwayExit: TradeExitCriterion {
     
     var minRunwayPercent: Percent
     
+    override var logMessage: String {
+        return "MinRunwayExit (\(self.minRunwayPercent)%)"
+    }
+    
     init(percent runway: Percent) {
         self.minRunwayPercent = runway
     }
@@ -21,7 +25,6 @@ class MinRunwayExit: TradeExitCriterion {
                 else { return false }
         
         if runwayPercent < self.minRunwayPercent {
-            print("\(trade.symbol): Runway Exit Criterion Passed (\(runwayPercent.roundTo(2)))")
             return true
         }
         

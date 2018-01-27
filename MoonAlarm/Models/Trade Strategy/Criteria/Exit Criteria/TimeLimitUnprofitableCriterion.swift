@@ -10,9 +10,12 @@ import Foundation
 
 class TimeLimitExit: TradeExitCriterion {
     
-    var exitAfterDuration: Milliseconds = 5.minutesToMilliseconds
+    var exitAfterDuration: Milliseconds
     
-    override init() { }
+    override var logMessage: String {
+        let minutes = self.exitAfterDuration.msToMinutes.roundTo(1)
+        return "TimeLimitProfitExit (\(minutes) minutes)"
+    }
     
     init(_ timeLimit: Minutes = 60) {
         self.exitAfterDuration = timeLimit.minutesToMilliseconds
@@ -21,7 +24,6 @@ class TimeLimitExit: TradeExitCriterion {
     override func passedFor(trade: Trade) -> Bool {
         // exit no matter if trade is profitable or not
         if trade.duration > self.exitAfterDuration {
-            print("\(trade.symbol): Time Limit Unprofitable Exit Criteria Passed")
             return true
         }
         return false

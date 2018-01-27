@@ -12,6 +12,10 @@ class RSIExit: TradeExitCriterion {
     
     var maxRSI: Double
     
+    override var logMessage: String {
+        return "RSIExit (\(self.maxRSI))"
+    }
+    
     init(max rsi: Double = 60) {
         self.maxRSI = rsi
     }
@@ -33,7 +37,6 @@ class RSIExit: TradeExitCriterion {
         }
         
         if allAboveMax {
-            print("\(trade.symbol): RSI Exit Criterion Passed")
             return true
         }
         

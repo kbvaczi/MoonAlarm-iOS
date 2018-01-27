@@ -37,7 +37,22 @@ extension Array where Element : TradeExitCriterion {
 
         // only one criterion must pass to exit a trade (conservative)
         let answers = self.map() { $0.passedFor(trade: trade) }
-        return answers.reduce(false, { $0 || $1 })
+        let onePassed = answers.reduce(false, { $0 || $1 })
+        if onePassed {
+            logPassedFor(trade)
+            return true
+        }
+        return false
+    }
+    
+    private func logPassedFor(_ trade: Trade) {
+        var logMessage = "\(trade.symbol) Exit Criteria: "
+        for criterion in self {
+            if criterion.passedFor(trade: trade) {
+                logMessage += "\(criterion.logMessage); "
+            }
+        }
+        print(logMessage)
     }
     
     func copy() -> TradeExitCriteria {
