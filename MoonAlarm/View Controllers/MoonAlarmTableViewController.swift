@@ -29,32 +29,27 @@ class MoonAlarmTableViewController: UITableViewController {
     @IBOutlet weak var sessionTimeLabel: UILabel!
     @IBOutlet weak var tradeAmountLabel: UILabel!
     
+    var openTrades = Trades()
+    var completedTrades = Trades()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.startRegularDisplayUpdates()
         
         TradeStrategy.instance.entranceCriteria = [
-            MACDEnterCriterion(incTrendFor: 2, requireCross: false, inLast: 1),
-            RSIEnterCriterion(max: 35, inLast: 5),
-            SpareRunwayCriterion(minRunwayPercent: 1.0),
-//            IncreaseVolumeCriterion(minVolRatio: 2.0),
-//            BidAskGapCriterion(maxGapPercent: 0.5),
-//            MarketyBuyLossCriterion(maxLossPercent: 0.5)
-        ]
-        TradeStrategy.instance.exitCriteria = [
-//            TimeLimitProfitableCriterion(timeLimit: 60.minutesToMilliseconds),
-//            TimeLimitUnprofitableCriterion(timeLimit: 30.minutesToMilliseconds),
-            LossPercentCriterion(percent: 2.5),
-//            ProfitCutoffCriterion(profitPercent: 5.0),
-            TrailingLossPercentCriterion(loss: 1.0, after: 2.0),
-            RSIExitCriterion(max: 60),
-//            MACDExitCriterion()
+//            RSIEnter(max: 40, inLast: 1),
+            SpareRunwayEnter(percent: 1.5),
+//            FallwaySupportEnter(percent: 0.4),
         ]
         
-        let newOrder = TradeOrder(pair: "LTCBTC", side: .buy, price: 0.09084, quantity: 10, isTest: false)
-        newOrder.execute() { isSuccess in
-            print(isSuccess)
-        }
+        TradeStrategy.instance.exitCriteria = [
+            LossExit(percent: 2.0),
+            TrailingLossExit(percent: 1.0, after: 3.0),
+            RSIExit(max: 65),
+            MinRunwayExit(percent: 0.2),
+            AndExit([LossExit(percent: 1.0), FallwayExit(percent: 0.5)])
+        ]
+        
     }
 
     override func didReceiveMemoryWarning() {
@@ -78,49 +73,51 @@ class MoonAlarmTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
-        case 0: return TradeSession.instance.trades.countOnly(status: .open)
-        case 1: return TradeSession.instance.trades.countOnly(status: .complete)
+        case 0: return self.openTrades.count
+        case 1: return self.completedTrades.count
         default: return 0
         }
         
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "tradeDetailCell", for: indexPath)
         switch indexPath.section {
         case 0:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "tradeDetailCell", for: indexPath)
-            let trades = TradeSession.instance.trades.selectOnly(status: .open)
-            let currentTrade = trades[indexPath.row]
-            let pairVolume = TradeStrategy.instance.tradeAmountTarget
-            let marketExitPrice = currentTrade.marketSnapshot.orderBook.marketSellPrice(forPairVolume: pairVolume)
-            let entPriceString =    (currentTrade.enterPrice != nil) ?
-                                    String(currentTrade.enterPrice!.rounded8) :
-                                    "?"
-            let exitPriceString =   (currentTrade.exitPrice != nil) ?
-                                    String(currentTrade.exitPrice!.rounded8) :
-                                    (marketExitPrice != nil) ?
-                                    String(marketExitPrice!.rounded8) :
-                                    "?"
-            cell.textLabel?.text = "\(currentTrade.symbol) \(entPriceString) -> \(exitPriceString)"
-            if let profitPercent = trades[indexPath.row].profitPercent {
-                cell.detailTextLabel?.text = "\(profitPercent)%"
-            }
-            return cell
+            let currentTrade = openTrades[indexPath.row]
+            self.buildCell(cell, from: currentTrade)
         case 1:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "tradeDetailCell", for: indexPath)
-            let trades = TradeSession.instance.trades.selectOnly(status: .complete)
-            let currentTrade = trades[indexPath.row]
-            let entPriceString =    (currentTrade.enterPrice != nil) ?
-                                    String(currentTrade.enterPrice!.rounded8) : "?"
-            let exitPriceString =   (currentTrade.exitPrice != nil) ?
-                                    String(currentTrade.exitPrice!.rounded8) :
-                                    "?"
-            cell.textLabel?.text = "\(currentTrade.symbol) \(entPriceString) -> \(exitPriceString)"
-            if let profitPercent = trades[indexPath.row].profitPercent {
-                cell.detailTextLabel?.text = "\(profitPercent)%"
+            let currentTrade = completedTrades[indexPath.row]
+            self.buildCell(cell, from: currentTrade)
+        default: break
+        }
+        return cell
+    }
+    
+    func buildCell(_ cell: UITableViewCell, from trade: Trade) {
+        // set enter price
+        var entPriceString = ""
+        if let enterPrice = trade.enterPrice {
+            entPriceString = enterPrice.toDisplay
+        } else {
+            entPriceString = "?"
+        }
+        
+        // Set exit price
+        var exitPriceString = ""
+        if let exitPrice = trade.exitPrice {
+            exitPriceString = exitPrice.toDisplay
+        } else {
+            let pairVolume = TradeStrategy.instance.tradeAmountTarget
+            if let marketExitPrice = trade.marketSnapshot.orderBook.marketSellPrice(forPairVolume: pairVolume) {
+                exitPriceString = marketExitPrice.toDisplay
+            } else {
+                exitPriceString = "?"
             }
-            return cell
-        default: return UITableViewCell()
+        }
+        cell.textLabel?.text = "\(trade.symbol) \(entPriceString) -> \(exitPriceString)"
+        if let profitPercent = trade.profitPercent {
+            cell.detailTextLabel?.text = "\(profitPercent)%"
         }
     }
     
@@ -131,6 +128,8 @@ class MoonAlarmTableViewController: UITableViewController {
     }
     
     private func updateDisplay() {
+        self.openTrades = TradeSession.instance.trades.selectOnly(status: .open)
+        self.completedTrades = TradeSession.instance.trades.selectOnly(status: .complete)
         self.tableView.reloadData()
         self.symbolsCountLabel.text = "Markets: \(TradeSession.instance.symbols.count)"
         if  let marketLastUpdate = TradeSession.instance.lastUpdateTime {
