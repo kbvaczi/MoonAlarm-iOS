@@ -74,8 +74,10 @@ class MarketSnapshot {
                 cSticks.calculateMACD()
                 cSticks.calculateRSI()
                 self.candleSticks = cSticks
+                callback()
+            } else {
+                callback()
             }
-            callback()
         }
     }
     

@@ -94,7 +94,7 @@ class Trade {
 
         self.status = .open
         self.enterPrice = buyPrice
-        self.startUpdatingData()
+        self.startRegularUpdates()
         print("\(self.symbol) trade started")
     }
     
@@ -105,7 +105,7 @@ class Trade {
         let marketSellPrice = orderBook.marketSellPrice(forPairVolume: pairQty)
         let currentPrice = marketSnapshot.currentPrice
         self.exitPrice = marketSellPrice ?? currentPrice ?? 0
-        self.stopUpdatingData()
+        self.stopRegularUpdates()
         
         let tradeProfitDisplay = (self.profitPercent != nil) ?
                                  String(self.profitPercent!.roundTo(1)) : "???"
@@ -125,16 +125,19 @@ class Trade {
     
     ////////// DATA UPDATES //////////
     
-    private func startUpdatingData() {
-        self.stopUpdatingData()
-        self.updateTimer = Timer.scheduledTimer(withTimeInterval: 2, repeats: true) { _ in
-            self.marketSnapshot.updateData {
-                self.monitorAndTerminateIfAppropriate()
-            }
+    private func startRegularUpdates() {
+        self.updateTimer = Timer.scheduledTimer(timeInterval: 2, target: self,
+                                                selector: #selector(self.regularUpdate),
+                                                userInfo: nil, repeats: true)
+    }
+    
+    @objc func regularUpdate() {
+        self.marketSnapshot.updateData {
+            self.monitorAndTerminateIfAppropriate()
         }
     }
     
-    private func stopUpdatingData() {
+    private func stopRegularUpdates() {
         self.updateTimer.invalidate()
     }
 

@@ -42,9 +42,7 @@ class TradeSession {
         self.status = .running
         self.startTime = Date().millisecondsSince1970
         TradeSession.instance.updateSymbolsAndPrioritize {
-            self.startRegularSnapshotUpdates {
-                self.investInWinners()
-            }
+            self.startRegularSnapshotUpdates()
             callback()
         }
     }
@@ -73,9 +71,8 @@ class TradeSession {
                         (isSuccessful, pairVolume) in
                         
                         if isSuccessful, let pairVolume = pairVolume {
-                            let min24HrVol = TradeStrategy.instance.tradingPairSymbol == "BTC" ? 1000.0 : 3000.0
-                            if  pairVolume > min24HrVol,
-                                self.symbols.count < 50 {
+                            let min24HrVol = tradingPairSymbol == "BTC" ? 1000.0 : 3000.0
+                            if pairVolume > min24HrVol, self.symbols.count < 50 {
                                 self.symbols.append(symbol)
                             }
                         }
@@ -121,13 +118,17 @@ class TradeSession {
         }
     }
     
-    func startRegularSnapshotUpdates(callback: @escaping () -> Void) {
-        self.updateTimer = Timer.scheduledTimer(withTimeInterval: 15, repeats: true) { _ in
-            let maxOpenTrades = TradeStrategy.instance.maxOpenTrades
-            guard self.trades.countOnly(status: .open) < maxOpenTrades else { return }
-            self.updateMarketSnapshots {
-                callback()
-            }
+    func startRegularSnapshotUpdates() {
+        self.updateTimer = Timer.scheduledTimer(timeInterval: 15, target: self,
+                                                selector: #selector(self.regularUpdate),
+                                                userInfo: nil, repeats: true)
+    }
+    
+    @objc func regularUpdate() {
+        let maxOpenTrades = TradeStrategy.instance.maxOpenTrades
+        guard self.trades.countOnly(status: .open) < maxOpenTrades else { return }
+        self.updateMarketSnapshots {
+            self.investInWinners()
         }
     }
     
