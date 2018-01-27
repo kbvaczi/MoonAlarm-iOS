@@ -15,12 +15,15 @@ class BinanceAPI {
     
     static let instance = BinanceAPI() // Declare singleton
     
-    private init() {} // Disallow multiple instances
+    // Disallow multiple instances by marking initializer private
+    private init() { }
     
     let rootURLString = "https:/api.binance.com"
     
     // Track if we're banned for sending too many requests
     var bannedUntil: Milliseconds? = nil
+    
+    var sessionMgr = SessionManager()
     
     // jsonRequest Method
     // General request method used as a root for other request methods to standardize error logging
@@ -29,7 +32,12 @@ class BinanceAPI {
                         params: Parameters? = nil, headers: HTTPHeaders? = nil,
                         callback: @escaping (_ isSuccessful: Bool, _ jsonResponse: JSON) -> Void) {
         
-        Alamofire.request(url, method: method, parameters: params, headers: headers)
+        guard !isBannedForRequestFlooding() else {
+            callback(false, JSON.null)
+            return
+        }
+        
+        sessionMgr.request(url, method: method, parameters: params, headers: headers)
                 .validate(statusCode: 200..<300)
                 .validate(contentType: ["application/json"])
                 .responseSwiftyJSON { response in
@@ -80,7 +88,12 @@ class BinanceAPI {
                                    params: Parameters? = nil, headers: HTTPHeaders? = nil,
                                    callback: @escaping (_ isSuccessful: Bool, _ jsonResponse: JSON) -> Void) {
 
-        Alamofire.request(url, method: method, parameters: params, encoding: SignedEncoding(), headers: headers)
+        guard !isBannedForRequestFlooding() else {
+            callback(false, JSON.null)
+            return
+        }
+        
+        sessionMgr.request(url, method: method, parameters: params, encoding: SignedEncoding(), headers: headers)
                 .validate(statusCode: 200..<300)
                 .validate(contentType: ["application/json"])
                 .responseSwiftyJSON { response in
