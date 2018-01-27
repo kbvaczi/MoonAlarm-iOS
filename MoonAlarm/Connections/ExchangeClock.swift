@@ -27,30 +27,19 @@ class ExchangeClock {
     private init(serverTime: Milliseconds, localTime: Milliseconds) {
         self.lastSyncServerTime = serverTime
         self.lastSyncLocalTime = localTime
+        self.syncTimeWithServer()
     }
     
     private convenience init() {
-        self.init(serverTime: Date().millisecondsSince1970,
-                  localTime: Date().millisecondsSince1970)
-        self.syncTimeWithServer()
-        self.startRegularSync()
+        let currentTime = Date().millisecondsSince1970
+        self.init(serverTime: currentTime, localTime: currentTime)
     }
     
     private func syncTimeWithServer() {
         self.lastSyncLocalTime = Date().millisecondsSince1970
-        BinanceAPI.instance.getCurrentServerTime(callback: { isSuccess, serverTime in
+        BinanceAPI.instance.getCurrentServerTime(callback: {
+            isSuccess, serverTime in
             self.lastSyncServerTime = serverTime
         })
     }
-    
-    func startRegularSync() {
-        syncTimer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { _ in
-            self.syncTimeWithServer()
-        }
-    }
-    
-    func stopRegularSync() {
-        syncTimer.invalidate()
-    }
-    
 }

@@ -10,7 +10,7 @@ import Foundation
 
 typealias Minutes = Double
 typealias Seconds = Double
-typealias Milliseconds = Int
+typealias Milliseconds = Int64
 
 extension Milliseconds {
     
@@ -39,7 +39,7 @@ extension Minutes {
     }
     
     var minutesToMilliseconds: Milliseconds {
-        return Int(self * 60 * 1000)
+        return Milliseconds(self * 60 * 1000)
     }
     
 }
