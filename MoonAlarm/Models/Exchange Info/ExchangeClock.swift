@@ -20,8 +20,9 @@ class ExchangeClock {
     
     var currentTime: Milliseconds {
         let currentLocalTime = Date().millisecondsSince1970
-        let timeSinceLastSync = currentLocalTime - self.lastSyncLocalTime
-        return timeSinceLastSync + self.lastSyncServerTime
+//        let timeSinceLastSync = currentLocalTime - self.lastSyncLocalTime
+//        return timeSinceLastSync + self.lastSyncServerTime
+        return currentLocalTime
     }
     
     private init(serverTime: Milliseconds, localTime: Milliseconds) {
