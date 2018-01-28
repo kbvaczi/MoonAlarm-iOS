@@ -11,18 +11,34 @@ import Foundation
 /// Used to keep track of lot sizes and valid prices for trades
 class ExchangeInfo {
     
-    static let instance = ExchangeInfo()
-    
-    private init() { }
+    init() { }
     
     private var info: [SymbolPairInfo] = []
+    
+    /// Returns an array of symbols available to trade with given trading pair
+    ///
+    /// - Parameter tradingPair: symbol for trading pair coin (ex. "BTC")
+    /// - Returns: array of symbols available to trade with pair
+    func symbolsForPair(_ tradingPairSymbol: String) -> [Symbol] {
+        let symbolPairs = self.info.filter({ $0.symbolPair.hasSuffix(tradingPairSymbol) })
+        let symbols = symbolPairs.map({$0.symbolPair.replacingOccurrences(
+                                       of: tradingPairSymbol, with: "") })
+        return symbols
+    }
     
     /// Populate exchange info with data from server
     ///
     /// - Parameter callback: do this after update
     func updateData(callback: @escaping (_ isSuccess: Bool) -> Void ) {
-        BinanceAPI.instance.getExchangeInfo() { isSuccess in
-            callback(isSuccess)
+        BinanceAPI.instance.getExchangeInfo() { isSuccess, pairInfo in
+            // Verify we received pairInfo
+            guard let infos = pairInfo, infos.count > 0 else { callback(false); return }
+            
+            for info in infos {
+                self.addInfo(info)
+            }
+            
+            callback(true)
         }
     }
     

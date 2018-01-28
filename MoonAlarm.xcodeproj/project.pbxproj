@@ -191,8 +191,8 @@
 		BE390B9E20015ABE00CFD46B /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				BE9B0F8E201E2097004846F1 /* Exchange Info */,
 				BE9E3C9820044FC1005D531C /* General */,
+				BE9B0F8E201E2097004846F1 /* Exchange Info */,
 				BE9E3CA220058E09005D531C /* Market Data */,
 				BEF496272009791D00501C5C /* Trade Strategy */,
 				BE9E3C9920044FC8005D531C /* Trading */,

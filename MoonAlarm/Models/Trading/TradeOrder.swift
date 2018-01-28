@@ -28,6 +28,9 @@ class TradeOrder {
     var quantityFilled: Double = 0                  // Updated after processing
     var fills: TradeOrderFills = []                 // Keep track of individual fills
     
+    /// Used for status updates
+    private var updateTimer = Timer()
+    
     /// Average fill price for this trade order, excluding fees
     var avgfillPrice: Price? {
         
@@ -49,6 +52,16 @@ class TradeOrder {
         return nil  // Not sure
     }
     
+    /// Determine if trade needs to be watched, or if it's finished
+    var isFinalized: Bool {
+        switch  self.status {
+        case .filled, .cancelled, .rejected, .expired:
+            return true
+        default:
+            return false
+        }
+    }
+    
     // Initializers //
     
     init(pair: String, side: BinanceAPI.OrderSide, type: BinanceAPI.OrderType = .market,
@@ -65,12 +78,43 @@ class TradeOrder {
     
     // Methods //
     
+    /// Execute this order by sending it for processing
+    ///
+    /// - Parameter callback: do this after processing
     func execute(callback: @escaping (_ isSuccess: Bool) -> Void) {
         guard self.status == .new else { callback(false); return }
-        BinanceAPI.instance.postNewOrder(for: self) {
-            (isSuccess, processedOrder) in
-            callback(isSuccess)
+        BinanceAPI.instance.postNewOrder(for: self) { (isSuccess, processedOrder) in
+            guard isSuccess, processedOrder != nil else {
+                callback(false)
+                return
+            }
+            self.startRegularUpdates()
+            callback(true)
         }
     }
+    
+    /// Query server and update order
+    @objc func update() {
+        guard !self.isFinalized else {
+            self.stopRegularUpdates()
+            return
+        }
+        
+        BinanceAPI.instance.getOrderUpdate(for: self) {
+            (isSuccess, processedOrder) in
+        }
+    }
+    
+    private func startRegularUpdates() {
+        self.updateTimer = Timer.scheduledTimer(timeInterval: 10, target: self,
+                                                selector: #selector(self.update),
+                                                userInfo: nil, repeats: true)
+    }
+    
+    private func stopRegularUpdates() {
+        self.updateTimer.invalidate()
+    }
+    
+    
 
 }

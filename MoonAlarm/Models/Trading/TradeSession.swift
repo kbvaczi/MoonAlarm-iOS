@@ -14,7 +14,8 @@ class TradeSession {
     private init() { } // prohibit instances of this class from being declared
     
     // Market Data //
-    var symbols = [String]()
+    var exchangeInfo = ExchangeInfo()
+    var symbolsWatching = [Symbol]()
     var marketSnapshots = MarketSnapshots()
     
     // TIME //
@@ -41,7 +42,7 @@ class TradeSession {
     func start(callback: @escaping () -> Void) {
         self.status = .running
         self.startTime = Date().millisecondsSince1970
-        TradeSession.instance.updateSymbolsAndPrioritize {
+        self.updateSymbolsAndPrioritize { isSuccess in
             self.startRegularSnapshotUpdates()
             callback()
         }
@@ -53,36 +54,39 @@ class TradeSession {
         callback()
     }
     
-    func updateSymbolsAndPrioritize(callback: @escaping () -> Void) {
+    func updateSymbolsAndPrioritize(callback: @escaping (_ isSuccess: Bool) -> Void) {
         let tradingPairSymbol = TradeStrategy.instance.tradingPairSymbol
-        BinanceAPI.instance.getAllSymbols(forTradingPair: tradingPairSymbol) {
-            (isSuccess, allSymbols) in
+        
+        self.exchangeInfo.updateData() { isSuccess in
             
-            if isSuccess, let allSymbols = allSymbols {
-                // use a dispatch group to keep track of how many symbols we've updated
-                let dpG = DispatchGroup()
-                
-                // clear out old symbols
-                self.symbols.removeAll()
-                
-                for symbol in allSymbols {
-                    dpG.enter()
-                    BinanceAPI.instance.get24HrPairVolume(forTradingPair: symbol.symbolPair) {
-                        (isSuccessful, pairVolume) in
+            // Verify we got exchange data
+            guard isSuccess == true else { callback(false); return }
+            
+            self.symbolsWatching.removeAll()
+            
+            let allAvailableSymbols = self.exchangeInfo.symbolsForPair(tradingPairSymbol)
+            let dpG = DispatchGroup() // Keep track of how many have updated
+            
+            for symbol in allAvailableSymbols {
+                dpG.enter()
+                BinanceAPI.instance.get24HrPairVolume(forTradingPair: symbol.symbolPair) {
+                    (isSuccessful, pairVolume) in
+                    
+                    if isSuccessful, let pairVolume = pairVolume {
+                        // TODO: come up with a more intelligent way of filtering symbols
+                        let min24HrVol = tradingPairSymbol == "BTC" ? 1000.0 : 3000.0
                         
-                        if isSuccessful, let pairVolume = pairVolume {
-                            let min24HrVol = tradingPairSymbol == "BTC" ? 1000.0 : 3000.0
-                            if pairVolume > min24HrVol, self.symbols.count < 50 {
-                                self.symbols.append(symbol)
-                            }
+                        // Due to API request limits, can monitor up to 50 symbols at once
+                        if pairVolume > min24HrVol, self.symbolsWatching.count < 50 {
+                            self.symbolsWatching.append(symbol)
                         }
-                        dpG.leave()
                     }
+                    dpG.leave()
                 }
-                
-                dpG.notify(queue: .main) {
-                    callback()
-                }
+            }
+            
+            dpG.notify(queue: .main) {
+                callback(true)
             }
         }
     }
@@ -92,7 +96,7 @@ class TradeSession {
         // use a dispatch group to keep track of how many symbols we've updated
         let dpG = DispatchGroup()
         
-        for symbol in self.symbols {
+        for symbol in self.symbolsWatching {
             // don't need to evaluate for coins already trading
             if trades.openTradeFor(symbol) { continue }
             

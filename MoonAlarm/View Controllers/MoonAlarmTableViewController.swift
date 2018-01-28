@@ -14,10 +14,14 @@ class MoonAlarmTableViewController: UITableViewController {
         switch TradeSession.instance.status {
         case .running:
             sender.setTitle("Start Trading", for: .normal)
-            TradeSession.instance.stop { }
+            TradeSession.instance.stop {
+                self.stopRegularDisplayUpdates()
+            }
         case .stopped:
             sender.setTitle("Stop Trading", for: .normal)
-            TradeSession.instance.start { }
+            TradeSession.instance.start {
+                self.startRegularDisplayUpdates()
+            }
         }
     }
     
@@ -31,23 +35,30 @@ class MoonAlarmTableViewController: UITableViewController {
     
     var openTrades = Trades()
     var completedTrades = Trades()
+    var updateTimer = Timer()
+    
+    // REMOVE THIS
+    var orderToWatch: TradeOrder? = nil
+    var orderUpdateTimer = Timer()
+    
     
     override func viewDidLoad() {
+        
         super.viewDidLoad()
-        self.startRegularDisplayUpdates()
         
         TradeStrategy.instance.entranceCriteria = [
-//            RSIEnter(max: 40, inLast: 1),
+            RSIEnter(max: 40, inLast: 1),
+            MACDEnter(incTrendFor: 2, requireCross: false),
             SpareRunwayEnter(percent: 1.5),
-//            FallwaySupportEnter(percent: 0.4),
+            FallwaySupportEnter(percent: 0.5),
         ]
         
         TradeStrategy.instance.exitCriteria = [
             LossExit(percent: 2.0),
-            TrailingLossExit(percent: 1.0, after: 3.0),
+            TrailingLossExit(percent: 0.5, after: 3.0),
             RSIExit(max: 65),
-            MinRunwayExit(percent: 0.2),
-            AndExit([LossExit(percent: 1.0), FallwayExit(percent: 0.5)])
+            MinRunwayExit(percent: 0.1),
+            AndExit([LossExit(percent: 1.0), FallwayExit(percent: 0.6)])
         ]
         
     }
@@ -122,16 +133,20 @@ class MoonAlarmTableViewController: UITableViewController {
     }
     
     private func startRegularDisplayUpdates() {
-        let _ = Timer.scheduledTimer(withTimeInterval: 1, repeats: true){ _ in
-            self.updateDisplay()
-        }
+        self.updateTimer = Timer.scheduledTimer(timeInterval: 1, target: self,
+                                                selector: #selector(self.updateDisplay),
+                                                userInfo: nil, repeats: true)
     }
     
-    private func updateDisplay() {
+    private func stopRegularDisplayUpdates() {
+        self.updateTimer.invalidate()
+    }
+    
+    @objc private func updateDisplay() {
         self.openTrades = TradeSession.instance.trades.selectOnly(status: .open)
         self.completedTrades = TradeSession.instance.trades.selectOnly(status: .complete)
         self.tableView.reloadData()
-        self.symbolsCountLabel.text = "Markets: \(TradeSession.instance.symbols.count)"
+        self.symbolsCountLabel.text = "Markets: \(TradeSession.instance.symbolsWatching.count)"
         if  let marketLastUpdate = TradeSession.instance.lastUpdateTime {
             let currentTime = ExchangeClock.instance.currentTime
             let secondsSinceLastUpdate = (currentTime - marketLastUpdate).msToSeconds

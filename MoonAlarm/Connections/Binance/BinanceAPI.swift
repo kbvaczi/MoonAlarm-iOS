@@ -176,7 +176,8 @@ class BinanceAPI {
     /// Get exchange information for each symbol including lot size and price filter
     ///
     /// - Parameter callback: Do this after
-    func getExchangeInfo(callback: @escaping (_ isSuccessful: Bool) -> Void) {
+    func getExchangeInfo(callback: @escaping (_ isSuccessful: Bool,
+                                              _ info: [ExchangeInfo.SymbolPairInfo]?) -> Void) {
         
         let url = rootURLString + "/api/v1/exchangeInfo"
         
@@ -184,16 +185,18 @@ class BinanceAPI {
             (isSuccessful, jsonResponse) in
             
             guard isSuccessful else {
-                callback(false)
+                callback(false, nil)
                 return
             }
-                
+            
+            var pairInfo = [ExchangeInfo.SymbolPairInfo]()
+            
             for (_ ,symbolInfoJson):(String, JSON) in jsonResponse["symbols"] {
                 let newInfo = ExchangeInfo.SymbolPairInfo(fromJson: symbolInfoJson)
-                ExchangeInfo.instance.addInfo(newInfo)
+                pairInfo.append(newInfo)
             }
             
-            callback(true)
+            callback(true, pairInfo)
             
                     //    {
                     //        "symbols": [{
@@ -501,6 +504,7 @@ class BinanceAPI {
             
             print("NEW ORDER JSON:")
             print(jsonResponse)
+            
             callback(true, order)
         }
     }
@@ -511,7 +515,7 @@ class BinanceAPI {
     /// - Parameters:
     ///   - order: order to get status update for
     ///   - callback: what to do after status update recieved
-    func updateOrderStatus(for order: TradeOrder,
+    func getOrderUpdate(for order: TradeOrder,
                       callback: @escaping (_ isSuccess: Bool, _ order: TradeOrder?) -> Void) {
         
         // Verify order has been processed before proceeding
