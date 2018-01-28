@@ -26,6 +26,10 @@
 		BE3BA149201399F400458621 /* TrailingLossPercentCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE3BA148201399F400458621 /* TrailingLossPercentCriterion.swift */; };
 		BE3BA14D2013E8D100458621 /* BinanceKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE3BA14C2013E8D100458621 /* BinanceKeys.swift */; };
 		BE5F8592200BB4C70042EE0A /* BinanceEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5F8591200BB4C70042EE0A /* BinanceEnums.swift */; };
+		BE9B0F87201DFC2C004846F1 /* TradeOrderFill.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9B0F86201DFC2C004846F1 /* TradeOrderFill.swift */; };
+		BE9B0F8B201DFE6B004846F1 /* TradeOrderFills.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9B0F8A201DFE6B004846F1 /* TradeOrderFills.swift */; };
+		BE9B0F8D201E097C004846F1 /* BinanceExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9B0F8C201E097C004846F1 /* BinanceExtensions.swift */; };
+		BE9B0F90201E20B1004846F1 /* ExchangeInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9B0F8F201E20B1004846F1 /* ExchangeInfo.swift */; };
 		BE9E3C9420043429005D531C /* CandleSticks.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E3C9320043429005D531C /* CandleSticks.swift */; };
 		BE9E3C9620044CD9005D531C /* TimeAliases.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E3C9520044CD9005D531C /* TimeAliases.swift */; };
 		BE9E3C9B20045189005D531C /* MarketSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E3C9A20045189005D531C /* MarketSnapshot.swift */; };
@@ -84,6 +88,10 @@
 		BE3BA148201399F400458621 /* TrailingLossPercentCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailingLossPercentCriterion.swift; sourceTree = "<group>"; };
 		BE3BA14C2013E8D100458621 /* BinanceKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinanceKeys.swift; sourceTree = "<group>"; };
 		BE5F8591200BB4C70042EE0A /* BinanceEnums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinanceEnums.swift; sourceTree = "<group>"; };
+		BE9B0F86201DFC2C004846F1 /* TradeOrderFill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradeOrderFill.swift; sourceTree = "<group>"; };
+		BE9B0F8A201DFE6B004846F1 /* TradeOrderFills.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradeOrderFills.swift; sourceTree = "<group>"; };
+		BE9B0F8C201E097C004846F1 /* BinanceExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinanceExtensions.swift; sourceTree = "<group>"; };
+		BE9B0F8F201E20B1004846F1 /* ExchangeInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeInfo.swift; sourceTree = "<group>"; };
 		BE9E3C9320043429005D531C /* CandleSticks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CandleSticks.swift; sourceTree = "<group>"; };
 		BE9E3C9520044CD9005D531C /* TimeAliases.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeAliases.swift; sourceTree = "<group>"; };
 		BE9E3C9A20045189005D531C /* MarketSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketSnapshot.swift; sourceTree = "<group>"; };
@@ -183,10 +191,11 @@
 		BE390B9E20015ABE00CFD46B /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				BE9B0F8E201E2097004846F1 /* Exchange Info */,
 				BE9E3C9820044FC1005D531C /* General */,
 				BE9E3CA220058E09005D531C /* Market Data */,
-				BE9E3C9920044FC8005D531C /* Trading */,
 				BEF496272009791D00501C5C /* Trade Strategy */,
+				BE9E3C9920044FC8005D531C /* Trading */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -207,10 +216,27 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
-		BE9E3C9720044FA1005D531C /* Connections */ = {
+		BE9B0F88201DFC4F004846F1 /* OrderBooks */ = {
+			isa = PBXGroup;
+			children = (
+				BE9E3CA82006867E005D531C /* OrderBook.swift */,
+				BE9E3CAA200686CE005D531C /* Order.swift */,
+			);
+			path = OrderBooks;
+			sourceTree = "<group>";
+		};
+		BE9B0F8E201E2097004846F1 /* Exchange Info */ = {
 			isa = PBXGroup;
 			children = (
 				BEF49635200A336500501C5C /* ExchangeClock.swift */,
+				BE9B0F8F201E20B1004846F1 /* ExchangeInfo.swift */,
+			);
+			path = "Exchange Info";
+			sourceTree = "<group>";
+		};
+		BE9E3C9720044FA1005D531C /* Connections */ = {
+			isa = PBXGroup;
+			children = (
 				BED95531200BBCAF0094C1BD /* Binance */,
 			);
 			path = Connections;
@@ -235,6 +261,8 @@
 				BE9E3CA620059458005D531C /* Trades.swift */,
 				BEE6B0B6201503AE0068DDCB /* TradeOrder.swift */,
 				BEE6B0B8201503C70068DDCB /* TradeOrders.swift */,
+				BE9B0F86201DFC2C004846F1 /* TradeOrderFill.swift */,
+				BE9B0F8A201DFE6B004846F1 /* TradeOrderFills.swift */,
 			);
 			path = Trading;
 			sourceTree = "<group>";
@@ -245,8 +273,7 @@
 				BE18674F2012BCF400E275E4 /* Symbol.swift */,
 				BE9E3C9A20045189005D531C /* MarketSnapshot.swift */,
 				BE9E3C9E20045467005D531C /* MarketSnapshots.swift */,
-				BE9E3CA82006867E005D531C /* OrderBook.swift */,
-				BE9E3CAA200686CE005D531C /* Order.swift */,
+				BE9B0F88201DFC4F004846F1 /* OrderBooks */,
 				BEC755F8200D86000092B316 /* CandleSticks */,
 			);
 			path = "Market Data";
@@ -270,6 +297,7 @@
 				BE5F8591200BB4C70042EE0A /* BinanceEnums.swift */,
 				BED9552F200BBCA60094C1BD /* BinanceSignature.swift */,
 				BE3BA14C2013E8D100458621 /* BinanceKeys.swift */,
+				BE9B0F8C201E097C004846F1 /* BinanceExtensions.swift */,
 			);
 			path = Binance;
 			sourceTree = "<group>";
@@ -485,6 +513,7 @@
 				BE1867482012215B00E275E4 /* BidAskGapCriterion.swift in Sources */,
 				BE9E3CA92006867E005D531C /* OrderBook.swift in Sources */,
 				BED95530200BBCA60094C1BD /* BinanceSignature.swift in Sources */,
+				BE9B0F90201E20B1004846F1 /* ExchangeInfo.swift in Sources */,
 				BE390BA62002507B00CFD46B /* MoonAlarmTableViewController.swift in Sources */,
 				BEE6B0BF201564340068DDCB /* Price.swift in Sources */,
 				BEF4963420098E4600501C5C /* MinVolumeCriterion.swift in Sources */,
@@ -495,9 +524,11 @@
 				BE18674C201279EB00E275E4 /* ProfitCutoffCriterion.swift in Sources */,
 				BE9E3CA720059458005D531C /* Trades.swift in Sources */,
 				BE07C0D5200E8C0E000F5A38 /* CandlesticksMACD.swift in Sources */,
+				BE9B0F87201DFC2C004846F1 /* TradeOrderFill.swift in Sources */,
 				BE5F8592200BB4C70042EE0A /* BinanceEnums.swift in Sources */,
 				BEAE63CF201BCD9A006746A7 /* AndCriterion.swift in Sources */,
 				BEE6B0B7201503AE0068DDCB /* TradeOrder.swift in Sources */,
+				BE9B0F8D201E097C004846F1 /* BinanceExtensions.swift in Sources */,
 				BEF49648200AAC4E00501C5C /* LossPercentCriterion.swift in Sources */,
 				BEF4963E200A9FC600501C5C /* TimeLimitProfitableCriterion.swift in Sources */,
 				BEF49636200A336500501C5C /* ExchangeClock.swift in Sources */,
@@ -506,6 +537,7 @@
 				BE18674E2012B0D400E275E4 /* MarketBuyLossCriterion.swift in Sources */,
 				BEF49632200989B800501C5C /* SpareRunwayCriterion.swift in Sources */,
 				BE3BA14720138F4D00458621 /* RSIEnterCriterion.swift in Sources */,
+				BE9B0F8B201DFE6B004846F1 /* TradeOrderFills.swift in Sources */,
 				BE9E3C9420043429005D531C /* CandleSticks.swift in Sources */,
 				BEF4962C20097ED000501C5C /* IncreasedVolumeCriterion.swift in Sources */,
 			);

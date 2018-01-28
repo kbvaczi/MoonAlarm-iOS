@@ -9,6 +9,7 @@
 import Foundation
 
 typealias Symbol = String
+typealias SymbolPair = String
 
 extension Symbol {
     

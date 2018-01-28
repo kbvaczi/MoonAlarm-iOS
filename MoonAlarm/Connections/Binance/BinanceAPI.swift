@@ -113,8 +113,6 @@ class BinanceAPI {
                 return
             }
                     
-            print(jsonResponse)
-                    
             guard jsonResponse["code"].int == nil else {
                 print("*** Request to \(url) unsuccessful ***")
                 if let statusCode = response.response?.statusCode {
@@ -130,9 +128,35 @@ class BinanceAPI {
         }
     }
     
-    // getCurrentServerTime Method
-    // Returns current timeo of server in milliseconds
+    /// Check to see if we're banned for flooding before sending requests
+    ///
+    /// - Returns: true if we are banned for flooding
+    private func isBannedForRequestFlooding() -> Bool {
+        guard let bannedUntil = self.bannedUntil else { return false }
+        let currentTime = ExchangeClock.instance.currentTime
+        if currentTime > bannedUntil {
+            self.bannedUntil = nil
+            return false
+        }
+        return true
+    }
     
+    /// Parses response from server to determine how long we're banned
+    ///
+    /// - Parameter msg: message from server including timestamp
+    private func setBannedUntilTime(fromMessage msg: String) {
+        let timeNumberLength = 13
+        let regex = "\\d{\(timeNumberLength)}"
+        
+        guard   let bannedUntil = msg.matches(for: regex).first
+            else { return }
+        
+        self.bannedUntil = Milliseconds(bannedUntil)
+    }
+    
+    /// Get current server time in milliseconds
+    ///
+    /// - Parameter callback: do this after getting time
     func getCurrentServerTime(callback: @escaping (_ isSuccessful: Bool, _ currentTime: Milliseconds) -> Void) {
         
         let url = rootURLString + "/api/v1/time"
@@ -149,35 +173,62 @@ class BinanceAPI {
         // { "serverTime": 1499827319559 }
     }
     
-    // isBannedForRequestFlooding Method
-    // Check to see if we're banned for flooding before sending requests
-    
-    func isBannedForRequestFlooding() -> Bool {
-        guard let bannedUntil = self.bannedUntil else { return false }
-        let currentTime = ExchangeClock.instance.currentTime
-        if currentTime > bannedUntil {
-            self.bannedUntil = nil
-            return false
+    /// Get exchange information for each symbol including lot size and price filter
+    ///
+    /// - Parameter callback: Do this after
+    func getExchangeInfo(callback: @escaping (_ isSuccessful: Bool) -> Void) {
+        
+        let url = rootURLString + "/api/v1/exchangeInfo"
+        
+        jsonRequest(url: url, method: .get, params: nil) {
+            (isSuccessful, jsonResponse) in
+            
+            guard isSuccessful else {
+                callback(false)
+                return
+            }
+                
+            for (_ ,symbolInfoJson):(String, JSON) in jsonResponse["symbols"] {
+                let newInfo = ExchangeInfo.SymbolPairInfo(fromJson: symbolInfoJson)
+                ExchangeInfo.instance.addInfo(newInfo)
+            }
+            
+            callback(true)
+            
+                    //    {
+                    //        "symbols": [{
+                    //            "symbol": "ETHBTC",
+                    //            "status": "TRADING",
+                    //            "baseAsset": "ETH",
+                    //            "baseAssetPrecision": 8,
+                    //            "quoteAsset": "BTC",
+                    //            "quotePrecision": 8,
+                    //            "orderTypes": ["LIMIT", "MARKET"],
+                    //            "icebergAllowed": false,
+                    //            "filters": [{
+                    //                "filterType": "PRICE_FILTER",
+                    //                "minPrice": "0.00000100",
+                    //                "maxPrice": "100000.00000000",
+                    //                "tickSize": "0.00000100"
+                    //                }, {
+                    //                "filterType": "LOT_SIZE",
+                    //                "minQty": "0.00100000",
+                    //                "maxQty": "100000.00000000",
+                    //                "stepSize": "0.00100000"
+                    //                }, {
+                    //                "filterType": "MIN_NOTIONAL",
+                    //                "minNotional": "0.00100000"
+                    //            }]
+                    //        }]
+                    //    }
         }
-        return true
     }
     
-    // setIsBannedTime Method
-    // When server response with message saying we're banned, determine when ban is lifted
-    
-    func setBannedUntilTime(fromMessage msg: String) {
-        let timeNumberLength = 13
-        let regex = "\\d{\(timeNumberLength)}"
-        
-        guard   let bannedUntil = msg.matches(for: regex).first
-                else { return }
-        
-        self.bannedUntil = Milliseconds(bannedUntil)
-    }
-    
-    // getAllSymbols Method
-    // Returns list of all available symbols with selected trading pair
-    
+    /// Returns list of all available symbols with selected trading pair
+    ///
+    /// - Parameters:
+    ///   - tradingPairSymbol: symbol for trading pair
+    ///   - callback: do this after retrieving symbols
     func getAllSymbols(forTradingPair tradingPairSymbol: String,
                        callback: @escaping (_ isSuccessful: Bool, _ symbols: [Symbol]?) -> Void) {
         
@@ -206,10 +257,12 @@ class BinanceAPI {
             callback(true, symbolsList)
         }
     }
-    
-    // get24HrPairVolume Method
-    // Returns 24hr pair volume of given symbol
-    
+
+    /// Returns 24hr pair volume of given symbol
+    ///
+    /// - Parameters:
+    ///   - tradingPair: symbol for trading pair
+    ///   - callback: do this after
     func get24HrPairVolume(forTradingPair tradingPair: String,
                        callback: @escaping (_ isSuccessful: Bool, _ volume: Double?) -> Void) {
         
@@ -224,32 +277,30 @@ class BinanceAPI {
                 return
             }
             
-            // Data is a dictionary
-            /*
-            {
-                "priceChange": "-94.99999800",
-                "priceChangePercent": "-95.960",
-                "weightedAvgPrice": "0.29628482",
-                "prevClosePrice": "0.10002000",
-                "lastPrice": "4.00000200",
-                "bidPrice": "4.00000000",
-                "askPrice": "4.00000200",
-                "openPrice": "99.00000000",
-                "highPrice": "100.00000000",
-                "lowPrice": "0.10000000",
-                "volume": "8913.30000000",
-                "openTime": 1499783499040,
-                "closeTime": 1499869899040,
-                "fristId": 28385,   // First tradeId
-                "lastId": 28460,    // Last tradeId
-                "count": 76         // Trade count
-            }
-            */
-            
             let volume = jsonResponse["volume"].doubleValue
             let price = jsonResponse["lastPrice"].doubleValue
             let pairVolume = volume * price
             callback(true, pairVolume)
+            
+            // Data is a dictionary
+            //    {
+            //    "priceChange": "-94.99999800",
+            //    "priceChangePercent": "-95.960",
+            //    "weightedAvgPrice": "0.29628482",
+            //    "prevClosePrice": "0.10002000",
+            //    "lastPrice": "4.00000200",
+            //    "bidPrice": "4.00000000",
+            //    "askPrice": "4.00000200",
+            //    "openPrice": "99.00000000",
+            //    "highPrice": "100.00000000",
+            //    "lowPrice": "0.10000000",
+            //    "volume": "8913.30000000",
+            //    "openTime": 1499783499040,
+            //    "closeTime": 1499869899040,
+            //    "fristId": 28385,   // First tradeId
+            //    "lastId": 28460,    // Last tradeId
+            //    "count": 76         // Trade count
+            //    }
         }
     }
 
@@ -425,7 +476,8 @@ class BinanceAPI {
         var params: Parameters = ["symbol": order.symbolPair,
                                   "side": order.side.rawValue,
                                   "type": order.type.rawValue,
-                                  "quantity": order.quantityOrdered,
+                                  "quantity": order.quantityOrdered.toDisplay,
+                                  "newOrderRespType": BinanceAPI.NewOrderRespType.full.rawValue,
                                   "timestamp": ExchangeClock.instance.currentTime]
         
         if order.type != .market {
@@ -445,26 +497,116 @@ class BinanceAPI {
                 return
             }
             
-            let clientOrderID = jsonResponse["clientOrderId"].stringValue
-            order.uid = clientOrderID
+            self.updateOrder(order, from: jsonResponse)
+            
+            print("NEW ORDER JSON:")
+            print(jsonResponse)
+            callback(true, order)
+        }
+    }
+    
+    
+    /// Get status update for an order that has already been placed
+    ///
+    /// - Parameters:
+    ///   - order: order to get status update for
+    ///   - callback: what to do after status update recieved
+    func updateOrderStatus(for order: TradeOrder,
+                      callback: @escaping (_ isSuccess: Bool, _ order: TradeOrder?) -> Void) {
+        
+        // Verify order has been processed before proceeding
+        guard let orderID = order.uid else {
+            callback(false, nil)
+            return
+        }
+        
+        let url = rootURLString + "/api/v3/order"
+        let head = ["X-MBX-APIKEY": BinanceAPI.apiKey]
+        let params: Parameters = ["symbol": order.symbolPair,
+                                  "origClientOrderId": orderID,
+                                  "timestamp": ExchangeClock.instance.currentTime]
+        
+        signedJsonRequest(url: url, method: .get, params: params, headers: head) {
+            (isSuccessful, jsonResponse) in
+            
+            guard isSuccessful else {
+                callback(false, nil)
+                return
+            }
+            
+            self.updateOrder(order, from: jsonResponse)
+            
+            print("UPDATE ORDER JSON:")
+            print(jsonResponse)
             
             callback(true, order)
-            
-            // Example Response:
-            //    {
-            //        "orderId" : 21819402,
-            //        "status" : "NEW",
-            //        "clientOrderId" : "CRfopIxdIAKnVXbFkkyQc8",
-            //        "symbol" : "LTCBTC",
-            //        "side" : "BUY",
-            //        "price" : "0.00900000",
-            //        "transactTime" : 1517096241155,
-            //        "origQty" : "1.00000000",
-            //        "timeInForce" : "GTC",
-            //        "type" : "LIMIT",
-            //        "executedQty" : "0.00000000"
-            //    }
         }
+    }
+    
+    /// used to update order based on json response from server. Used in multiple functions.
+    ///
+    /// - Parameters:
+    ///   - order: order to update
+    ///   - json: json to update order with
+    private func updateOrder(_ order: TradeOrder, from json: JSON) {
+        
+        // Set uid now that the order has been processed
+        let clientOrderID = json["clientOrderId"].stringValue
+        order.uid = clientOrderID
+        
+        // Update quantity executed
+        let newQtyFilled = json["executedQty"].doubleValue
+        if newQtyFilled > 0 {
+            order.quantityFilled = newQtyFilled
+        }
+        
+        // Update status of order
+        let newStatusString = json["status"].stringValue
+        if let newStatus = BinanceAPI.OrderStatus(rawValue: newStatusString) {
+            order.status = newStatus
+        }
+        
+        // Update fills (expect this only from create response with market orders?)
+        let fillsJSON = json["fills"]
+        for (_ ,fillJson):(String, JSON) in fillsJSON {
+            let price = fillJson["price"].doubleValue
+            let qty = fillJson["qty"].doubleValue
+            let fee = fillJson["commission"].doubleValue
+            let feeAsset = fillJson["commissionAsset"].stringValue
+            
+            guard price > 0, qty > 0, fee > 0 else { continue }
+            
+            let newFill = TradeOrderFill(qty, atPrice: price, fee: fee, feeAsset: feeAsset)
+            order.fills.append(newFill)
+        }
+        
+                // Example Response:
+                //    {
+                //        "symbol": "BTCUSDT",
+                //        "orderId": 28,
+                //        "clientOrderId": "6gCrw2kRUAF9CvJDGP16IP",
+                //        "transactTime": 1507725176595,
+                //        "price": "0.00000000",
+                //        "origQty": "10.00000000",
+                //        "executedQty": "10.00000000",
+                //        "status": "FILLED",
+                //        "timeInForce": "GTC",
+                //        "type": "MARKET",
+                //        "side": "SELL",
+                //        "fills": [
+                //        {
+                //        "price": "4000.00000000",
+                //        "qty": "1.00000000",
+                //        "commission": "4.00000000",
+                //        "commissionAsset": "USDT"
+                //        },
+                //        {
+                //        "price": "3999.00000000",
+                //        "qty": "5.00000000",
+                //        "commission": "19.99500000",
+                //        "commissionAsset": "USDT"
+                //        }]
+                //    }
     }
     
     ///////// DATA STREAMS //////////
@@ -495,86 +637,3 @@ class BinanceAPI {
 
 }
 
-extension CandleStick {
-
-    convenience init(fromJson json: JSON) {
-        
-        
-        /* Example data:
-         [
-            [1499040000000,      // Open time
-             "0.01634790",       // Open
-             "0.80000000",       // High
-             "0.01575800",       // Low
-             "0.01577100",       // Close
-             "148976.11427815",  // Volume
-             1499644799999,      // Close time
-             "2434.19055334",    // Quote asset volume
-             308,                // Number of trades
-             "1756.87402397",    // Taker buy base asset volume
-             "28.46694368",      // Taker buy quote asset volume
-             "17928899.62484339"] // Can be ignored
-         ]*/
-    
-        self.init(openTime: (json[0].int64Value as Milliseconds),
-                  closeTime: (json[6].int64Value as Milliseconds),
-                  openPrice: json[1].doubleValue, closePrice: json[4].doubleValue,
-                  highPrice: json[2].doubleValue, lowPrice: json[3].doubleValue,
-                  volume: json[5].doubleValue, pairVolume: json[7].doubleValue,
-                  tradesCount: json[8].intValue)
-    }
-}
-
-extension OrderBook {
-    
-    convenience init(symbol sym: String, fromJson json: JSON) {
-        
-        // Data is a dictionary of arrays
-        // Example: [{"bids" : [[Price, Quantity], [Price, Quantity]]}]
-        let bidsJson = json["bids"]
-        let asksJson = json["asks"]
-        
-        var bids = [Order]()
-        var asks = [Order]()
-        
-        for (_ ,bidJson):(String, JSON) in bidsJson {
-            bids.append(Order(fromJson: bidJson))
-        }
-        
-        for (_ ,askJson):(String, JSON) in asksJson {
-            asks.append(Order(fromJson: askJson))
-        }
-        
-        self.init(symbol: sym, asks: asks, bids: bids)
-        
-        //    Example Data
-        //    Dictionary of arrays
-        //    {
-        //    "lastUpdateId": 1027024,
-        //    "bids": [
-        //    [
-        //    "4.00000000",     // PRICE
-        //    "431.00000000",   // QTY
-        //    []                // Can be ignored
-        //    ]
-        //    ],
-        //    "asks": [
-        //    [
-        //    "4.00000200",
-        //    "12.00000000",
-        //    []
-        //    ]
-        //    ]
-        //    }
-        
-    }
-    
-}
-
-extension Order {
-    
-    // Data is an array: [Price, Quantity]
-    convenience init(fromJson json: JSON) {
-        self.init(price: json[0].doubleValue, quantity: json[1].doubleValue)
-    }
-}

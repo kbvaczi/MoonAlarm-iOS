@@ -52,4 +52,10 @@ extension BinanceAPI {
         case ioc = "IOC"  // Immediate or cancel
     }
     
+    enum NewOrderRespType: String {
+        case ack = "ACK"
+        case result = "RESULT"
+        case full = "FULL"
+    }
+    
 }
