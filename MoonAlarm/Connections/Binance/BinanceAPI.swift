@@ -490,6 +490,9 @@ class BinanceAPI {
                 return
             }
             params["price"] = price.toDisplay
+            if let ibq = order.quantityVisible {
+                params["icebergQty"] = ibq.toDisplay
+            }
         }
         
         signedJsonRequest(url: url, method: .post, params: params, headers: head) {
@@ -501,9 +504,6 @@ class BinanceAPI {
             }
             
             self.updateOrder(order, from: jsonResponse)
-            
-            print("NEW ORDER JSON:")
-            print(jsonResponse)
             
             callback(true, order)
         }
@@ -527,7 +527,7 @@ class BinanceAPI {
         let url = rootURLString + "/api/v3/order"
         let head = ["X-MBX-APIKEY": BinanceAPI.apiKey]
         let params: Parameters = ["symbol": order.symbolPair,
-                                  "origClientOrderId": orderID,
+                                  "orderId": orderID,
                                   "timestamp": ExchangeClock.instance.currentTime]
         
         signedJsonRequest(url: url, method: .get, params: params, headers: head) {
@@ -539,11 +539,52 @@ class BinanceAPI {
             }
             
             self.updateOrder(order, from: jsonResponse)
-            
-            print("UPDATE ORDER JSON:")
-            print(jsonResponse)
-            
+
             callback(true, order)
+        }
+    }
+    
+    /// Cancel an existing order
+    ///
+    /// - Parameters:
+    ///   - order: order to be cancelled
+    ///   - callback: do this after cancelled
+    func cancelOrder(_ order: TradeOrder,
+                    callback: @escaping (_ isSuccess: Bool, _ order: TradeOrder?) -> Void) {
+        
+        // Verify order has been processed before proceeding
+        guard let orderID = order.uid else {
+            callback(false, nil)
+            return
+        }
+        
+        let url = rootURLString + "/api/v3/order"
+        let head = ["X-MBX-APIKEY": BinanceAPI.apiKey]
+        let params: Parameters = ["symbol": order.symbolPair,
+                                  "orderId": orderID,
+                                  "timestamp": ExchangeClock.instance.currentTime]
+        
+        signedJsonRequest(url: url, method: .delete, params: params, headers: head) {
+            (cancelSuccess, jsonResponse) in
+            
+            guard cancelSuccess else {
+                callback(false, nil)
+                return
+            }
+            
+            // Unfortunately, binance doesn't give us an update when we cancel so we have to
+            // update after cancellation (see json below)
+            order.update(callback: { updateSuccess in
+                callback(updateSuccess, order)
+            })
+            
+                    //    Example JSON Response:
+                    //    {
+                    //    "orderId" : 16058114,
+                    //    "symbol" : "IOTABTC",
+                    //    "origClientOrderId" : "Z9Mekllm2mYteyTrdKqdir",
+                    //    "clientOrderId" : "LuLLH2vxLfVhGSfLrCLngU"
+                    //    }
         }
     }
     
@@ -555,8 +596,8 @@ class BinanceAPI {
     private func updateOrder(_ order: TradeOrder, from json: JSON) {
         
         // Set uid now that the order has been processed
-        let clientOrderID = json["clientOrderId"].stringValue
-        order.uid = clientOrderID
+        let orderID = json["orderId"].stringValue
+        order.uid = orderID
         
         // Update quantity executed
         let newQtyFilled = json["executedQty"].doubleValue
@@ -583,7 +624,7 @@ class BinanceAPI {
             let newFill = TradeOrderFill(qty, atPrice: price, fee: fee, feeAsset: feeAsset)
             order.fills.append(newFill)
         }
-        
+               
                 // Example Response:
                 //    {
                 //        "symbol": "BTCUSDT",
