@@ -74,7 +74,7 @@ class TradeSession {
                     
                     if isSuccessful, let pairVolume = pairVolume {
                         // TODO: come up with a more intelligent way of filtering symbols
-                        let min24HrVol = tradingPairSymbol == "BTC" ? 1000.0 : 3000.0
+                        let min24HrVol = TradeStrategy.instance.marketMin24HrVol
                         
                         // Due to API request limits, can monitor up to 50 symbols at once
                         if pairVolume > min24HrVol, self.symbolsWatching.count < 50 {

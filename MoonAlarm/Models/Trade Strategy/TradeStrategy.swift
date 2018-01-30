@@ -17,9 +17,11 @@ class TradeStrategy {
     
     // Settings //
     var tradingPairSymbol = "BTC"
+    var marketMin24HrVol: Double = 1000
     var tradeAmountTarget: Double = 0.01
     var maxOpenTrades: Int = 8
     var expectedFeePerTrade: Percent = 0.1
+    
     
     var candleStickPeriod: BinanceAPI.KLineInterval = .m5
     
