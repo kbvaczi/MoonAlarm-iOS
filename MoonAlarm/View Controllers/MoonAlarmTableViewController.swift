@@ -36,29 +36,24 @@ class MoonAlarmTableViewController: UITableViewController {
     var openTrades = Trades()
     var completedTrades = Trades()
     var updateTimer = Timer()
-    
-    // REMOVE THIS
-    var orderToWatch: TradeOrder? = nil
-    var orderUpdateTimer = Timer()
-    
-    
+        
     override func viewDidLoad() {
         
         super.viewDidLoad()
         
         TradeStrategy.instance.entranceCriteria = [
-            RSIEnter(max: 40, inLast: 1),
-            MACDEnter(incTrendFor: 2, requireCross: false),
+            RSIEnter(max: 40, inLast: 4),
+            MACDEnter(incTrendFor: 3, requireCross: false),
             SpareRunwayEnter(percent: 1.5),
             FallwaySupportEnter(percent: 0.5),
         ]
         
         TradeStrategy.instance.exitCriteria = [
             LossExit(percent: 2.0),
-            TrailingLossExit(percent: 0.5, after: 3.0),
-            RSIExit(max: 65),
-            MinRunwayExit(percent: 0.1),
-            AndExit([LossExit(percent: 1.0), FallwayExit(percent: 0.6)])
+            TrailingLossExit(percent: 1.0, after: 2.0),
+            RSIExit(max: 60),
+            AndExit([MinRunwayExit(percent: 0.1), FallwayExit(percent: 0.2)]),
+            AndExit([LossExit(percent: 0.6), FallwayExit(percent: 1.0)])
         ]
         
     }
