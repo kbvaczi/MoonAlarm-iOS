@@ -42,8 +42,7 @@ class BinanceAPI {
                 .responseSwiftyJSON { response in
                     
             guard   let jsonResponse = response.result.value else {
-                print("*** Request to \(url) unsuccessful ***")
-                print("no data returned")
+                print("*** Request to \(url) unsuccessful *** NO DATA RETURNED ***")
                 callback(false, JSON.null)
                 return
             }
