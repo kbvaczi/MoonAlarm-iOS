@@ -64,6 +64,15 @@ class MarketSnapshot {
     }
     
     private func updateCandleSticks(callback: @escaping () -> Void) {
+        let areNewSticks = self.candleSticks.isEmpty
+        if areNewSticks {
+            buildNewCandleSticks { callback() }
+        } else {
+            updateExistingCandleSticks { callback() }
+        }
+    }
+    
+    private func buildNewCandleSticks(callback: @escaping () -> Void) {
         let pair = self.symbol.symbolPair
         let stickInterval = TradeStrategy.instance.candleStickPeriod
         BinanceAPI.instance.getCandleSticks(symbolPair: pair,
@@ -74,10 +83,37 @@ class MarketSnapshot {
                 cSticks.calculateMACD()
                 cSticks.calculateRSI()
                 self.candleSticks = cSticks
-                callback()
-            } else {
-                callback()
             }
+            callback()
+        }
+    }
+    
+    private func updateExistingCandleSticks(callback: @escaping () -> Void) {
+        let pair = self.symbol.symbolPair
+        let stickInterval = TradeStrategy.instance.candleStickPeriod
+        BinanceAPI.instance.getCandleSticks(symbolPair: pair,
+                                            interval: stickInterval,
+                                            limit: 2) {
+            (isSuccess, newSticks) in
+            if isSuccess, let newSticks = newSticks, newSticks.count == 2 {
+                let existingCount = self.candleSticks.count
+                let toReplaceExistingSticks = self.candleSticks.last?.openTime ==
+                                              newSticks.last?.openTime
+                if toReplaceExistingSticks {
+                    // Replace just the last two sticks with new data
+                    self.candleSticks[existingCount - 2] = newSticks[0]
+                    self.candleSticks[existingCount - 1] = newSticks[1]
+                } else {
+                    // Replace last stick and add a new one
+                    self.candleSticks[existingCount - 1] = newSticks[0]
+                    self.candleSticks.append(newSticks[1])
+                }
+                // Recalculate Market indicators
+                self.candleSticks.calculateMACD()
+                self.candleSticks.calculateRSI()
+                
+            }
+            callback()
         }
     }
     
