@@ -23,7 +23,7 @@ class TradeSession {
     var duration: Milliseconds {
         guard   let st = self.startTime
                 else { return 0 }
-        return Date().millisecondsSince1970 - st
+        return Date.currentTimeInMS - st
     }
     
     private var updateTimer = Timer() // Timer that periodically updates market data
@@ -41,7 +41,7 @@ class TradeSession {
     
     func start(callback: @escaping () -> Void) {
         self.status = .running
-        self.startTime = Date().millisecondsSince1970
+        self.startTime = Date.currentTimeInMS
         self.updateSymbolsAndPrioritize { isSuccess in
             self.startRegularSnapshotUpdates()
             callback()
@@ -117,7 +117,7 @@ class TradeSession {
         
         // when all API calls are returned, run callback
         dpG.notify(queue: .main) {
-            self.lastUpdateTime = ExchangeClock.instance.currentTime
+            self.lastUpdateTime = Date.currentTimeInMS
             callback()
         }
     }

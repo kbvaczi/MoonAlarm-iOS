@@ -28,7 +28,7 @@ extension Array where Element : CandleStick {
     var currentStickDuration: Seconds? {
         guard let currentStick = self.last else { return nil }
         let openT = currentStick.openTime
-        let currentT = ExchangeClock.instance.currentTime
+        let currentT = Date.currentTimeInMS
         return (currentT - openT).msToSeconds
     }
     

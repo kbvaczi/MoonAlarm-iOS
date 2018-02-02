@@ -20,13 +20,13 @@ class Trade {
     
     var exitCriteria = TradeStrategy.instance.exitCriteria.copy()
     
-    var startTime: Milliseconds = ExchangeClock.instance.currentTime
+    var startTime: Milliseconds = Date.currentTimeInMS
     var endTime: Milliseconds? = nil
     var duration: Milliseconds { // Track how long this trade has been active
         if let eT = self.endTime {
             return eT - self.startTime
         } else {
-            return ExchangeClock.instance.currentTime - self.startTime
+            return Date.currentTimeInMS - self.startTime
         }
     }
     

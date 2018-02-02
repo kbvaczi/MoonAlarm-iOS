@@ -132,7 +132,7 @@ class BinanceAPI {
     /// - Returns: true if we are banned for flooding
     private func isBannedForRequestFlooding() -> Bool {
         guard let bannedUntil = self.bannedUntil else { return false }
-        let currentTime = ExchangeClock.instance.currentTime
+        let currentTime = Date.currentTimeInMS
         if currentTime > bannedUntil {
             self.bannedUntil = nil
             return false
@@ -387,7 +387,7 @@ class BinanceAPI {
         let url = rootURLString + "/api/v3/account"
         let head = ["X-MBX-APIKEY": BinanceAPI.apiKey]
         
-        let params: Parameters = ["timestamp": ExchangeClock.instance.currentTime]
+        let params: Parameters = ["timestamp": Date.currentTimeInMS]
         
         signedJsonRequest(url: url, method: .get, params: params, headers: head) {
             (isSuccessful, jsonResponse) in
@@ -451,7 +451,7 @@ class BinanceAPI {
         let head = ["X-MBX-APIKEY": BinanceAPI.apiKey]
         
         let params: Parameters = ["symbol": symbolPair,
-                                  "timestamp": ExchangeClock.instance.currentTime]
+                                  "timestamp": Date.currentTimeInMS]
         
         signedJsonRequest(url: url, method: .get, params: params, headers: head) {
             (isSuccessful, jsonResponse) in
@@ -480,7 +480,7 @@ class BinanceAPI {
                                   "type": order.type.rawValue,
                                   "quantity": order.quantityOrdered.toDisplay,
                                   "newOrderRespType": BinanceAPI.NewOrderRespType.full.rawValue,
-                                  "timestamp": ExchangeClock.instance.currentTime]
+                                  "timestamp": Date.currentTimeInMS]
         
         if order.type != .market {
             params["timeInForce"] = order.timeInForce.rawValue
@@ -527,7 +527,7 @@ class BinanceAPI {
         let head = ["X-MBX-APIKEY": BinanceAPI.apiKey]
         let params: Parameters = ["symbol": order.symbolPair,
                                   "orderId": orderID,
-                                  "timestamp": ExchangeClock.instance.currentTime]
+                                  "timestamp": Date.currentTimeInMS]
         
         signedJsonRequest(url: url, method: .get, params: params, headers: head) {
             (isSuccessful, jsonResponse) in
@@ -561,7 +561,7 @@ class BinanceAPI {
         let head = ["X-MBX-APIKEY": BinanceAPI.apiKey]
         let params: Parameters = ["symbol": order.symbolPair,
                                   "orderId": orderID,
-                                  "timestamp": ExchangeClock.instance.currentTime]
+                                  "timestamp": Date.currentTimeInMS]
         
         signedJsonRequest(url: url, method: .delete, params: params, headers: head) {
             (cancelSuccess, jsonResponse) in

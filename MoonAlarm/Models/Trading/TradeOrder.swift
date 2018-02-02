@@ -12,15 +12,15 @@ class TradeOrder {
     
     // Fixed Properties //
     
-    let symbolPair: String
-    let side: BinanceAPI.OrderSide
-    let type: BinanceAPI.OrderType
-    let isTestOrder: Bool
+    let symbolPair: String                          // What coin are we trading?
+    let side: BinanceAPI.OrderSide                  // BUY or SELL
+    let type: BinanceAPI.OrderType                  // LIMIT, MARKET currently supported
+    let isTestOrder: Bool                           // Query test URL?
     let orderPrice: Price?                          // Not necessary for market orders
-    let quantityOrdered: Double
-    let quantityVisible: Double?
+    let quantityOrdered: Double                     // How many are we trying to buy/sell?
+    let quantityVisible: Double?                    // Used for iceburg orders
     let timeInForce: BinanceAPI.TimeInForce         // assume processed immediately
-    var startTime: Milliseconds = ExchangeClock.instance.currentTime
+    let startTime: Milliseconds = Date.currentTimeInMS
     
     // Mutating Properties //
 
@@ -28,6 +28,7 @@ class TradeOrder {
     var status: BinanceAPI.OrderStatus = .new       // Updated after processing
     var quantityFilled: Double = 0                  // Updated after processing
     var fills: TradeOrderFills = []                 // Keep track of individual fills
+    var endTime: Milliseconds? = nil                // Keep track of when orders are finished
     
     /// Used for status updates
     private var updateTimer = Timer()
@@ -99,13 +100,17 @@ class TradeOrder {
     ///
     /// - Parameter callback: do this after cancellation
     func cancel(callback: @escaping (_ isSuccess: Bool) -> Void) {
+        
+        // No need to cancel an order that's already finalized
         guard !self.isFinalized else { callback(false); return }
+        
         BinanceAPI.instance.cancelOrder(self) { (isSuccess, processedOrder) in
-            guard isSuccess, processedOrder != nil else {                
-                callback(false)
-                return
-            }
+            
+            guard isSuccess, processedOrder != nil else { callback(false); return }
+            
             self.stopRegularUpdates()
+            self.endTime = Date.currentTimeInMS
+            
             callback(true)
         }
     }
@@ -118,10 +123,15 @@ class TradeOrder {
         
         BinanceAPI.instance.getOrderUpdate(for: self) {
             (isSuccess, processedOrder) in
-            if let order = processedOrder, order.isFinalized {
+            
+            guard isSuccess, processedOrder != nil else { callback(false); return }
+            
+            if self.isFinalized {
                 self.stopRegularUpdates()
-                callback(true)
+                self.endTime = Date.currentTimeInMS
             }
+            
+            callback(true)
         }
     }
     

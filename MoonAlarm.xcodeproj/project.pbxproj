@@ -57,7 +57,6 @@
 		BEF49630200984DE00501C5C /* TradeExitCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF4962F200984DE00501C5C /* TradeExitCriterion.swift */; };
 		BEF49632200989B800501C5C /* SpareRunwayCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF49631200989B800501C5C /* SpareRunwayCriterion.swift */; };
 		BEF4963420098E4600501C5C /* MinVolumeCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF4963320098E4600501C5C /* MinVolumeCriterion.swift */; };
-		BEF49636200A336500501C5C /* ExchangeClock.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF49635200A336500501C5C /* ExchangeClock.swift */; };
 		BEF4963A200A621A00501C5C /* FallwaySupportCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF49639200A621A00501C5C /* FallwaySupportCriterion.swift */; };
 		BEF4963E200A9FC600501C5C /* TimeLimitProfitableCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF4963D200A9FC600501C5C /* TimeLimitProfitableCriterion.swift */; };
 		BEF49640200AA6A400501C5C /* TimeLimitUnprofitableCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF4963F200AA6A400501C5C /* TimeLimitUnprofitableCriterion.swift */; };
@@ -119,7 +118,6 @@
 		BEF4962F200984DE00501C5C /* TradeExitCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradeExitCriterion.swift; sourceTree = "<group>"; };
 		BEF49631200989B800501C5C /* SpareRunwayCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpareRunwayCriterion.swift; sourceTree = "<group>"; };
 		BEF4963320098E4600501C5C /* MinVolumeCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MinVolumeCriterion.swift; sourceTree = "<group>"; };
-		BEF49635200A336500501C5C /* ExchangeClock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeClock.swift; sourceTree = "<group>"; };
 		BEF49639200A621A00501C5C /* FallwaySupportCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FallwaySupportCriterion.swift; sourceTree = "<group>"; };
 		BEF4963D200A9FC600501C5C /* TimeLimitProfitableCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeLimitProfitableCriterion.swift; sourceTree = "<group>"; };
 		BEF4963F200AA6A400501C5C /* TimeLimitUnprofitableCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeLimitUnprofitableCriterion.swift; sourceTree = "<group>"; };
@@ -228,7 +226,6 @@
 		BE9B0F8E201E2097004846F1 /* Exchange Info */ = {
 			isa = PBXGroup;
 			children = (
-				BEF49635200A336500501C5C /* ExchangeClock.swift */,
 				BE9B0F8F201E20B1004846F1 /* ExchangeInfo.swift */,
 			);
 			path = "Exchange Info";
@@ -531,7 +528,6 @@
 				BE9B0F8D201E097C004846F1 /* BinanceExtensions.swift in Sources */,
 				BEF49648200AAC4E00501C5C /* LossPercentCriterion.swift in Sources */,
 				BEF4963E200A9FC600501C5C /* TimeLimitProfitableCriterion.swift in Sources */,
-				BEF49636200A336500501C5C /* ExchangeClock.swift in Sources */,
 				BEE6B0BD201513B40068DDCB /* RSIExitCriterion.swift in Sources */,
 				BEF49630200984DE00501C5C /* TradeExitCriterion.swift in Sources */,
 				BE18674E2012B0D400E275E4 /* MarketBuyLossCriterion.swift in Sources */,
