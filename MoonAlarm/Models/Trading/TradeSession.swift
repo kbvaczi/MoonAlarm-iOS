@@ -123,6 +123,7 @@ class TradeSession {
     }
     
     func startRegularSnapshotUpdates() {
+        self.updateTimer.invalidate() // Stop prior update timer
         self.updateTimer = Timer.scheduledTimer(timeInterval: 15, target: self,
                                                 selector: #selector(self.regularUpdate),
                                                 userInfo: nil, repeats: true)
