@@ -151,9 +151,13 @@ class TradeSession {
             // only one trade open per symbol at a time
             if trades.openTradeFor(snapshot.symbol) { continue }
             
+            // We don't want to make real trades in test mode
+            let isTestMode = TradeStrategy.instance.testMode
+            
             // only trade if the market snapshot passes our trade enter criteria
             if TradeStrategy.instance.entranceCriteria.allPassedFor(snapshot) {
-                let newTrade = Trade(symbol: snapshot.symbol, snapshot: snapshot, isTest: true)
+                let newTrade = Trade(symbol: snapshot.symbol, snapshot: snapshot,
+                                     isTest: isTestMode)
                 self.trades.insert(newTrade, at: 0)
                 newTrade.execute()
             }

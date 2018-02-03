@@ -15,16 +15,36 @@ class MoonAlarmTableViewController: UITableViewController {
         case .running:
             sender.setTitle("Start Trading", for: .normal)
             TradeSession.instance.stop {
-                self.stopRegularDisplayUpdates()
+//                self.stopRegularDisplayUpdates()
             }
         case .stopped:
             sender.setTitle("Stop Trading", for: .normal)
             TradeSession.instance.start {
-                self.startRegularDisplayUpdates()
+//                self.startRegularDisplayUpdates()
             }
         }
     }
     
+    @IBAction func testModeSwitchToggle(_ sender: UISwitch) {
+        if sender.isOn {
+            TradeStrategy.instance.testMode = true
+        } else {
+            let switchAlert = UIAlertController(title: "Leaving Test Mode",
+                                        message: "Are you sure you want to start live trading?",
+                                        preferredStyle: UIAlertControllerStyle.alert)
+            switchAlert.addAction(UIAlertAction(title: "No", style: .cancel,
+                                                handler: { (action: UIAlertAction!) in
+                self.testModeSwitch.setOn(true, animated: true) // Turn switch back
+            }))
+            switchAlert.addAction(UIAlertAction(title: "Yes", style: .destructive,
+                                                handler: { (action: UIAlertAction!) in
+                TradeStrategy.instance.testMode = false
+            }))
+            present(switchAlert, animated: true, completion: nil)
+        }
+    }
+    
+    @IBOutlet weak var testModeSwitch: UISwitch!
     @IBOutlet weak var symbolsCountLabel: UILabel!
     @IBOutlet weak var lastUpdatedLabel: UILabel!
     @IBOutlet weak var completedTradesLabel: UILabel!
@@ -33,6 +53,7 @@ class MoonAlarmTableViewController: UITableViewController {
     @IBOutlet weak var sessionTimeLabel: UILabel!
     @IBOutlet weak var tradeAmountLabel: UILabel!
     
+    
     var openTrades = Trades()
     var completedTrades = Trades()
     var updateTimer = Timer()
@@ -40,14 +61,17 @@ class MoonAlarmTableViewController: UITableViewController {
     override func viewDidLoad() {
         
         super.viewDidLoad()
+        self.startRegularDisplayUpdates()
+        self.initTestModeSwitch()
         
+//        IPAD
         TradeStrategy.instance.entranceCriteria = [
             RSIEnter(max: 40, inLast: 4),
             MACDEnter(incTrendFor: 3, requireCross: false),
             SpareRunwayEnter(percent: 1.5),
-            FallwaySupportEnter(percent: 0.5),
+//            FallwaySupportEnter(percent: 0.5),
         ]
-        
+
         TradeStrategy.instance.exitCriteria = [
             LossExit(percent: 2.0),
             TrailingLossExit(percent: 1.0, after: 2.0),
@@ -56,11 +80,29 @@ class MoonAlarmTableViewController: UITableViewController {
             AndExit([LossExit(percent: 0.6), FallwayExit(percent: 1.0)])
         ]
         
+////        iPad Mini
+//        TradeStrategy.instance.entranceCriteria = [
+//            IncreasedVolumeEnter(minVolRatio: 2.0),
+//            SpareRunwayEnter(percent: 1.5),
+//            FallwaySupportEnter(percent: 0.5),
+//        ]
+//
+//        TradeStrategy.instance.exitCriteria = [
+//            LossExit(percent: 1.0),
+//            ProfitCutoffExit(percent: 0.5),
+//            MinRunwayExit(percent: 0.1)
+//        ]
+
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    func initTestModeSwitch() {
+        let isTestMode = TradeStrategy.instance.testMode
+        self.testModeSwitch.setOn(isTestMode, animated: true)
+        self.testModeSwitch.tintColor = UIColor.red // Show the switch as red if out of test mode
+        
+
+        
+        
     }
 
     // MARK: - Table view data source
@@ -128,6 +170,7 @@ class MoonAlarmTableViewController: UITableViewController {
     }
     
     private func startRegularDisplayUpdates() {
+        self.updateTimer.invalidate() // Stop prior update timer
         self.updateTimer = Timer.scheduledTimer(timeInterval: 1, target: self,
                                                 selector: #selector(self.updateDisplay),
                                                 userInfo: nil, repeats: true)
@@ -143,7 +186,7 @@ class MoonAlarmTableViewController: UITableViewController {
         self.tableView.reloadData()
         self.symbolsCountLabel.text = "Markets: \(TradeSession.instance.symbolsWatching.count)"
         if  let marketLastUpdate = TradeSession.instance.lastUpdateTime {
-            let currentTime = ExchangeClock.instance.currentTime
+            let currentTime = Date.currentTimeInMS
             let secondsSinceLastUpdate = (currentTime - marketLastUpdate).msToSeconds
             let secondsSinceLastUpdateDisplay = String(format: "%.0f", arguments: [secondsSinceLastUpdate])
             self.lastUpdatedLabel.text = "Last Refresh: \(secondsSinceLastUpdateDisplay)"
