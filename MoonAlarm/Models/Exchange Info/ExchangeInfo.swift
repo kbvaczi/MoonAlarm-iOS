@@ -11,20 +11,12 @@ import Foundation
 /// Used to keep track of lot sizes and valid prices for trades
 class ExchangeInfo {
     
-    init() { }
-    
+    /// Price & Amount info for different markets
     private var info: [SymbolPairInfo] = []
     
-    /// Returns an array of symbols available to trade with given trading pair
-    ///
-    /// - Parameter tradingPair: symbol for trading pair coin (ex. "BTC")
-    /// - Returns: array of symbols available to trade with pair
-    func symbolsForPair(_ tradingPairSymbol: String) -> [Symbol] {
-        let symbolPairs = self.info.filter({ $0.symbolPair.hasSuffix(tradingPairSymbol) })
-        let symbols = symbolPairs.map({$0.symbolPair.replacingOccurrences(
-                                       of: tradingPairSymbol, with: "") })
-        return symbols
-    }
+    //////////////////////////////////////////////
+    ////////// ADDING AND UPDATING DATA //////////
+    //////////////////////////////////////////////
     
     /// Populate exchange info with data from server
     ///
@@ -53,6 +45,21 @@ class ExchangeInfo {
         }
     }
     
+    /////////////////////////////////////
+    ////////// RETRIEVING DATA //////////
+    /////////////////////////////////////
+    
+    /// Returns an array of symbols available to trade with given trading pair
+    ///
+    /// - Parameter tradingPair: symbol for trading pair coin (ex. "BTC")
+    /// - Returns: array of symbols available to trade with pair
+    func symbolsForPair(_ tradingPairSymbol: String) -> [Symbol] {
+        let symbolPairs = self.info.filter({ $0.symbolPair.hasSuffix(tradingPairSymbol) })
+        let symbols = symbolPairs.map({$0.symbolPair.replacingOccurrences(
+            of: tradingPairSymbol, with: "") })
+        return symbols
+    }
+    
     /// Returns the nearest allowable trade amount within lot size restrictions
     ///
     /// - Parameters:
@@ -65,6 +72,19 @@ class ExchangeInfo {
         }
         
         return symbolInfo.lotSize.nearestAllowableAmount(to: amount).roundTo(8)
+    }
+    
+    
+    /// Returns the minimum increment exchange allows for setting amount ordered
+    ///
+    /// - Parameter symbolPair: for this symbol pair
+    /// - Returns: minimum amount tick allowable for this market
+    func amountTick(for symbolPair: SymbolPair) -> Double? {
+        guard let symbolInfo = self.info.first(where: {$0.symbolPair == symbolPair}) else {
+            return nil
+        }
+        
+        return symbolInfo.lotSize.stepSize
     }
     
     /// Returns the nearest allowable trade amount within lot size restrictions
@@ -81,16 +101,45 @@ class ExchangeInfo {
         return symbolInfo.priceFilter.nearestAllowablePrice(to: price).roundTo(8)
     }
     
+    /// Returns the minimum increment exchange allows for setting price
+    ///
+    /// - Parameter symbolPair: for this symbol pair
+    /// - Returns: minimum price tick allowable for this market
+    func priceTick(for symbolPair: SymbolPair) -> Price? {
+        guard let symbolInfo = self.info.first(where: {$0.symbolPair == symbolPair}) else {
+            return nil
+        }
+        
+        return symbolInfo.priceFilter.tickSize
+    }
+    
+    /// Returns minimum value (price * amount) allowed for buy/sell
+    ///
+    /// - Parameter symbolPair: for this market
+    /// - Returns: minimum value ("min notional")
+    func minNotionalValue(for symbolPair: SymbolPair) -> Double? {
+        guard let symbolInfo = self.info.first(where: {$0.symbolPair == symbolPair}) else {
+            return nil
+        }
+        
+        return symbolInfo.minNotionalValue
+    }
+    
+    ////////// DATA STRUCTURES //////////
+    
     /// Describes information for a symbol pair
     struct SymbolPairInfo {
         let symbolPair: SymbolPair
         let lotSize: LotSize
         let priceFilter: PriceFilter
+        let minNotionalValue: Double
         
-        init(_ symbolPair: SymbolPair, lotSize: LotSize, priceFilter: PriceFilter) {
+        init(_ symbolPair: SymbolPair, lotSize: LotSize, priceFilter: PriceFilter,
+             minNotional: Double) {
             self.symbolPair = symbolPair
             self.lotSize = lotSize
             self.priceFilter = priceFilter
+            self.minNotionalValue = minNotional
         }
     }
     

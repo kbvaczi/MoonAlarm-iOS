@@ -43,6 +43,22 @@ class OrderBook {
         return (gap / firstAsk - 1).doubleToPercent
     }
     
+    /// Returns amount of coins listed for purchase at or above given price
+    ///
+    /// - Parameter price: given price
+    /// - Returns: amount for purchase at or above given price
+    func amountAtOrAboveBid(price: Price) -> Double? {
+        return self.bids.filter({ $0.price >= price }).map({ $0.quantity }).reduce(0, +)
+    }
+    
+    /// Returns amount of coins listed for sale at or below given price
+    ///
+    /// - Parameter price: given price
+    /// - Returns: amount for sale at or below given price
+    func amountAtOrBelowAsk(price: Price) -> Double? {
+        return self.asks.filter({ $0.price <= price }).map({ $0.quantity }).reduce(0, +)
+    }
+    
     ////////// RUNWAY / FALLWAY PRICING //////////
     
     func runwayPrice(forVolume volume: Double) -> Double? {

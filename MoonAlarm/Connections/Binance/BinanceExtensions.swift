@@ -101,21 +101,27 @@ extension ExchangeInfo.SymbolPairInfo {
     /// - Parameter json: json to build symbolpairinfo from
     init(fromJson json: JSON) {
         
-        var priceFilterJson: JSON = JSON.null
-        var lotSizeJson: JSON = JSON.null
+        var newPriceFilterJson: JSON = JSON.null
+        var newLotSizeJson: JSON = JSON.null
+        var newMinNotionalValue: Double = 20                     // 20 was max at time of writing
         
         for (_ ,filterInfoJson):(String, JSON) in json["filters"] {
-            if filterInfoJson["filterType"].stringValue == "PRICE_FILTER" {
-                priceFilterJson = filterInfoJson
-            }
-            if filterInfoJson["filterType"].stringValue == "LOT_SIZE" {
-                lotSizeJson = filterInfoJson
+            let filterType = filterInfoJson["filterType"].stringValue
+            switch filterType {
+            case "PRICE_FILTER":
+                newPriceFilterJson = filterInfoJson
+            case "LOT_SIZE":
+                newLotSizeJson = filterInfoJson
+            case "MIN_NOTIONAL":
+                newMinNotionalValue = filterInfoJson["minNotional"].doubleValue
+            default: break
             }
         }
         
         self.symbolPair = json["symbol"].stringValue
-        self.priceFilter = ExchangeInfo.PriceFilter(fromJson: priceFilterJson)
-        self.lotSize = ExchangeInfo.LotSize(fromJson: lotSizeJson)
+        self.priceFilter = ExchangeInfo.PriceFilter(fromJson: newPriceFilterJson)
+        self.lotSize = ExchangeInfo.LotSize(fromJson: newLotSizeJson)
+        self.minNotionalValue = newMinNotionalValue
     }
     
             // Example Data:

@@ -478,7 +478,7 @@ class BinanceAPI {
         var params: Parameters = ["symbol": order.symbolPair,
                                   "side": order.side.rawValue,
                                   "type": order.type.rawValue,
-                                  "quantity": order.quantityOrdered.toDisplay,
+                                  "quantity": order.amountOrdered.toDisplay,
                                   "newOrderRespType": BinanceAPI.NewOrderRespType.full.rawValue,
                                   "timestamp": Date.currentTimeInMS]
         
@@ -489,7 +489,7 @@ class BinanceAPI {
                 return
             }
             params["price"] = price.toDisplay
-            if let ibq = order.quantityVisible {
+            if let ibq = order.amountVisible {
                 params["icebergQty"] = ibq.toDisplay
             }
         }
@@ -601,7 +601,7 @@ class BinanceAPI {
         // Update quantity executed
         let newQtyFilled = json["executedQty"].doubleValue
         if newQtyFilled > 0 {
-            order.quantityFilled = newQtyFilled
+            order.amountFilled = newQtyFilled
         }
         
         // Update status of order
