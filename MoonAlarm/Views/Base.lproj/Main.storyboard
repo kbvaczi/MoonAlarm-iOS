@@ -22,7 +22,8 @@
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uAT-nI-7IM">
-                                    <rect key="frame" x="339" y="125" width="90" height="30"/>
+                                    <rect key="frame" x="334" y="65" width="100" height="33"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                     <state key="normal" title="Start Trading"/>
                                     <connections>
                                         <action selector="startStopButtonPushed:" destination="Vd1-LB-tze" eventType="touchUpInside" id="DfZ-DU-Kx9"/>
@@ -30,13 +31,13 @@
                                 </button>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Markets:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="543-gf-Hph">
                                     <rect key="frame" x="20" y="8" width="67" height="21"/>
-                                    <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                     <nil key="textColor"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Last Refresh:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3iI-49-n2r">
                                     <rect key="frame" x="20" y="37" width="101" height="21"/>
-                                    <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                     <nil key="textColor"/>
                                     <nil key="highlightedColor"/>
                                 </label>
@@ -96,6 +97,7 @@
                                 <constraint firstItem="RHF-dy-Sju" firstAttribute="top" secondItem="Tvi-od-6Vh" secondAttribute="bottom" constant="15" id="OH4-kW-wbH"/>
                                 <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Hwu-8Z-XT4" secondAttribute="trailing" constant="20" symbolic="YES" id="QLc-zQ-Rdx"/>
                                 <constraint firstAttribute="trailing" secondItem="137-Zc-ou7" secondAttribute="trailing" constant="20" symbolic="YES" id="Vu8-nO-x2a"/>
+                                <constraint firstItem="uAT-nI-7IM" firstAttribute="centerY" secondItem="Srk-IU-jFr" secondAttribute="centerY" id="XMe-0y-4BD"/>
                                 <constraint firstItem="agg-d4-72I" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Srk-IU-jFr" secondAttribute="leading" constant="20" symbolic="YES" id="Ycx-oZ-IBs"/>
                                 <constraint firstItem="543-gf-Hph" firstAttribute="top" secondItem="Srk-IU-jFr" secondAttribute="top" constant="8" id="Zt7-Kw-tUK"/>
                                 <constraint firstItem="3iI-49-n2r" firstAttribute="leading" secondItem="Srk-IU-jFr" secondAttribute="leading" constant="20" symbolic="YES" id="cyc-0p-sKY"/>
@@ -107,7 +109,6 @@
                                 <constraint firstItem="Tvi-od-6Vh" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Srk-IU-jFr" secondAttribute="leading" constant="20" symbolic="YES" id="qVs-mx-nbP"/>
                                 <constraint firstAttribute="trailing" secondItem="NSH-FX-24w" secondAttribute="trailing" constant="20" symbolic="YES" id="rKn-0c-ewY"/>
                                 <constraint firstItem="Hwu-8Z-XT4" firstAttribute="top" secondItem="3iI-49-n2r" secondAttribute="bottom" constant="7.5" id="rZQ-kV-2sa"/>
-                                <constraint firstAttribute="bottom" secondItem="uAT-nI-7IM" secondAttribute="bottom" constant="8" id="uJ4-vE-X8d"/>
                                 <constraint firstItem="137-Zc-ou7" firstAttribute="top" secondItem="agg-d4-72I" secondAttribute="bottom" constant="8" id="uX5-ng-8zZ"/>
                                 <constraint firstItem="NSH-FX-24w" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Srk-IU-jFr" secondAttribute="leading" constant="20" symbolic="YES" id="vGo-qJ-RZz"/>
                                 <constraint firstItem="3iI-49-n2r" firstAttribute="top" secondItem="543-gf-Hph" secondAttribute="bottom" constant="8" symbolic="YES" id="vkm-Fa-7uW"/>

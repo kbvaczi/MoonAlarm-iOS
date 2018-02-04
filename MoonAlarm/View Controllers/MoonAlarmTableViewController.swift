@@ -95,14 +95,11 @@ class MoonAlarmTableViewController: UITableViewController {
 
     }
 
+    /// Initialize test mode switch, set to current mode
     func initTestModeSwitch() {
         let isTestMode = TradeStrategy.instance.testMode
         self.testModeSwitch.setOn(isTestMode, animated: true)
         self.testModeSwitch.tintColor = UIColor.red // Show the switch as red if out of test mode
-        
-
-        
-        
     }
 
     // MARK: - Table view data source
@@ -181,21 +178,30 @@ class MoonAlarmTableViewController: UITableViewController {
     }
     
     @objc private func updateDisplay() {
-        self.openTrades = TradeSession.instance.trades.selectOnly(status: .open)
-        self.completedTrades = TradeSession.instance.trades.selectOnly(status: .complete)
+        self.openTrades = TradeSession.instance.trades.filterOnlyOpen()
+        self.completedTrades = TradeSession.instance.trades.filterOnlyComplete()
         self.tableView.reloadData()
         self.symbolsCountLabel.text = "Markets: \(TradeSession.instance.symbolsWatching.count)"
         if  let marketLastUpdate = TradeSession.instance.lastUpdateTime {
             let currentTime = Date.currentTimeInMS
             let secondsSinceLastUpdate = (currentTime - marketLastUpdate).msToSeconds
-            let secondsSinceLastUpdateDisplay = String(format: "%.0f", arguments: [secondsSinceLastUpdate])
+            let secondsSinceLastUpdateDisplay =
+                                String(format: "%.0f", arguments: [secondsSinceLastUpdate])
             self.lastUpdatedLabel.text = "Last Refresh: \(secondsSinceLastUpdateDisplay)"
         }
-        self.completedTradesLabel.text = "Complete Trades: \(TradeSession.instance.trades.countOnly(status: .complete))"
-        self.successRateLabel.text = "Success Rate: \(TradeSession.instance.trades.successRate)%"
-        self.totalProfitPercentLabel.text = "Total Profit: \(TradeSession.instance.trades.totalProfitPercent)%"
-        self.sessionTimeLabel.text = "Session Time: \(TradeSession.instance.duration.displayMsToHHMM)"
-        self.tradeAmountLabel.text = "Trade Amount: \(TradeStrategy.instance.tradeAmountTarget) \(TradeStrategy.instance.tradingPairSymbol)"
+        self.completedTradesLabel.text =
+            "Complete Trades: \(TradeSession.instance.trades.countOnly(status: .complete))"
+        self.successRateLabel.text =
+            "Success Rate: \(TradeSession.instance.trades.successRate)%"
+        self.totalProfitPercentLabel.text =
+            "Total Profit: \(TradeSession.instance.trades.totalProfitPercent)%"
+        self.sessionTimeLabel.text =
+            "Session Time: \(TradeSession.instance.duration.displayMsToHHMM)"
+        self.tradeAmountLabel.text =
+            """
+            Trade Amount: \(TradeStrategy.instance.tradeAmountTarget)
+            \(TradeStrategy.instance.tradingPairSymbol)
+            """
     }
     
    
