@@ -100,13 +100,15 @@ class MarketSnapshot {
                 let toReplaceExistingSticks = self.candleSticks.last?.openTime ==
                                               newSticks.last?.openTime
                 if toReplaceExistingSticks {
-                    // Replace just the last two sticks with new data
+                    // Replace just the last two existing sticks with new data
                     self.candleSticks[existingCount - 2] = newSticks[0]
                     self.candleSticks[existingCount - 1] = newSticks[1]
                 } else {
-                    // Replace last stick and add a new one
+                    // Replace last existing stick and append a new one
                     self.candleSticks[existingCount - 1] = newSticks[0]
                     self.candleSticks.append(newSticks[1])
+                    // Remove oldest stick to maintain same number of total sticks
+                    self.candleSticks.removeFirst()
                 }
                 // Recalculate Market indicators
                 self.candleSticks.calculateMACD()
