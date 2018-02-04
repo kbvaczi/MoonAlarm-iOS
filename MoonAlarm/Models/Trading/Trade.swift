@@ -183,6 +183,7 @@ class Trade {
     private func complete() {
         // Cleanup
         self.status = .complete
+        self.endTime = Date.currentTimeInMS
         self.stopRegularUpdates()
         TradeStrategy.instance.updateBalances()         // update account balances
         
