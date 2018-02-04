@@ -13,7 +13,7 @@ class ProfitCutoffExit: TradeExitCriterion {
     var profitPercentCutoff: Percent
     
     override var logMessage: String {
-        return "ProfitCutoffExit (\(self.profitPercentCutoff.roundTo(1))%)"
+        return "ProfitCutoffExit (\(self.profitPercentCutoff.display1))%)"
     }
     
     init(percent pp: Percent = 1.0) {

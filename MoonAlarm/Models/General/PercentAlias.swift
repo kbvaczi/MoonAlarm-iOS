@@ -25,4 +25,9 @@ extension Percent {
         return self / 100
     }
     
+    /// Display as a string with 1 decimal place
+    var display1: String {
+        return String(format: "%0.1f", arguments: [self.roundTo(1)])
+    }
+    
 }

@@ -13,7 +13,7 @@ class TimeLimitExit: TradeExitCriterion {
     var exitAfterDuration: Milliseconds
     
     override var logMessage: String {
-        let minutes = self.exitAfterDuration.msToMinutes.roundTo(1)
+        let minutes = self.exitAfterDuration.msToMinutes.display1
         return "TimeLimitProfitExit (\(minutes) minutes)"
     }
     

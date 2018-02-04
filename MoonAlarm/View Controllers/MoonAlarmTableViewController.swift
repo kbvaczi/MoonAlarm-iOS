@@ -52,46 +52,49 @@ class MoonAlarmTableViewController: UITableViewController {
     @IBOutlet weak var totalProfitPercentLabel: UILabel!
     @IBOutlet weak var sessionTimeLabel: UILabel!
     @IBOutlet weak var tradeAmountLabel: UILabel!
-    
+    @IBOutlet weak var pairCoinBalanceLabel: UILabel!
+    @IBOutlet weak var feeCoinBalanceLabel: UILabel!
     
     var openTrades = Trades()
     var completedTrades = Trades()
     var updateTimer = Timer()
         
     override func viewDidLoad() {
-        
         super.viewDidLoad()
         self.startRegularDisplayUpdates()
         self.initTestModeSwitch()
+        TradeStrategy.instance.updateBalances()
         
-//        IPAD
+////        MINI
+//        TradeStrategy.instance.entranceCriteria = [
+//            RSIEnter(max: 40, inLast: 4),
+//            MACDEnter(incTrendFor: 3, requireCross: false),
+//            SpareRunwayEnter(percent: 1.5),
+////            FallwaySupportEnter(percent: 0.5),
+//        ]
+//
+//        TradeStrategy.instance.exitCriteria = [
+//            LossExit(percent: 2.0),
+//            TrailingLossExit(percent: 1.0, after: 2.0),
+//            RSIExit(max: 60),
+//            AndExit([MinRunwayExit(percent: 0.1), FallwayExit(percent: 0.2)]),
+//            AndExit([LossExit(percent: 0.6), FallwayExit(percent: 1.0)])
+//        ]
+
+        // IPAD //
         TradeStrategy.instance.entranceCriteria = [
             RSIEnter(max: 40, inLast: 4),
             MACDEnter(incTrendFor: 3, requireCross: false),
             SpareRunwayEnter(percent: 1.5),
-//            FallwaySupportEnter(percent: 0.5),
-        ]
-
-        TradeStrategy.instance.exitCriteria = [
-            LossExit(percent: 2.0),
-            TrailingLossExit(percent: 1.0, after: 2.0),
-            RSIExit(max: 60),
-            AndExit([MinRunwayExit(percent: 0.1), FallwayExit(percent: 0.2)]),
-            AndExit([LossExit(percent: 0.6), FallwayExit(percent: 1.0)])
         ]
         
-////        iPad Mini
-//        TradeStrategy.instance.entranceCriteria = [
-//            IncreasedVolumeEnter(minVolRatio: 2.0),
-//            SpareRunwayEnter(percent: 1.5),
-//            FallwaySupportEnter(percent: 0.5),
-//        ]
-//
-//        TradeStrategy.instance.exitCriteria = [
-//            LossExit(percent: 1.0),
-//            ProfitCutoffExit(percent: 0.5),
-//            MinRunwayExit(percent: 0.1)
-//        ]
+        TradeStrategy.instance.exitCriteria = [
+            ProfitCutoffExit(percent: 0.5),
+            LossExit(percent: 1.0),
+            AndExit([LossExit(percent: 0.5), FallwayExit(percent: 1.0)]),
+            AndExit([MinRunwayExit(percent: 0.1), FallwayExit(percent: 0.2)]),
+        ]
+
 
     }
 
@@ -141,26 +144,14 @@ class MoonAlarmTableViewController: UITableViewController {
     
     func buildCell(_ cell: UITableViewCell, from trade: Trade) {
         // set enter price
-        var entPriceString = ""
-        if let enterPrice = trade.enterPrice {
-            entPriceString = enterPrice.toDisplay
-        } else {
-            entPriceString = "?"
-        }
+        let enterPrice = trade.enterPrice
+        let enterPriceString = enterPrice != nil ? enterPrice!.display8 : "?"
         
         // Set exit price
-        var exitPriceString = ""
-        if let exitPrice = trade.exitPrice {
-            exitPriceString = exitPrice.toDisplay
-        } else {
-            let pairVolume = TradeStrategy.instance.tradeAmountTarget
-            if let marketExitPrice = trade.marketSnapshot.orderBook.marketSellPrice(forPairVolume: pairVolume) {
-                exitPriceString = marketExitPrice.toDisplay
-            } else {
-                exitPriceString = "?"
-            }
-        }
-        cell.textLabel?.text = "\(trade.symbol) \(entPriceString) -> \(exitPriceString)"
+        let exitPrice = trade.exitPrice ?? trade.marketSnapshot.orderBook.firstAskPrice
+        let exitPriceString = exitPrice != nil ? exitPrice!.display8 : "?"
+        
+        cell.textLabel?.text = "\(trade.symbol) \(enterPriceString) -> \(exitPriceString)"
         if let profitPercent = trade.profitPercent {
             cell.detailTextLabel?.text = "\(profitPercent)%"
         }
@@ -189,19 +180,32 @@ class MoonAlarmTableViewController: UITableViewController {
                                 String(format: "%.0f", arguments: [secondsSinceLastUpdate])
             self.lastUpdatedLabel.text = "Last Refresh: \(secondsSinceLastUpdateDisplay)"
         }
+        
+        // Set Labels
+        
+        // Account Balances
+        let pairBalance = TradeStrategy.instance.tradingPairBalance.display8
+        let pairSymbol = TradeStrategy.instance.tradingPairSymbol
+        let pairCoinBalanceString = "\(pairBalance) \(pairSymbol)"
+        self.pairCoinBalanceLabel.text = "Pair Coin Balance: \(pairCoinBalanceString)"
+        let feeCoinBalance = TradeStrategy.instance.tradingFeeCoinBalance.display8
+        let feeCoinSymbol = TradeStrategy.instance.tradingFeeCoinSymbol
+        let feeCoinBalanceString =  feeCoinSymbol != nil ?
+                                    "\(feeCoinBalance) \(feeCoinSymbol!)" :
+                                    "N/A"
+        self.feeCoinBalanceLabel.text = "Fee Coin Balance: \(feeCoinBalanceString)"
+        
+        // Trade Session Details
         self.completedTradesLabel.text =
-            "Complete Trades: \(TradeSession.instance.trades.countOnly(status: .complete))"
+            "Trades Completed: \(TradeSession.instance.trades.countComplete())"
         self.successRateLabel.text =
             "Success Rate: \(TradeSession.instance.trades.successRate)%"
         self.totalProfitPercentLabel.text =
             "Total Profit: \(TradeSession.instance.trades.totalProfitPercent)%"
         self.sessionTimeLabel.text =
             "Session Time: \(TradeSession.instance.duration.displayMsToHHMM)"
-        self.tradeAmountLabel.text =
-            """
-            Trade Amount: \(TradeStrategy.instance.tradeAmountTarget)
-            \(TradeStrategy.instance.tradingPairSymbol)
-            """
+        let targetTradeAmount = TradeStrategy.instance.tradeAmountTarget
+        self.tradeAmountLabel.text = "Target Trade Amount: \(targetTradeAmount) \(pairSymbol)"
     }
     
    

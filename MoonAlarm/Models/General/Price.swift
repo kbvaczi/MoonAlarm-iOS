@@ -25,9 +25,9 @@ extension Price {
         return self.roundTo(8)
     }
     
-    var toDisplay: String {
+    /// Display as a string with 8 decimal places
+    var display8: String {
         return String(format: "%0.8f", arguments: [self.rounded8])
-        
     }
     
 }

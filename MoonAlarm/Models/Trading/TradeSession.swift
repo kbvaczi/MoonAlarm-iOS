@@ -131,7 +131,7 @@ class TradeSession {
     
     @objc func regularUpdate() {
         let maxOpenTrades = TradeStrategy.instance.maxOpenTrades
-        guard self.trades.countOnly(status: .open) < maxOpenTrades else { return }
+        guard self.trades.countOpen() < maxOpenTrades else { return }
         self.updateMarketSnapshots {
             self.investInWinners()
         }
@@ -146,7 +146,7 @@ class TradeSession {
         
         for snapshot in self.marketSnapshots {
             // don't start any more trades if we've maxed out
-            guard trades.countOnly(status: .open) < maxOpenTrades else { return }
+            guard trades.countOpen() < maxOpenTrades else { return }
             
             // only one trade open per symbol at a time
             if trades.openTradeFor(snapshot.symbol) { continue }
@@ -159,7 +159,7 @@ class TradeSession {
                 let newTrade = Trade(symbol: snapshot.symbol, snapshot: snapshot,
                                      isTest: isTestMode)
                 self.trades.insert(newTrade, at: 0)
-                newTrade.execute()
+                newTrade.enter()
             }
         }
     }
