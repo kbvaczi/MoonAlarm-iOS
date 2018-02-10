@@ -81,10 +81,11 @@ class SellOrderManager: OrderManager {
         
     }
     
-    override func manageOrder(_ order: TradeOrder) {
+    override func manageOpenOrder() {
         
         // If order is finished, stop managing orders
-        guard   !order.isFinalized
+        guard   let order = self.orders.last,
+                !order.isFinalized
                 else {
             NSLog("SellOrderManager(\(self.parentTrade.symbol)): Order Finalized, stop managing")
             self.stopRegularUpdates()

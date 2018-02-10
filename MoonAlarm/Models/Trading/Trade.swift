@@ -71,10 +71,12 @@ class Trade {
     /// Keep track of status of trade
     ///
     /// - draft: trade has not yet been submitted to exchange
-    /// - open: trade has been submitted, and is being tracked
+    /// - entering: trade has been submitted, and is being tracked
+    /// - entered: buy order has been filled, stop managing buy order
     /// - complete: trade has been finished, asset has been sold, no longer need to track
     enum Status: String {
         case draft = "Draft"
+        case entering = "Entering"
         case entered = "Entered"
         case exiting = "Exiting"
         case complete = "Complete"
@@ -96,7 +98,7 @@ class Trade {
         let fee = TradeStrategy.instance.expectedFeePerTrade
         switch self.status {
         case .draft: return nil
-        case .entered, .exiting:
+        case .entering, .entered, .exiting:
             let orderBook = self.marketSnapshot.orderBook
             guard   let enterP = self.enterPrice,
                     let currentP = orderBook.firstAskPrice
@@ -135,19 +137,20 @@ class Trade {
             NSLog("Trade(\(self.symbol)): Error, cannot enter trade without market pricing")
             return
         }
-
-        // If we're not testing, place and manage orders
-        if !self.isTest {
+        
+        // If we're doing live trades, place and manage orders
+        if self.isTest {
+            self.status = .entered
+        } else {
             let amountToBuy = self.targetTradePairAmount / buyPrice
             self.buyOrderManager = BuyOrderManager(price: buyPrice, amount: amountToBuy,
                                                    forTrade: self)
             self.buyOrderManager?.start()
+            self.status = .entering
         }
         
-        self.status = .entered
         self.targetEnterPrice = buyPrice
         self.startRegularUpdates()
-        
     }
     
     /// Exit a trade, setup sell orders if appropriate, continue tracking until exit complete
@@ -167,15 +170,20 @@ class Trade {
             // No sale orders placed during testing, go ahead and complete trade
             self.complete()
         } else {
-            // If we're doing live trading, place and manage sale orders
-            guard   let amountToSell = self.amountTrading else {
-                NSLog("Trade(\(self.symbol)): Error, cannot sell without knowing amount trading")
-                return
+            // Cancel any open buy orders before proceeding to make sale orders
+            self.buyOrderManager?.cancelOpenOrder() { isSuccess in
+                guard isSuccess else { self.exit(); return }
+             
+                // If we're doing live trading, place and manage sale orders
+                guard   let amountToSell = self.amountTrading else {
+                    NSLog("Trade(\(self.symbol)): Error, cannot sell without amount to trade")
+                    return
+                }
+                self.sellOrderManager = SellOrderManager(price: sellPrice, amount: amountToSell,
+                                                         forTrade: self)
+                self.sellOrderManager?.start()
+                self.status = .exiting  // Allows this trade to begin monitoring for completion
             }
-            self.sellOrderManager = SellOrderManager(price: sellPrice, amount: amountToSell,
-                                                     forTrade: self)
-            self.sellOrderManager?.start()
-            self.status = .exiting  // Allows this trade to begin monitoring for completion
         }
     }
     
@@ -189,21 +197,32 @@ class Trade {
         
         // Log results
         let tradeProfitDisplay = (self.profitPercent != nil) ? self.profitPercent!.display1 : "???"
-        NSLog("Trade(\(self.symbol)) Ended, \(tradeProfitDisplay)% profit")
+        NSLog("Trade(\(self.symbol)) Ended, \(tradeProfitDisplay) % profit")
         let tradesCount = TradeSession.instance.trades.countOnly(status: .complete)
         let successRate = TradeSession.instance.trades.successRate.display1
         let sessionProfit = TradeSession.instance.trades.totalProfitPercent.display1
-        NSLog("Session Trades:\(tradesCount) Success:\(successRate)% Profit:\(sessionProfit)%")
+        NSLog("Session Trades:\(tradesCount) Success: \(successRate) % Profit: \(sessionProfit) %")
     }
     
     /// Monitor an trade and determine whether to exit/complete
     private func monitor() {
         switch self.status {
+        case .entering:            
+            if self.exitCriteria.onePassedFor(self) {
+                self.exit()
+            } else {
+                self.buyOrderManager?.manageOpenOrder()
+                if let allBuysFinal = self.buyOrderManager?.orders.allFinalized,
+                   allBuysFinal == true {
+                    self.status = .entered
+                }
+            }
+            break
         case .entered:
-            if self.exitCriteria.onePassedFor(self) { self.exit() }
+            if self.exitCriteria.onePassedFor(self) { self.exit(); break }
         case .exiting:
-            guard   let allSellsFinalized = self.sellOrderManager?.orders.allFinalized,
-                    allSellsFinalized == true else {
+            guard   let allSellsFinal = self.sellOrderManager?.orders.allFinalized,
+                    allSellsFinal == true else {
                 return
             }
             self.complete()
@@ -215,7 +234,7 @@ class Trade {
     
     private func startRegularUpdates() {
         self.updateTimer.invalidate()
-        self.updateTimer = Timer.scheduledTimer(timeInterval: 3, target: self,
+        self.updateTimer = Timer.scheduledTimer(timeInterval: 5, target: self,
                                                 selector: #selector(self.regularUpdate),
                                                 userInfo: nil, repeats: true)
     }

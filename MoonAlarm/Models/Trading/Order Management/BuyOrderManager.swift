@@ -82,16 +82,14 @@ class BuyOrderManager: OrderManager {
                 callback(true)
             }
         }
-        
     }
     
-    /// Manage order based on market conditions
-    ///
-    /// - Parameter order: order to manage
-    override func manageOrder(_ order: TradeOrder) {
+    /// Manage open order based on market conditions
+    override func manageOpenOrder() {
         
         // If order is finished, stop managing orders
-        guard   !order.isFinalized else {
+        guard   let order = self.orders.last,
+                !order.isFinalized else {
             NSLog("BuyOrderManager(\(self.parentTrade.symbol)): Order Finalized, stop managing")
             self.stopRegularUpdates()
             return
@@ -130,6 +128,22 @@ class BuyOrderManager: OrderManager {
                 \(orderPrice.display8), replacing buy order
                 """)
             self.replaceOrder(order)
+        }
+    }
+    
+    /// Cancel last order if it is open
+    ///
+    /// - Parameter callback: do this after cancelling order
+    func cancelOpenOrder(callback: @escaping (_ isSuccess: Bool) -> Void ) {
+        
+        // Verify order needs to be canceled
+        guard   let orderToCancel = self.orders.last,
+                !orderToCancel.isFinalized
+                else { callback(true); return }
+        
+        self.cancelOrder(orderToCancel) { isSuccess in
+            if isSuccess { self.stopRegularUpdates() }
+            callback(isSuccess)
         }
     }
     

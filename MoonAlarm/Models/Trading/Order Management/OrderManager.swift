@@ -49,10 +49,8 @@ class OrderManager {
         NSLog("OrderManager(\(self.parentTrade.symbol): Error, placeNewOrder not overridden")
     }
     
-    /// Manage order based on market conditions
-    ///
-    /// - Parameter order: order to manage
-    func manageOrder(_ order: TradeOrder) {
+    /// Manage open order based on market conditions
+    func manageOpenOrder() {
         NSLog("OrderManager(\(self.parentTrade.symbol): Error, manageOrder not overridden")
     }
     
@@ -96,7 +94,7 @@ class OrderManager {
     func startRegularUpdates() {
         NSLog("OrderManager(\(self.parentTrade.symbol)): Start regular updates")
         self.updateTimer.invalidate()
-        self.updateTimer = Timer.scheduledTimer(timeInterval: 15, target: self,
+        self.updateTimer = Timer.scheduledTimer(timeInterval: 30, target: self,
                                                 selector: #selector(self.updateAndManageLastOrder),
                                                 userInfo: nil, repeats: true)
     }
@@ -106,7 +104,7 @@ class OrderManager {
         NSLog("OrderManager(\(self.parentTrade.symbol)): Updating")
         guard let lastOrder = self.orders.last else { return }
         lastOrder.update() { isSuccess in
-            self.manageOrder(lastOrder)
+//            self.manageOrder(lastOrder)
         }
     }
     
