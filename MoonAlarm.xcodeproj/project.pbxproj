@@ -28,6 +28,7 @@
 		BE4279722024B8B100D6FE1E /* BuyOrderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE4279712024B8B100D6FE1E /* BuyOrderManager.swift */; };
 		BE4279782026433000D6FE1E /* OrderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE4279772026433000D6FE1E /* OrderManager.swift */; };
 		BE42797A20264D7800D6FE1E /* SellOrderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE42797920264D7800D6FE1E /* SellOrderManager.swift */; };
+		BE42797C20279F0400D6FE1E /* TimeDelayCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE42797B20279F0400D6FE1E /* TimeDelayCriterion.swift */; };
 		BE5F8592200BB4C70042EE0A /* BinanceEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5F8591200BB4C70042EE0A /* BinanceEnums.swift */; };
 		BE9B0F87201DFC2C004846F1 /* TradeOrderFill.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9B0F86201DFC2C004846F1 /* TradeOrderFill.swift */; };
 		BE9B0F8B201DFE6B004846F1 /* TradeOrderFills.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9B0F8A201DFE6B004846F1 /* TradeOrderFills.swift */; };
@@ -92,6 +93,7 @@
 		BE4279712024B8B100D6FE1E /* BuyOrderManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuyOrderManager.swift; sourceTree = "<group>"; };
 		BE4279772026433000D6FE1E /* OrderManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderManager.swift; sourceTree = "<group>"; };
 		BE42797920264D7800D6FE1E /* SellOrderManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SellOrderManager.swift; sourceTree = "<group>"; };
+		BE42797B20279F0400D6FE1E /* TimeDelayCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeDelayCriterion.swift; sourceTree = "<group>"; };
 		BE5F8591200BB4C70042EE0A /* BinanceEnums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinanceEnums.swift; sourceTree = "<group>"; };
 		BE9B0F86201DFC2C004846F1 /* TradeOrderFill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradeOrderFill.swift; sourceTree = "<group>"; };
 		BE9B0F8A201DFE6B004846F1 /* TradeOrderFills.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradeOrderFills.swift; sourceTree = "<group>"; };
@@ -344,6 +346,7 @@
 				BE1867472012215B00E275E4 /* BidAskGapCriterion.swift */,
 				BE18674D2012B0D400E275E4 /* MarketBuyLossCriterion.swift */,
 				BE3BA14620138F4D00458621 /* RSIEnterCriterion.swift */,
+				BE42797B20279F0400D6FE1E /* TimeDelayCriterion.swift */,
 			);
 			path = "Enter Criteria";
 			sourceTree = "<group>";
@@ -511,6 +514,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BE42797C20279F0400D6FE1E /* TimeDelayCriterion.swift in Sources */,
 				BE390BA020015AD500CFD46B /* BinanceAPI.swift in Sources */,
 				BE07C0DB200EBE35000F5A38 /* MACDEnterCriterion.swift in Sources */,
 				BE9E3CA420058F3B005D531C /* Trade.swift in Sources */,
