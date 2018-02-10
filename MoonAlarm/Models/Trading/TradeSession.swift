@@ -42,6 +42,7 @@ class TradeSession {
     func start(callback: @escaping () -> Void) {
         self.status = .running
         self.startTime = Date.currentTimeInMS
+        TradeStrategy.instance.updateBalances()
         self.updateSymbolsAndPrioritize { isSuccess in
             self.startRegularSnapshotUpdates()
             callback()
