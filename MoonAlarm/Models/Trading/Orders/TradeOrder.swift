@@ -112,7 +112,7 @@ class TradeOrder {
     func cancel(callback: @escaping (_ isSuccess: Bool) -> Void) {
         
         // No need to cancel an order that's already finalized
-        guard !self.isFinalized else { callback(false); return }
+        guard !self.isFinalized else { callback(true); return }
         
         BinanceAPI.instance.cancelOrder(self) { (isSuccess, processedOrder) in
             
