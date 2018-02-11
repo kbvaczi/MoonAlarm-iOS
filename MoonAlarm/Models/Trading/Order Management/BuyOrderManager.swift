@@ -91,7 +91,7 @@ class BuyOrderManager: OrderManager {
         guard   let order = self.orders.last,
                 !order.isFinalized else {
             NSLog("BuyOrderManager(\(self.parentTrade.symbol)): Order Finalized, stop managing")
-            self.stopRegularUpdates()
+            self.complete()
             return
         }
         
@@ -113,10 +113,10 @@ class BuyOrderManager: OrderManager {
         guard   percentAboveTargetPrice <= self.maxChangeToTargetPrice else {
             NSLog("""
                 BuyOrderManager(\(self.parentTrade.symbol)): Price got too expensive
-                (\(percentAboveTargetPrice)%), stop placing new buy orders
+                (\(percentAboveTargetPrice)%%), stop placing new buy orders
                 """)
             cancelOrder(order) { isSuccess in
-                if isSuccess { self.stopRegularUpdates() }
+                if isSuccess { self.complete() }
             }
             return
         }
@@ -131,10 +131,10 @@ class BuyOrderManager: OrderManager {
         }
     }
     
-    /// Cancel last order if it is open
+    /// Cancel last order if it is open, stop order management
     ///
-    /// - Parameter callback: do this after cancelling order
-    func cancelOpenOrder(callback: @escaping (_ isSuccess: Bool) -> Void ) {
+    /// - Parameter callback: do this after
+    func cancelOpenOrderAndStopBuying(callback: @escaping (_ isSuccess: Bool) -> Void ) {
         
         // Verify order needs to be canceled
         guard   let orderToCancel = self.orders.last,
@@ -142,7 +142,7 @@ class BuyOrderManager: OrderManager {
                 else { callback(true); return }
         
         self.cancelOrder(orderToCancel) { isSuccess in
-            if isSuccess { self.stopRegularUpdates() }
+            if isSuccess { self.complete() }
             callback(isSuccess)
         }
     }

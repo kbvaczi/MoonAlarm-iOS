@@ -88,7 +88,7 @@ class SellOrderManager: OrderManager {
                 !order.isFinalized
                 else {
             NSLog("SellOrderManager(\(self.parentTrade.symbol)): Order Finalized, stop managing")
-            self.stopRegularUpdates()
+            self.complete()
             return
         }
         

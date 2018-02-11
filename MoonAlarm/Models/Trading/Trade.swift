@@ -21,7 +21,7 @@ class Trade {
     /// Used to keep track of whether trade is a draft, open, or complete
     var status: Status = .draft
     
-    /// Keep track of the target amount for this trade
+    /// Target amount for this trade, expressed as trading pair amount
     let targetTradePairAmount = TradeStrategy.instance.tradeAmountTarget
     /// Asset price when enter criteria triggers
     var targetEnterPrice: Price? = nil
@@ -45,6 +45,20 @@ class Trade {
         }
         
         return self.buyOrderManager?.orders.amountFilled
+    }
+    
+    /// Amount of trading pair spent to date on this trade
+    var amountTradingPair: Double? {
+        // If we are doing test trades, assume we always trade exactly target amount
+        guard   !self.isTest else { return self.targetTradePairAmount }
+        
+        // Verify we have the data necessary to calculate amount trading for live trades
+        guard   let amountTrading = self.amountTrading,
+                let averageFillPrice = self.buyOrderManager?.orders.avgfillPrice
+                else { return nil }
+        
+        // purchasedCoinAmount * $(pairAmount/coin) = purchasedPairAmount
+        return amountTrading * averageFillPrice
     }
     
     /// When trade started
@@ -171,7 +185,7 @@ class Trade {
             self.complete()
         } else {
             // Cancel any open buy orders before proceeding to make sale orders
-            self.buyOrderManager?.cancelOpenOrder() { isSuccess in
+            self.buyOrderManager?.cancelOpenOrderAndStopBuying() { isSuccess in
                 guard isSuccess else { self.exit(); return }
              
                 // If we're doing live trading, place and manage sale orders
@@ -197,11 +211,11 @@ class Trade {
         
         // Log results
         let tradeProfitDisplay = (self.profitPercent != nil) ? self.profitPercent!.display1 : "???"
-        NSLog("Trade(\(self.symbol)) Ended, \(tradeProfitDisplay) % profit")
+        NSLog("Trade(\(self.symbol)) Ended, \(tradeProfitDisplay)%% profit")
         let tradesCount = TradeSession.instance.trades.countOnly(status: .complete)
         let successRate = TradeSession.instance.trades.successRate.display1
         let sessionProfit = TradeSession.instance.trades.totalProfitPercent.display1
-        NSLog("Session Trades:\(tradesCount) Success: \(successRate) % Profit: \(sessionProfit) %")
+        NSLog("Session Trades:\(tradesCount) Success: \(successRate)%% Profit: \(sessionProfit)%%")
     }
     
     /// Monitor an trade and determine whether to exit/complete
@@ -212,8 +226,8 @@ class Trade {
                 self.exit()
             } else {
                 self.buyOrderManager?.manageOpenOrder()
-                if let allBuysFinal = self.buyOrderManager?.orders.allFinalized,
-                   allBuysFinal == true {
+                let buyingComplete = self.buyOrderManager?.status == .complete
+                if buyingComplete {
                     self.status = .entered
                 }
             }
@@ -221,11 +235,11 @@ class Trade {
         case .entered:
             if self.exitCriteria.onePassedFor(self) { self.exit(); break }
         case .exiting:
-            guard   let allSellsFinal = self.sellOrderManager?.orders.allFinalized,
-                    allSellsFinal == true else {
-                return
+            self.sellOrderManager?.manageOpenOrder()
+            let sellingComplete = self.sellOrderManager?.status == .complete
+            if sellingComplete {
+                self.complete()
             }
-            self.complete()
         case .draft, .complete: break
         }
     }

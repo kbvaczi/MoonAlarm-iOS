@@ -10,12 +10,23 @@ import Foundation
 
 class OrderManager {
     
+    ////////// PROPERTIES //////////
+    
     /// Trade we are managing orders for
     let parentTrade: Trade
     /// Target price for the asset we are trying to buy/sell
     let targetPrice: Price
     /// Amount of asset we want to buy/sell
     let targetAmount: Double
+    
+    /// Orders we will be managing
+    var orders: TradeOrders = []
+    
+    /// Keep track of the status of this order manager
+    var status: Status = .draft
+    
+    /// Used for status updates
+    var updateTimer = Timer()
     
     ////////// SETTINGS //////////
     
@@ -24,11 +35,7 @@ class OrderManager {
     /// We will share a spot on the order book with other orders up to this volume
     var maxCompetitionAtPrice: Double { return self.targetAmount }
     
-    /// Orders we will be managing
-    var orders: TradeOrders = []
-    
-    /// Used for status updates
-    var updateTimer = Timer()
+    ////////// INIT //////////
     
     /// Create a new OrderManager to manage orders for a trade
     ///
@@ -41,6 +48,8 @@ class OrderManager {
         self.targetAmount = amount
         self.parentTrade = trade
     }
+    
+    ////////// USE METHODS //////////
     
     /// Place new order
     ///
@@ -57,7 +66,13 @@ class OrderManager {
     /// Place an order and start managing
     func start() {
         self.placeNewOrder() { isSuccess in
-            if isSuccess { self.startRegularUpdates() }
+            if isSuccess {
+                self.status = .started
+                self.startRegularUpdates()
+            } else {
+                NSLog("OrderManager(\(self.parentTrade.symbol): Error, initial order failed")
+                self.status = .complete
+            }
         }
     }
     
@@ -90,28 +105,51 @@ class OrderManager {
         }
     }
     
+    /// Complete order management, stop updates
+    func complete() {
+        self.status = .complete
+        self.stopRegularUpdates()
+    }
+    
+    ////////// DATA UPDATES //////////
+    
     /// Update this order repeatedly on a regular interval
-    func startRegularUpdates() {
+    private func startRegularUpdates() {
         NSLog("OrderManager(\(self.parentTrade.symbol)): Start regular updates")
         self.updateTimer.invalidate()
-        self.updateTimer = Timer.scheduledTimer(timeInterval: 30, target: self,
+        self.updateTimer = Timer.scheduledTimer(timeInterval: 15, target: self,
                                                 selector: #selector(self.updateAndManageLastOrder),
                                                 userInfo: nil, repeats: true)
     }
     
     /// Update last order and manage based on market conditions
     @objc private func updateAndManageLastOrder() {
+        // Verify we can find an order
+        guard   let lastOrder = self.orders.last else { return }
+        
         NSLog("OrderManager(\(self.parentTrade.symbol)): Updating")
-        guard let lastOrder = self.orders.last else { return }
         lastOrder.update() { isSuccess in
-//            self.manageOrder(lastOrder)
+            self.manageOpenOrder()
         }
     }
     
     /// Stop regular updates to this order
-    func stopRegularUpdates() {
+    private func stopRegularUpdates() {
         NSLog("OrderManager(\(self.parentTrade.symbol)): Stop regular updates")
         self.updateTimer.invalidate()
+    }
+    
+    ////////// DATA STRUCTURES //////////
+    
+    /// Used to keep track of the status of order manager
+    ///
+    /// - draft: Order manager has not been started yet
+    /// - started: Order manager has started and is actively managing orders
+    /// - complete: Order manager has completed, stopped managing orders
+    enum Status: String {
+        case draft = "Draft"
+        case started = "Started"
+        case complete = "Completed"
     }
     
 }
