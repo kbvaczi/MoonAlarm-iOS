@@ -70,4 +70,18 @@ class CandleStick {
     
     var rsi: Double? = nil
     
+    ////////// Stoch RSI Indicator //////////
+    
+    /// Stochastic RSI
+    var stochRSI: Double? = nil
+    /// Smoothed signal of stochastic RSI
+    var stochRSIK: Double? = nil
+    /// Smoothed smoothed signal of stochastic RSI
+    var stochRSID: Double? = nil
+    /// stochRSIK - stochRSID
+    var stochRSISignalDelta: Double? {
+        guard   let k = self.stochRSIK,
+                let d = self.stochRSID else { return nil }
+        return k - d
+    }
 }

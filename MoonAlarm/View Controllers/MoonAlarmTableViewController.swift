@@ -63,39 +63,44 @@ class MoonAlarmTableViewController: UITableViewController {
         super.viewDidLoad()
         self.startRegularDisplayUpdates()
         self.initTestModeSwitch()
-        TradeStrategy.instance.updateBalances()
         
-////        MINI
+        //  MINI //
+        TradeStrategy.instance.entranceCriteria = [
+//            RSIEnter(max: 40, inLast: 3),
+//            MACDEnter(incTrendFor: 2, requireCross: false),
+            StochRSIEnter(),
+            SpareRunwayEnter(percent: 1),
+            TimeDelayEnter(delay: 10),
+//            FallwaySupportEnter(percent: 1),
+        ]
+
+        TradeStrategy.instance.exitCriteria = [
+            LossExit(percent: 1.0),
+            AndExit([LossExit(percent: 0.5), FallwayExit(percent: 1.0)]),
+            AndExit([MinRunwayExit(percent: 0.1), FallwayExit(percent: 0.2)]),
+            ProfitCutoffExit(percent: 0.5),
+            TrailingLossExit(percent: 0.2, after: 0.3),
+            RSIExit(max: 60),
+        ]
+
+        // IPAD //
 //        TradeStrategy.instance.entranceCriteria = [
-//            RSIEnter(max: 40, inLast: 4),
-//            MACDEnter(incTrendFor: 3, requireCross: false),
-//            SpareRunwayEnter(percent: 1.5),
+//            RSIEnter(max: 40, inLast: 3),
+//            MACDEnter(incTrendFor: 2, requireCross: false),
+//            SpareRunwayEnter(percent: 2),
+//            TimeDelayEnter(delay: 10),
 ////            FallwaySupportEnter(percent: 0.5),
 //        ]
 //
 //        TradeStrategy.instance.exitCriteria = [
-//            LossExit(percent: 2.0),
-//            TrailingLossExit(percent: 1.0, after: 2.0),
-//            RSIExit(max: 60),
+//            LossExit(percent: 1.0),
+//            AndExit([LossExit(percent: 0.5), FallwayExit(percent: 1.0)]),
 //            AndExit([MinRunwayExit(percent: 0.1), FallwayExit(percent: 0.2)]),
-//            AndExit([LossExit(percent: 0.6), FallwayExit(percent: 1.0)])
+//            ProfitCutoffExit(percent: 0.5),
+//            TrailingLossExit(percent: 0.2, after: 0.3),
+//            RSIExit(max: 60),
 //        ]
-
-        // IPAD //
-        TradeStrategy.instance.entranceCriteria = [
-            RSIEnter(max: 40, inLast: 4),
-            MACDEnter(incTrendFor: 3, requireCross: false),
-            SpareRunwayEnter(percent: 1.5),
-        ]
-        
-        TradeStrategy.instance.exitCriteria = [
-            ProfitCutoffExit(percent: 0.5),
-            LossExit(percent: 1.0),
-            AndExit([LossExit(percent: 0.5), FallwayExit(percent: 1.0)]),
-            AndExit([MinRunwayExit(percent: 0.1), FallwayExit(percent: 0.2)]),
-        ]
-
-
+    
     }
 
     /// Initialize test mode switch, set to current mode

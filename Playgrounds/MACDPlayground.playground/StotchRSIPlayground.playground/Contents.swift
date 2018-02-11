@@ -1,3 +1,5 @@
+// http://investexcel.net/how-to-calculate-macd-in-excel/
+
 import Foundation
 
 class CandleStick {
@@ -5,6 +7,9 @@ class CandleStick {
     ////////// Price //////////
     
     let closePrice: Double
+    var macd: Double? = nil
+    var macdSignal: Double? = nil
+    var ema26: Double? = nil
     
     ////////// Initializer //////////
     
@@ -15,81 +20,6 @@ class CandleStick {
 }
 
 extension Array where Element : CandleStick {
-    
-    func currentRSI(_ period: Int = 14) -> Double? {
-        
-        // RSI needs a minimum of 2 * period to be accurate
-        guard self.count > (2 * period) else { return nil }
-        
-        var initialBullAvg: Double = 0.0
-        var initialBearAvg: Double = 0.0
-        
-        let initialPeriod = self.prefix(period)
-        for (index, cStick) in initialPeriod.enumerated() {
-            if index == 0 { continue } // can't get prev close from first
-            let prevClosePrice = self[index - 1].closePrice
-            let deltaPrice = cStick.closePrice - prevClosePrice
-            
-            let isBull = deltaPrice > 0
-            if isBull {
-                let gain = deltaPrice
-                initialBullAvg += gain / Double(period)
-            } else {
-                let loss = deltaPrice * -1
-                initialBearAvg += loss / Double(period)
-            }
-        }
-        
-        var bullSMA = SMA(initialValue: initialBullAvg, period)
-        var bearSMA = SMA(initialValue: initialBearAvg, period)
-        
-        let remainingPeriods = self.dropFirst(period + 1)
-        let rpStartIndex = remainingPeriods.startIndex
-        for (index, cStick) in remainingPeriods.enumerated() {
-            let prevClosePrice = self[index + rpStartIndex - 1].closePrice
-            let deltaPrice = cStick.closePrice - prevClosePrice
-            
-            let isBull = deltaPrice > 0
-            if isBull {
-                let gain = deltaPrice
-                bullSMA.add(next: gain)
-                bearSMA.add(next: 0)
-            } else {
-                let loss = deltaPrice * -1
-                bearSMA.add(next: loss)
-                bullSMA.add(next: 0)
-            }
-        }
-        
-        guard   let bullSMAValue = bullSMA.currentAvg,
-                let bearSMAValue = bearSMA.currentAvg
-                else { return nil }
-        
-        let rs = bullSMAValue / bearSMAValue
-        let rsi = (100 - (100 / (1 + rs)))
-        
-        return rsi
-    }
-    
-    struct SMAOld {
-        
-        private var period: Int
-        var currentAvg: Double?
-        
-        init(initialPrice: Double? = nil, _ period: Int) {
-            self.currentAvg = initialPrice
-            self.period = period
-        }
-        
-        @discardableResult mutating func add(next: Double) -> SMAOld {
-            guard let currentAvg = self.currentAvg else {
-                self.currentAvg = next
-                return self
-            }
-            self.currentAvg = ((currentAvg * Double(period - 1)) + next) / Double(period)
-            return self
-        }
-    }
     
     /// Simple Moving Average
     class SMA {
@@ -172,14 +102,73 @@ extension Array where Element : CandleStick {
         }
         
     }
+    
+    /// Exponential moving average
+    class EMA: SMA {
+        
+        override func updatedAvg(adding next: Double) -> Double? {
+            /// Verify we have a valid moving average prior to continuing
+            guard   let currentAvg = self.currentAvg else { return nil }
+            
+            let weightFactor: Double = 2.0 / Double(self.period + 1)
+            let newAvg = (next - currentAvg) * weightFactor + currentAvg
+            //            let newAvg = next * weightFactor + currentAvg * (1-weightFactor)
+            
+            return newAvg
+        }
+        
+    }
+    
+}
+
+extension Array where Element : CandleStick {
+    
+    func calculateMACD() {
+        
+        // need a minimum of 2 * period candlesticks to be accurate
+        guard self.count > 50 else { return }
+        
+        let ema26 = EMA(26)
+        let ema12 = EMA(12)
+        let signal = EMA(9)
+        
+        for stick in self {
+            
+            let currentClosePrice = stick.closePrice
+            
+            ema26.add(next: currentClosePrice)
+            ema12.add(next: currentClosePrice)
+            
+            if let ema26Avg = ema26.currentAvg, let ema12Avg = ema12.currentAvg {
+                stick.ema26 = ema26Avg
+                let macd = ema12Avg - ema26Avg
+                stick.macd = macd
+                signal.add(next: macd)
+                if let newSignal = signal.currentAvg {
+                    stick.macdSignal = newSignal
+                }
+            }
+        }
+    }
+    
 }
 
 var sticks = [CandleStick]()
-let closePrices  = [44.34,44.09,44.15,43.61,44.33,44.83,45.10,45.42,45.84,46.08,45.89,46.03,45.61,46.28,46.28,46.00,46.03,46.41,46.22,45.64,46.21,46.25,45.71,46.45,45.78,45.35,44.03,44.18,44.22,44.57,43.42,42.66,43.13]
+let closePrices  = [459.99, 448.85, 446.06, 450.81, 442.8, 448.97, 444.57, 441.4, 430.47, 420.05, 431.14, 425.66, 430.58, 431.72, 437.87, 428.43, 428.35, 432.5, 443.66, 455.72, 454.49, 452.08, 452.73, 461.91, 463.58, 461.14, 452.08, 442.66, 428.91, 429.79, 431.99, 427.72, 423.2, 426.21, 426.98, 435.69, 434.33, 429.8, 419.85, 426.24, 402.8, 392.05, 390.53, 398.67, 406.13, 405.46, 408.38, 417.2, 430.12, 442.78, 439.29, 445.52, 449.98, 460.71, 458.66, 463.84, 456.77, 452.97, 454.74, 443.86, 428.85, 434.58, 433.26, 442.93, 439.66, 441.35
+]
 
 for cp in closePrices {
     sticks.append(CandleStick(cp))
 }
 
-sticks.currentRSI()
+sticks.calculateMACD()
+sticks.last?.macd
+sticks.last?.macdSignal
+
+
+
+
+
+
+
 

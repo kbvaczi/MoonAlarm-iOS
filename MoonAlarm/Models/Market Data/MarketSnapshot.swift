@@ -82,6 +82,7 @@ class MarketSnapshot {
             if isSuccess, let cSticks = cSticks {
                 cSticks.calculateMACD()
                 cSticks.calculateRSI()
+                cSticks.calculateStochRSI()
                 self.candleSticks = cSticks
             }
             callback()
@@ -113,7 +114,7 @@ class MarketSnapshot {
                 // Recalculate Market indicators
                 self.candleSticks.calculateMACD()
                 self.candleSticks.calculateRSI()
-                
+                self.candleSticks.calculateStochRSI()
             }
             callback()
         }

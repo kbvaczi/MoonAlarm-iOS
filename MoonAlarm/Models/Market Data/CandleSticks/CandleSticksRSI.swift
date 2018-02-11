@@ -36,8 +36,8 @@ extension Array where Element : CandleStick {
             }
         }
         
-        var bullSMA = SMA(initialPrice: initialBullAvg, period)
-        var bearSMA = SMA(initialPrice: initialBearAvg, period)
+        let bullSMA = SMA(initialValue: initialBullAvg, period)
+        let bearSMA = SMA(initialValue: initialBearAvg, period)
         
         let remainingPeriods = self.dropFirst(period + 1)
         for (index, cStick) in remainingPeriods.enumerated() {
@@ -68,23 +68,5 @@ extension Array where Element : CandleStick {
     
     }
     
-    struct SMA {
-        
-        private var period: Int
-        var currentAvg: Double?
-        
-        init(initialPrice: Price? = nil, _ period: Int) {
-            self.currentAvg = initialPrice
-            self.period = period
-        }
-        
-        @discardableResult mutating func add(next: Double) -> SMA {
-            guard let currentAvg = self.currentAvg else {
-                self.currentAvg = next
-                return self
-            }
-            self.currentAvg = ((currentAvg * Double(period - 1)) + next) / Double(period)
-            return self
-        }
-    }
+
 }

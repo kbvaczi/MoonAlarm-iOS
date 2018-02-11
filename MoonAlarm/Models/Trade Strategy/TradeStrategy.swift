@@ -23,7 +23,7 @@ class TradeStrategy {
     
     var marketMin24HrVol: Double = 1000
     var tradeAmountTarget: Double = 0.005
-    var maxOpenTrades: Int = 1
+    var maxOpenTrades: Int = 8
     var expectedFeePerTrade: Percent = 0.1
     var testMode: Bool = true
 
