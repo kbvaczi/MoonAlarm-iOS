@@ -5,6 +5,7 @@ class CandleStick {
     ////////// Price //////////
     
     let closePrice: Double
+    var rsi: Double? = nil
     
     ////////// Initializer //////////
     
@@ -16,10 +17,12 @@ class CandleStick {
 
 extension Array where Element : CandleStick {
     
-    func currentRSI(_ period: Int = 14) -> Double? {
+    func calculateRSI(_ period: Int = 14) {
         
         // RSI needs a minimum of 2 * period to be accurate
-        guard self.count > (2 * period) else { return nil }
+        guard   self.count > (2 * period),
+            period > 0
+            else { return }
         
         var initialBullAvg: Double = 0.0
         var initialBearAvg: Double = 0.0
@@ -40,13 +43,13 @@ extension Array where Element : CandleStick {
             }
         }
         
-        var bullSMA = SMA(initialValue: initialBullAvg, period)
-        var bearSMA = SMA(initialValue: initialBearAvg, period)
+        let bullSMA = SMA(initialValue: initialBullAvg, period)
+        let bearSMA = SMA(initialValue: initialBearAvg, period)
         
         let remainingPeriods = self.dropFirst(period + 1)
-        let rpStartIndex = remainingPeriods.startIndex
         for (index, cStick) in remainingPeriods.enumerated() {
-            let prevClosePrice = self[index + rpStartIndex - 1].closePrice
+            let indexInSelf = remainingPeriods.startIndex + index
+            let prevClosePrice = self[indexInSelf - 1].closePrice
             let deltaPrice = cStick.closePrice - prevClosePrice
             
             let isBull = deltaPrice > 0
@@ -59,36 +62,17 @@ extension Array where Element : CandleStick {
                 bearSMA.add(next: loss)
                 bullSMA.add(next: 0)
             }
-        }
-        
-        guard   let bullSMAValue = bullSMA.currentAvg,
+            
+            guard   let bullSMAValue = bullSMA.currentAvg,
                 let bearSMAValue = bearSMA.currentAvg
-                else { return nil }
-        
-        let rs = bullSMAValue / bearSMAValue
-        let rsi = (100 - (100 / (1 + rs)))
-        
-        return rsi
-    }
-    
-    struct SMAOld {
-        
-        private var period: Int
-        var currentAvg: Double?
-        
-        init(initialPrice: Double? = nil, _ period: Int) {
-            self.currentAvg = initialPrice
-            self.period = period
+                else { return }
+            
+            let rs = bullSMAValue / bearSMAValue
+            let rsi = (100 - (100 / (1 + rs)))
+            
+            self[indexInSelf].rsi = rsi
         }
         
-        @discardableResult mutating func add(next: Double) -> SMAOld {
-            guard let currentAvg = self.currentAvg else {
-                self.currentAvg = next
-                return self
-            }
-            self.currentAvg = ((currentAvg * Double(period - 1)) + next) / Double(period)
-            return self
-        }
     }
     
     /// Simple Moving Average
@@ -175,11 +159,10 @@ extension Array where Element : CandleStick {
 }
 
 var sticks = [CandleStick]()
-let closePrices  = [44.34,44.09,44.15,43.61,44.33,44.83,45.10,45.42,45.84,46.08,45.89,46.03,45.61,46.28,46.28,46.00,46.03,46.41,46.22,45.64,46.21,46.25,45.71,46.45,45.78,45.35,44.03,44.18,44.22,44.57,43.42,42.66,43.13]
+let closePrices  = [44.3389, 44.0902, 44.1497, 43.6124, 44.3278, 44.8264, 45.0955, 45.4245, 45.8433, 46.0826, 45.8931, 46.0328, 45.6140, 46.2820, 46.2820, 46.0028, 46.0328, 46.4116, 46.2222, 45.6439, 46.2122, 46.2521, 45.7137, 46.4515, 45.7835, 45.3548, 44.0288, 44.1783, 44.2181, 44.5672, 43.4205, 42.6628, 43.131]
 
 for cp in closePrices {
     sticks.append(CandleStick(cp))
 }
 
-sticks.currentRSI()
-
+sticks.calculateRSI()

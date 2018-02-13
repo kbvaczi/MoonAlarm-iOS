@@ -55,11 +55,11 @@ extension Array where Element : CandleStick {
                 let maxRSI = minMaxGroup.max()
                 else { continue }
             
-            let newStochRSI = (currentRSI - minRSI) / (maxRSI - minRSI)
+            let newStochRSI = (currentRSI - minRSI) / (maxRSI - minRSI) * 100
             
             stick.stochRSI = newStochRSI
             
-            smaK.add(next: newStochRSI * 100)
+            smaK.add(next: newStochRSI)
             if let newK = smaK.currentAvg {
                 stick.stochRSIK = newK
                 smaD.add(next: newK)
