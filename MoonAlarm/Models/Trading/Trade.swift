@@ -23,6 +23,8 @@ class Trade {
     
     /// Target amount for this trade, expressed as trading pair amount
     let targetTradePairAmount = TradeStrategy.instance.tradeAmountTarget
+    /// Save the trading pair symbol for this trade
+    let tradingPairSymbol = TradeStrategy.instance.tradingPairSymbol
     /// Asset price when enter criteria triggers
     var targetEnterPrice: Price? = nil
     /// Asset price when exit criteria triggers
@@ -225,7 +227,6 @@ class Trade {
             if self.exitCriteria.onePassedFor(self) {
                 self.exit()
             } else {
-                self.buyOrderManager?.manageOpenOrder()
                 let buyingComplete = self.buyOrderManager?.status == .complete
                 if buyingComplete {
                     self.status = .entered
@@ -235,7 +236,6 @@ class Trade {
         case .entered:
             if self.exitCriteria.onePassedFor(self) { self.exit(); break }
         case .exiting:
-            self.sellOrderManager?.manageOpenOrder()
             let sellingComplete = self.sellOrderManager?.status == .complete
             if sellingComplete {
                 self.complete()
@@ -248,7 +248,7 @@ class Trade {
     
     private func startRegularUpdates() {
         self.updateTimer.invalidate()
-        self.updateTimer = Timer.scheduledTimer(timeInterval: 5, target: self,
+        self.updateTimer = Timer.scheduledTimer(timeInterval: 4, target: self,
                                                 selector: #selector(self.regularUpdate),
                                                 userInfo: nil, repeats: true)
     }
