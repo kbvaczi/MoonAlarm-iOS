@@ -47,6 +47,7 @@
 		BE9E3CA720059458005D531C /* Trades.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E3CA620059458005D531C /* Trades.swift */; };
 		BE9E3CA92006867E005D531C /* OrderBook.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E3CA82006867E005D531C /* OrderBook.swift */; };
 		BE9E3CAB200686CE005D531C /* Order.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9E3CAA200686CE005D531C /* Order.swift */; };
+		BEA81B122036583800F4A380 /* StochRSIExitCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEA81B112036583800F4A380 /* StochRSIExitCriterion.swift */; };
 		BEAE63CD201AB784006746A7 /* RunwayExitCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEAE63CC201AB784006746A7 /* RunwayExitCriterion.swift */; };
 		BEAE63CF201BCD9A006746A7 /* AndCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEAE63CE201BCD9A006746A7 /* AndCriterion.swift */; };
 		BEAE63D1201BD023006746A7 /* FallwayExit.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEAE63D0201BD023006746A7 /* FallwayExit.swift */; };
@@ -115,6 +116,7 @@
 		BE9E3CA620059458005D531C /* Trades.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Trades.swift; sourceTree = "<group>"; };
 		BE9E3CA82006867E005D531C /* OrderBook.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderBook.swift; sourceTree = "<group>"; };
 		BE9E3CAA200686CE005D531C /* Order.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Order.swift; sourceTree = "<group>"; };
+		BEA81B112036583800F4A380 /* StochRSIExitCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StochRSIExitCriterion.swift; sourceTree = "<group>"; };
 		BEAE63CC201AB784006746A7 /* RunwayExitCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunwayExitCriterion.swift; sourceTree = "<group>"; };
 		BEAE63CE201BCD9A006746A7 /* AndCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AndCriterion.swift; sourceTree = "<group>"; };
 		BEAE63D0201BD023006746A7 /* FallwayExit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FallwayExit.swift; sourceTree = "<group>"; };
@@ -373,6 +375,7 @@
 				BEAE63CC201AB784006746A7 /* RunwayExitCriterion.swift */,
 				BEAE63CE201BCD9A006746A7 /* AndCriterion.swift */,
 				BEAE63D0201BD023006746A7 /* FallwayExit.swift */,
+				BEA81B112036583800F4A380 /* StochRSIExitCriterion.swift */,
 			);
 			path = "Exit Criteria";
 			sourceTree = "<group>";
@@ -561,6 +564,7 @@
 				BEF4962E2009826400501C5C /* TradeEnterCriterion.swift in Sources */,
 				BEC755F7200C30700092B316 /* RegularExpression.swift in Sources */,
 				BE9E3C9D200452A9005D531C /* PercentAlias.swift in Sources */,
+				BEA81B122036583800F4A380 /* StochRSIExitCriterion.swift in Sources */,
 				BE18674C201279EB00E275E4 /* ProfitCutoffCriterion.swift in Sources */,
 				BE6B96C1202F6016006D81DD /* CandleSticksMA.swift in Sources */,
 				BE9E3CA720059458005D531C /* Trades.swift in Sources */,
