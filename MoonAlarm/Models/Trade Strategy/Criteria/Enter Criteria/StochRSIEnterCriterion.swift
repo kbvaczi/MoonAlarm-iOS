@@ -8,14 +8,26 @@
 
 import Foundation
 
+/// Enter trades based on Stoch RSI Indicator
 class StochRSIEnter: TradeEnterCriterion {
     
+    /// Only enter trades when current stoch RSI is below this value
     let maxStochRSI: Double
+    /// Stoch RSI must have signal cross to enter trade
     let requireSignalCross: Bool
+    /// To reduce weak crosses, only enter trade if no cross has happened recently
+    let noPriorCrossInLast: Int
     
-    init(max: Double = 100, requireCross: Bool = true) {
+    /// Enter trades based on Stoch RSI Indicator
+    ///
+    /// - Parameters:
+    ///   - max: Only enter trades when current stoch RSI is below this value
+    ///   - requireCross: Stoch RSI must have signal cross to enter trade
+    ///   - noCrossInLast: To reduce weak crosses, only enter trade if no cross has happened recently
+    init(max: Double = 100, requireCross: Bool = true, noPriorCrossInLast: Int = 6) {
         self.maxStochRSI = max
         self.requireSignalCross = requireCross
+        self.noPriorCrossInLast = noPriorCrossInLast
     }
     
     override func passedFor(snapshot: MarketSnapshot) -> Bool {
@@ -35,6 +47,27 @@ class StochRSIEnter: TradeEnterCriterion {
         // Verify we're below maximum stoch RSI
         guard   currentStochRSI < self.maxStochRSI
                 else { return false }
+        
+        // Verify there hasn't been a recent cross
+        let lastSticksToIgnore = 3
+        if noPriorCrossInLast > lastSticksToIgnore {
+            var wasPriorCross = false
+            let crossDataSet = snapshot.candleSticks.suffix(noPriorCrossInLast)
+                                                    .dropLast().dropLast().dropLast()
+            let startIndex = crossDataSet.startIndex
+            for (i, stick) in crossDataSet.enumerated() {
+                let priorIndex = startIndex + i - 1
+                if  let priorSRSID = snapshot.candleSticks[priorIndex].stochRSISignalDelta,
+                    let currentSRSID = stick.stochRSISignalDelta,
+                    priorSRSID < 0 && currentSRSID > 0 {
+                        wasPriorCross = true
+                }
+            }
+            if wasPriorCross { return false }
+        } else {
+            NSLog("invalid noCrossInLast for StochRSIEnter Criterion")
+        }
+        
         
         // look for signal cross in the last two candlesticks
         if self.requireSignalCross {

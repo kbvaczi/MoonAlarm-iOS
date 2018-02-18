@@ -10,22 +10,30 @@ import Foundation
 
 class StochRSIExit: TradeExitCriterion {
     
+    let maxStochRSI: Double
+    
     override var logMessage: String {
         return "StochRSIExit"
     }
     
-    override init() { }
+    init(max: Double = 80) {
+        self.maxStochRSI = max
+    }
     
     override func passedFor(trade: Trade) -> Bool {
         
         // Check for valid data
         let sticks = trade.marketSnapshot.candleSticks
-        guard   let currentSignalDelta = sticks.last?.stochRSISignalDelta,
-            let prevSignalDelta = sticks[sticks.count - 2].stochRSISignalDelta
-            else {
-                NSLog("invalid data in StochRSIExit Criterion")
-                return false
+        guard   let currentSRSIK = sticks.last?.stochRSIK,
+                let currentSignalDelta = sticks.last?.stochRSISignalDelta,
+                let prevSignalDelta = sticks[sticks.count - 2].stochRSISignalDelta
+                else {
+                    NSLog("invalid data in StochRSIExit Criterion")
+                    return false
         }
+        
+        // Determine if we are over the max
+        if currentSRSIK > self.maxStochRSI { return true }
         
         // look for signal cross
         let didCross = currentSignalDelta < 0 && prevSignalDelta > 0
@@ -33,7 +41,7 @@ class StochRSIExit: TradeExitCriterion {
     }
     
     override func copy() -> StochRSIExit {
-        return StochRSIExit()
+        return StochRSIExit(max: self.maxStochRSI)
     }
     
 }
