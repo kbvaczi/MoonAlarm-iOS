@@ -1,5 +1,5 @@
 //
-//  TimeDelayCriterion.swift
+//  DelayBetweenTradesCriterion.swift
 //  MoonAlarm
 //
 //  Created by Kenneth Vaczi on 2/4/18.
@@ -9,7 +9,7 @@
 import Foundation
 
 /// Wait a period of time after completing a trade before entering a new trade with the same coin
-class TimeDelayEnter: TradeEnterCriterion {
+class DelayBetweenTradesEnter: TradeEnterCriterion {
     
     let timeDelay: Minutes
     
