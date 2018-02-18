@@ -27,7 +27,7 @@ class MoonAlarmTableViewController: UITableViewController {
     
     @IBAction func testModeSwitchToggle(_ sender: UISwitch) {
         if sender.isOn {
-            TradeStrategy.instance.testMode = true
+            TradeSettings.instance.testMode = true
         } else {
             let switchAlert = UIAlertController(title: "Leaving Test Mode",
                                         message: "Are you sure you want to start live trading?",
@@ -38,7 +38,7 @@ class MoonAlarmTableViewController: UITableViewController {
             }))
             switchAlert.addAction(UIAlertAction(title: "Yes", style: .destructive,
                                                 handler: { (action: UIAlertAction!) in
-                TradeStrategy.instance.testMode = false
+                TradeSettings.instance.testMode = false
             }))
             present(switchAlert, animated: true, completion: nil)
         }
@@ -65,34 +65,30 @@ class MoonAlarmTableViewController: UITableViewController {
         self.initTestModeSwitch()
         
         //  MINI //
-        TradeStrategy.instance.entranceCriteria = [
-//            RSIEnter(max: 40, inLast: 3),
-//            MACDEnter(incTrendFor: 2, requireCross: false),
-            StochRSIEnter(),
-            SpareRunwayEnter(percent: 1),
-            TimeDelayEnter(delay: 10),
-//            FallwaySupportEnter(percent: 1),
+        TradeSettings.instance.tradeStrategy.entranceCriteria = [
+//            StochRSIEnter(),
+            SpareRunwayEnter(percent: 1.5),
+            DelayBetweenTradesEnter(delay: 10),
         ]
 
-        TradeStrategy.instance.exitCriteria = [
-            LossExit(percent: 1.0),
-            AndExit([LossExit(percent: 0.5), FallwayExit(percent: 1.0)]),
+        TradeSettings.instance.tradeStrategy.exitCriteria = [
+            ProfitCutoffExit(percent: 1.0),
+//            AndExit([LossExit(percent: 0.5), FallwayExit(percent: 1.0)]),
             AndExit([MinRunwayExit(percent: 0.1), FallwayExit(percent: 0.2)]),
-            ProfitCutoffExit(percent: 0.5),
-            TrailingLossExit(percent: 0.2, after: 0.3),
-            RSIExit(max: 60),
+            LossExit(percent: 0.5),
+            TrailingLossExit(percent: 0.2, after: 0.5),
         ]
 
-        // IPAD //
-//        TradeStrategy.instance.entranceCriteria = [
+//        // IPAD //
+//        TradeSettings.instance.entranceCriteria = [
 //            RSIEnter(max: 40, inLast: 3),
 //            MACDEnter(incTrendFor: 2, requireCross: false),
-//            SpareRunwayEnter(percent: 2),
+//            SpareRunwayEnter(percent: 1.5),
 //            TimeDelayEnter(delay: 10),
 ////            FallwaySupportEnter(percent: 0.5),
 //        ]
 //
-//        TradeStrategy.instance.exitCriteria = [
+//        TradeSettings.instance.exitCriteria = [
 //            LossExit(percent: 1.0),
 //            AndExit([LossExit(percent: 0.5), FallwayExit(percent: 1.0)]),
 //            AndExit([MinRunwayExit(percent: 0.1), FallwayExit(percent: 0.2)]),
@@ -105,7 +101,7 @@ class MoonAlarmTableViewController: UITableViewController {
 
     /// Initialize test mode switch, set to current mode
     func initTestModeSwitch() {
-        let isTestMode = TradeStrategy.instance.testMode
+        let isTestMode = TradeSettings.instance.testMode
         self.testModeSwitch.setOn(isTestMode, animated: true)
         self.testModeSwitch.tintColor = UIColor.red // Show the switch as red if out of test mode
     }
@@ -148,6 +144,11 @@ class MoonAlarmTableViewController: UITableViewController {
     }
     
     func buildCell(_ cell: UITableViewCell, from trade: Trade) {
+        
+        // set fill amount
+        let fillAmount = trade.amountTradingPair
+        let fillAmtString = fillAmount != nil ? fillAmount!.display3 : "?"
+        
         // set enter price
         let enterPrice = trade.enterPrice
         let enterPriceString = enterPrice != nil ? enterPrice!.display8 : "?"
@@ -156,7 +157,7 @@ class MoonAlarmTableViewController: UITableViewController {
         let exitPrice = trade.exitPrice ?? trade.marketSnapshot.orderBook.firstAskPrice
         let exitPriceString = exitPrice != nil ? exitPrice!.display8 : "?"
         
-        cell.textLabel?.text = "\(trade.symbol) \(enterPriceString) -> \(exitPriceString)"
+        cell.textLabel?.text = "\(trade.symbol): \(fillAmtString) \(trade.tradingPairSymbol)  \(enterPriceString) -> \(exitPriceString)"
         if let profitPercent = trade.profitPercent {
             cell.detailTextLabel?.text = "\(profitPercent)%"
         }
@@ -189,12 +190,12 @@ class MoonAlarmTableViewController: UITableViewController {
         // Set Labels
         
         // Account Balances
-        let pairBalance = TradeStrategy.instance.tradingPairBalance.display8
-        let pairSymbol = TradeStrategy.instance.tradingPairSymbol
+        let pairBalance = TradeSettings.instance.tradingPairBalance.display8
+        let pairSymbol = TradeSettings.instance.tradingPairSymbol
         let pairCoinBalanceString = "\(pairBalance) \(pairSymbol)"
         self.pairCoinBalanceLabel.text = "Pair Coin Balance: \(pairCoinBalanceString)"
-        let feeCoinBalance = TradeStrategy.instance.tradingFeeCoinBalance.display8
-        let feeCoinSymbol = TradeStrategy.instance.tradingFeeCoinSymbol
+        let feeCoinBalance = TradeSettings.instance.tradingFeeCoinBalance.display8
+        let feeCoinSymbol = TradeSettings.instance.tradingFeeCoinSymbol
         let feeCoinBalanceString =  feeCoinSymbol != nil ?
                                     "\(feeCoinBalance) \(feeCoinSymbol!)" :
                                     "N/A"
@@ -209,7 +210,7 @@ class MoonAlarmTableViewController: UITableViewController {
             "Total Profit: \(TradeSession.instance.trades.totalProfitPercent)%"
         self.sessionTimeLabel.text =
             "Session Time: \(TradeSession.instance.duration.displayMsToHHMM)"
-        let targetTradeAmount = TradeStrategy.instance.tradeAmountTarget
+        let targetTradeAmount = TradeSettings.instance.tradeAmountTarget
         self.tradeAmountLabel.text = "Target Trade Amount: \(targetTradeAmount) \(pairSymbol)"
     }
     

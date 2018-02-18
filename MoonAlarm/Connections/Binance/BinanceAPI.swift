@@ -362,7 +362,7 @@ class BinanceAPI {
                 return
             }
             
-            let pairSymbol = TradeStrategy.instance.tradingPairSymbol
+            let pairSymbol = TradeSettings.instance.tradingPairSymbol
             let symbol = symbolPair.replacingOccurrences(of: pairSymbol, with: "")
             let newOrderBook = OrderBook(symbol: symbol, fromJson: jsonResponse)
             

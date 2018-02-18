@@ -14,7 +14,7 @@ typealias SymbolPair = String
 extension Symbol {
     
     var symbolPair: String {
-        return self + TradeStrategy.instance.tradingPairSymbol
+        return self + TradeSettings.instance.tradingPairSymbol
     }
     
 }

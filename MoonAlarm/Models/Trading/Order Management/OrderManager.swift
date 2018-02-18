@@ -117,7 +117,7 @@ class OrderManager {
     private func startRegularUpdates() {
         NSLog("OrderManager(\(self.parentTrade.symbol)): Start regular updates")
         self.updateTimer.invalidate()
-        self.updateTimer = Timer.scheduledTimer(timeInterval: 15, target: self,
+        self.updateTimer = Timer.scheduledTimer(timeInterval: 4, target: self,
                                                 selector: #selector(self.updateAndManageLastOrder),
                                                 userInfo: nil, repeats: true)
     }

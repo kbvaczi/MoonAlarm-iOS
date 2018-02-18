@@ -1,5 +1,5 @@
 //
-//  TradeStrategy.swift
+//  TradeSettings.swift
 //  MoonAlarm
 //
 //  Created by Kenneth Vaczi on 1/12/18.
@@ -8,12 +8,11 @@
 
 import Foundation
 
-class TradeStrategy {
+class TradeSettings {
     
-    static var instance = TradeStrategy() // singleton
+    static var instance = TradeSettings() // singleton
     
     private init() { } // prevent declaring instances of this class
-    
     
     // Settings //
     var tradingPairSymbol = "BTC"
@@ -23,18 +22,13 @@ class TradeStrategy {
     
     var marketMin24HrVol: Double = 1000
     var tradeAmountTarget: Double = 0.005
-    var maxOpenTrades: Int = 8
+    var maxOpenTrades: Int = 5
     var expectedFeePerTrade: Percent = 0.1
     var testMode: Bool = true
 
     var candleStickPeriod: BinanceAPI.KLineInterval = .m5
     
-    var entranceCriteria = TradeEnterCriteria()
-    var exitCriteria = TradeExitCriteria()
-    
-    func entranceCriteriaPassedFor(snapshot: MarketSnapshot) -> Bool {
-        return entranceCriteria.allPassedFor(snapshot)
-    }
+    var tradeStrategy = TradeStrategy()
     
     /// Update balances for trading pair and fee coin
     func updateBalances() {

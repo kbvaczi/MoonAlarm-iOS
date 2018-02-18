@@ -42,7 +42,7 @@ class TradeSession {
     func start(callback: @escaping () -> Void) {
         self.status = .running
         self.startTime = Date.currentTimeInMS
-        TradeStrategy.instance.updateBalances()
+        TradeSettings.instance.updateBalances()
         self.updateSymbolsAndPrioritize { isSuccess in
             self.startRegularSnapshotUpdates()
             callback()
@@ -56,7 +56,7 @@ class TradeSession {
     }
     
     func updateSymbolsAndPrioritize(callback: @escaping (_ isSuccess: Bool) -> Void) {
-        let tradingPairSymbol = TradeStrategy.instance.tradingPairSymbol
+        let tradingPairSymbol = TradeSettings.instance.tradingPairSymbol
         
         self.exchangeInfo.updateData() { isSuccess in
             
@@ -75,7 +75,7 @@ class TradeSession {
                     
                     if isSuccessful, let pairVolume = pairVolume {
                         // TODO: come up with a more intelligent way of filtering symbols
-                        let min24HrVol = TradeStrategy.instance.marketMin24HrVol
+                        let min24HrVol = TradeSettings.instance.marketMin24HrVol
                         
                         // Due to API request limits, can monitor up to 50 symbols at once
                         if pairVolume > min24HrVol, self.symbolsWatching.count < 50 {
@@ -125,13 +125,13 @@ class TradeSession {
     
     func startRegularSnapshotUpdates() {
         self.updateTimer.invalidate() // Stop prior update timer
-        self.updateTimer = Timer.scheduledTimer(timeInterval: 15, target: self,
+        self.updateTimer = Timer.scheduledTimer(timeInterval: 10, target: self,
                                                 selector: #selector(self.regularUpdate),
                                                 userInfo: nil, repeats: true)
     }
     
     @objc func regularUpdate() {
-        let maxOpenTrades = TradeStrategy.instance.maxOpenTrades
+        let maxOpenTrades = TradeSettings.instance.maxOpenTrades
         guard self.trades.countOpen() < maxOpenTrades else { return }
         self.updateMarketSnapshots {
             self.investInWinners()
@@ -143,7 +143,7 @@ class TradeSession {
     }
     
     func investInWinners() {
-        let maxOpenTrades = TradeStrategy.instance.maxOpenTrades
+        let maxOpenTrades = TradeSettings.instance.maxOpenTrades
         
         for snapshot in self.marketSnapshots {
             // don't start any more trades if we've maxed out
@@ -153,10 +153,10 @@ class TradeSession {
             if trades.openTradeFor(snapshot.symbol) { continue }
             
             // We don't want to make real trades in test mode
-            let isTestMode = TradeStrategy.instance.testMode
+            let isTestMode = TradeSettings.instance.testMode
             
             // only trade if the market snapshot passes our trade enter criteria
-            if TradeStrategy.instance.entranceCriteria.allPassedFor(snapshot) {
+            if TradeSettings.instance.tradeStrategy.shouldEnterTrade(for: snapshot) {
                 let newTrade = Trade(symbol: snapshot.symbol, snapshot: snapshot,
                                      isTest: isTestMode)
                 self.trades.insert(newTrade, at: 0)

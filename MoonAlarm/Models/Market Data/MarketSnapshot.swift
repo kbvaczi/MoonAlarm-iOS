@@ -74,7 +74,7 @@ class MarketSnapshot {
     
     private func buildNewCandleSticks(callback: @escaping () -> Void) {
         let pair = self.symbol.symbolPair
-        let stickInterval = TradeStrategy.instance.candleStickPeriod
+        let stickInterval = TradeSettings.instance.candleStickPeriod
         BinanceAPI.instance.getCandleSticks(symbolPair: pair,
                                             interval: stickInterval,
                                             limit: 100) {
@@ -91,7 +91,7 @@ class MarketSnapshot {
     
     private func updateExistingCandleSticks(callback: @escaping () -> Void) {
         let pair = self.symbol.symbolPair
-        let stickInterval = TradeStrategy.instance.candleStickPeriod
+        let stickInterval = TradeSettings.instance.candleStickPeriod
         BinanceAPI.instance.getCandleSticks(symbolPair: pair,
                                             interval: stickInterval,
                                             limit: 2) {

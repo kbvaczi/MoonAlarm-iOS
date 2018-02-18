@@ -17,7 +17,7 @@ class MarketBuyLossEnter: TradeEnterCriterion {
     }
     
     override func passedFor(snapshot: MarketSnapshot) -> Bool {
-        let pairVolume = TradeStrategy.instance.tradeAmountTarget
+        let pairVolume = TradeSettings.instance.tradeAmountTarget
         let ob = snapshot.orderBook
         
         guard   let marketBuyPrice = ob.marketBuyPrice(forPairVolume: pairVolume),

@@ -17,6 +17,11 @@ extension Double {
         return percent
     }
     
+    /// Display as a string with 3 decimal place
+    var display3: String {
+        return String(format: "%0.3f", arguments: [self.roundTo(3)])
+    }
+    
 }
 
 extension Percent {

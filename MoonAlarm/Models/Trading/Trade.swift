@@ -17,14 +17,14 @@ class Trade {
     /// Market info we track for trade
     let marketSnapshot: MarketSnapshot
     /// Criteria used for exiting trade, copied so we can modify without affecting other trades
-    let exitCriteria = TradeStrategy.instance.exitCriteria.copy()
+    let exitCriteria = TradeSettings.instance.tradeStrategy.exitCriteria.copy()
     /// Used to keep track of whether trade is a draft, open, or complete
     var status: Status = .draft
     
     /// Target amount for this trade, expressed as trading pair amount
-    let targetTradePairAmount = TradeStrategy.instance.tradeAmountTarget
+    let targetTradePairAmount = TradeSettings.instance.tradeAmountTarget
     /// Save the trading pair symbol for this trade
-    let tradingPairSymbol = TradeStrategy.instance.tradingPairSymbol
+    let tradingPairSymbol = TradeSettings.instance.tradingPairSymbol
     /// Asset price when enter criteria triggers
     var targetEnterPrice: Price? = nil
     /// Asset price when exit criteria triggers
@@ -111,7 +111,7 @@ class Trade {
     ////////// PROFIT CALCULATIONS //////////
     
     var profit: Double? {
-        let fee = TradeStrategy.instance.expectedFeePerTrade
+        let fee = TradeSettings.instance.expectedFeePerTrade
         switch self.status {
         case .draft: return nil
         case .entering, .entered, .exiting:
@@ -209,7 +209,7 @@ class Trade {
         self.status = .complete
         self.endTime = Date.currentTimeInMS
         self.stopRegularUpdates()
-        TradeStrategy.instance.updateBalances()         // update account balances
+        TradeSettings.instance.updateBalances()         // update account balances
         
         // Log results
         let tradeProfitDisplay = (self.profitPercent != nil) ? self.profitPercent!.display1 : "???"
