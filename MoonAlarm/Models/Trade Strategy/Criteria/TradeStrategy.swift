@@ -28,7 +28,7 @@ class TradeStrategy {
     ///   - exitCriteria: One of these criteria must pass prior to exiting an open trade
     ///   - delayBeforeEnter: Wait before entering a trade after entrance criteria begins passing
     init(entranceCriteria: TradeEnterCriteria = [], exitCriteria: TradeExitCriteria = [],
-         delayBeforeEnter: Seconds = 90) {
+         delayBeforeEnter: Seconds = 0) {
         self.entranceCriteria = entranceCriteria
         self.exitCriteria = exitCriteria
         self.delayBeforeEnter = delayBeforeEnter
