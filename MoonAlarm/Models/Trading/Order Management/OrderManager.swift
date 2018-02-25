@@ -32,8 +32,6 @@ class OrderManager {
     
     /// If market price moves more than this before target amount filled, stop issueing new orders
     let maxChangeToTargetPrice: Percent = 0.2
-    /// We will share a spot on the order book with other orders up to this volume
-    var maxCompetitionAtPrice: Double { return self.targetAmount }
     
     ////////// INIT //////////
     
@@ -51,11 +49,31 @@ class OrderManager {
     
     ////////// USE METHODS //////////
     
+    /// Min notional amount at given price
+    ///
+    /// - Parameter price: price
+    /// - Returns: min amount that satisfies filters
+    func minLimitOrderAmountAt(price: Price) -> Double? {
+        /// Symbol we will use to buy/sell
+        let symbolPair = self.parentTrade.symbol.symbolPair
+        /// Exchange info we will use for lot size and price filter
+        let exchangeInfo = TradeSession.instance.exchangeInfo
+        
+        /// Verify we have required filter data for this symbol pair
+        guard   let minNotionalValue = exchangeInfo.minNotionalValue(for: symbolPair)
+                else { return nil }
+        
+        let minAmountAtPrice = (minNotionalValue / price) * 1.1 // Fudge factor
+        let minAmountChecked = exchangeInfo.nearestValidAmount(to: minAmountAtPrice,
+                                                              for: symbolPair)
+        return minAmountChecked
+    }
+    
     /// Place new order
     ///
     /// - Parameter callback: do this after order placed
-    func placeNewOrder(callback: @escaping (_ isSuccess: Bool) -> Void) {
-        NSLog("OrderManager(\(self.parentTrade.symbol): Error, placeNewOrder not overridden")
+    func placeNewLimitOrder(callback: @escaping (_ isSuccess: Bool) -> Void) {
+        NSLog("OrderManager(\(self.parentTrade.symbol): Error, placeNewLimitOrder not overridden")
     }
     
     /// Manage open order based on market conditions
@@ -65,7 +83,7 @@ class OrderManager {
     
     /// Place an order and start managing
     func start() {
-        self.placeNewOrder() { isSuccess in
+        self.placeNewLimitOrder() { isSuccess in
             if isSuccess {
                 self.status = .started
                 self.startRegularUpdates()
@@ -83,7 +101,7 @@ class OrderManager {
         order.cancel() { isSuccess in
             // have we bought/sold enough already?
             if isSuccess, self.orders.amountFilled < self.targetAmount {
-                self.placeNewOrder() { isSuccess in
+                self.placeNewLimitOrder() { isSuccess in
                     if isSuccess {
                         NSLog("OrderManager(\(self.parentTrade.symbol)): Order replaced")
                     }

@@ -66,37 +66,29 @@ class MoonAlarmTableViewController: UITableViewController {
         
         //  MINI //
         TradeSettings.instance.tradeStrategy.entranceCriteria = [
-            StochRSIEnter(),
-//            SpareRunwayEnter(percent: 1.5),
-//            DelayBetweenTradesEnter(delay: 10),
+            StochRSIEnter(max: 80, noPriorCrossInLast: 10),
+            SpareRunwayEnter(percent: 1.0),
+            DelayBetweenTradesEnter(delay: 10),
         ]
 
         TradeSettings.instance.tradeStrategy.exitCriteria = [
-            ProfitCutoffExit(percent: 1.0),
-//            AndExit([LossExit(percent: 0.5), FallwayExit(percent: 1.0)]),
-            AndExit([MinRunwayExit(percent: 0.1), FallwayExit(percent: 0.2)]),
-            LossExit(percent: 0.3),
-            TrailingLossExit(percent: 0.5, after: 0.5),
+            ProfitCutoffExit(percent: 0.5),
+            MinRunwayExit(percent: 0.1),
+            LossExit(percent: 0.4),
         ]
-
-//        // IPAD //
-//        TradeSettings.instance.entranceCriteria = [
-//            RSIEnter(max: 40, inLast: 3),
-//            MACDEnter(incTrendFor: 2, requireCross: false),
-//            SpareRunwayEnter(percent: 1.5),
-//            TimeDelayEnter(delay: 10),
-////            FallwaySupportEnter(percent: 0.5),
+    
+        //  IPAD //
+//        TradeSettings.instance.tradeStrategy.entranceCriteria = [
+//            StochRSIEnter(max: 80, noPriorCrossInLast: 10),
+//            SpareRunwayEnter(percent: 1.0),
+//            DelayBetweenTradesEnter(delay: 10),
 //        ]
 //
-//        TradeSettings.instance.exitCriteria = [
-//            LossExit(percent: 1.0),
-//            AndExit([LossExit(percent: 0.5), FallwayExit(percent: 1.0)]),
-//            AndExit([MinRunwayExit(percent: 0.1), FallwayExit(percent: 0.2)]),
-//            ProfitCutoffExit(percent: 0.5),
-//            TrailingLossExit(percent: 0.2, after: 0.3),
-//            RSIExit(max: 60),
+//        TradeSettings.instance.tradeStrategy.exitCriteria = [
+//            ProfitCutoffExit(percent: 0.8),
+//            MinRunwayExit(percent: 0.1),
+//            LossExit(percent: 0.4),
 //        ]
-    
     }
 
     /// Initialize test mode switch, set to current mode

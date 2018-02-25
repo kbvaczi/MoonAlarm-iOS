@@ -10,12 +10,12 @@ import Foundation
 
 class BuyOrderManager: OrderManager {
     
-    /// Place a new order
+    /// Place a new limit buy order
     ///
     /// - Parameter callback: do this after placing order
-    override func placeNewOrder(callback: @escaping (_ isSuccess: Bool) -> Void) {
+    override func placeNewLimitOrder(callback: @escaping (_ isSuccess: Bool) -> Void) {
         
-        NSLog("BuyOrderManager(\(self.parentTrade.symbol)): Placing new order")
+        NSLog("BuyOrderManager(\(self.parentTrade.symbol)): Placing new limit order")
         
         /// Use orderbook to track other orders on this market
         let orderBook = self.parentTrade.marketSnapshot.orderBook
@@ -51,7 +51,8 @@ class BuyOrderManager: OrderManager {
         }
         
         // If there much competition at current price point, let's buy a little higher
-        if      topBidQty > self.maxCompetitionAtPrice,
+        if      let maxCompetition = self.minLimitOrderAmountAt(price: priceToList),
+                topBidQty > maxCompetition,
                 let priceIncrement = exchangeInfo.priceTick(for: symbolPair) {
             NSLog("""
                 BuyOrderManager(\(self.parentTrade.symbol)): Too much competition at top bid
@@ -65,9 +66,8 @@ class BuyOrderManager: OrderManager {
         guard percentOverTarget <= self.maxChangeToTargetPrice else { callback(false); return }
         
         // Try an iceburg limit order by hiding most of our order, leaving just min notional
-        let minAmountAtPrice = (minNotionalValue / priceToList) * 1.1 // Fudge factor
-        var amtVisible = exchangeInfo.nearestValidAmount(to: minAmountAtPrice, for: symbolPair)
-        if amtVisible != nil, amtVisible! >= amountToList { amtVisible = nil }
+        var amtVisible = self.minLimitOrderAmountAt(price: priceToList)
+        if amtVisible ?? 0 >= amountToList { amtVisible = nil }
         
         let newOrder = TradeOrder(pair: symbolPair, side: .buy, type: .limit, price: priceToList,
                                timeInForce: .gtc, amount: amountToList, amtVisible: amtVisible)
@@ -122,7 +122,8 @@ class BuyOrderManager: OrderManager {
         }
         
         // do we need to increase bid price to be competetive?
-        if competitionAmount > self.maxCompetitionAtPrice {
+        if      let maxCompetition = self.minLimitOrderAmountAt(price: orderPrice),
+                competitionAmount > maxCompetition {
             NSLog("""
                 BuyOrderManager(\(self.parentTrade.symbol)): Too much competition @
                 \(orderPrice.display8), replacing buy order

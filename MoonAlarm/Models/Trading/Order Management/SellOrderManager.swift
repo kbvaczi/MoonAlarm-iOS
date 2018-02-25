@@ -10,12 +10,12 @@ import Foundation
 
 class SellOrderManager: OrderManager {
     
-    /// Place a new order
+    /// Place a new limit sell order
     ///
     /// - Parameter callback: do this after placing order
-    override func placeNewOrder(callback: @escaping (_ isSuccess: Bool) -> Void) {
+    override func placeNewLimitOrder(callback: @escaping (_ isSuccess: Bool) -> Void) {
         
-        NSLog("SellOrderManager(\(self.parentTrade.symbol)): Placing new order")
+        NSLog("SellOrderManager(\(self.parentTrade.symbol)): Placing new limit order")
         
         /// Use orderbook to track other orders on this market
         let orderBook = self.parentTrade.marketSnapshot.orderBook
@@ -51,7 +51,8 @@ class SellOrderManager: OrderManager {
         }
         
         // If there much competition at current price point, let's buy a little higher
-        if      firstAskQty > self.maxCompetitionAtPrice,
+        if      let maxCompetition = self.minLimitOrderAmountAt(price: priceToList),
+                firstAskQty > maxCompetition,
                 let priceIncrement = exchangeInfo.priceTick(for: symbolPair) {
             NSLog("""
                 SellOrderManager(\(self.parentTrade.symbol)): Too much competition at first ask
@@ -61,9 +62,8 @@ class SellOrderManager: OrderManager {
         }
 
         // Try an iceburg limit order by hiding most of our order, leaving just min notional
-        let minAmountAtPrice = (minNotionalValue / priceToList) * 1.1 // Fudge factor
-        var amtVisible = exchangeInfo.nearestValidAmount(to: minAmountAtPrice, for: symbolPair)
-        if amtVisible != nil, amtVisible! >= amountToList { amtVisible = nil }
+        var amtVisible = self.minLimitOrderAmountAt(price: priceToList)
+        if amtVisible ?? 0 >= amountToList { amtVisible = nil }
         
         let newOrder = TradeOrder(pair: symbolPair, side: .sell, type: .limit, price: priceToList,
                                   timeInForce: .gtc, amount: amountToList, amtVisible: amtVisible)
@@ -78,7 +78,34 @@ class SellOrderManager: OrderManager {
                 callback(true)
             }
         }
+    }
+    
+    /// Place a new market sell order
+    ///
+    /// - Parameter callback: do this after placing order
+    func placeNewMarketOrder(callback: @escaping (_ isSuccess: Bool) -> Void) {
         
+        NSLog("SellOrderManager(\(self.parentTrade.symbol)): Placing new MARKET order")
+        
+        /// Symbol we will use to buy/sell
+        let symbolPair = self.parentTrade.symbol.symbolPair
+        
+        /// Amount we have left to sell, we will place sell order for all of the remaining amount
+        let amountToList = self.targetAmount - self.orders.amountFilled
+
+        let newOrder = TradeOrder(pair: symbolPair, side: .sell, type: .market,
+                                  amount: amountToList)
+        
+        newOrder.execute() { isSuccess in
+            if isSuccess {
+                NSLog("""
+                    SellOrderManager(\(self.parentTrade.symbol)): New MARKET sell executed
+                    at \((newOrder.avgfillPrice ?? 0.0).display8)
+                    """)
+                self.orders.append(newOrder)
+                callback(true)
+            }
+        }
     }
     
     override func manageOpenOrder() {
@@ -95,6 +122,7 @@ class SellOrderManager: OrderManager {
         /// Use orderbook to track other orders on this market
         let orderBook = self.parentTrade.marketSnapshot.orderBook
         guard   let orderPrice = order.orderPrice,
+                let firstAsk = orderBook.firstAskPrice,
                 let competitionAmount = orderBook.amountAtOrBelowAsk(price: orderPrice)
                 else {
                 
@@ -105,8 +133,24 @@ class SellOrderManager: OrderManager {
             return
         }
         
+        // Verify price hasn't gone down too far since initially trying to sell
+        let percentBelowTargetPrice = (self.targetPrice / firstAsk - 1).doubleToPercent
+        guard   percentBelowTargetPrice <= self.maxChangeToTargetPrice else {
+            NSLog("""
+                BuyOrderManager(\(self.parentTrade.symbol)): Price dropped too much
+                (\(percentBelowTargetPrice)%%), force market sell
+                """)
+            cancelOrder(order) { isSuccess in
+                if isSuccess {
+                    self.placeNewMarketOrder(){ _ in }
+                }
+            }
+            return
+        }
+        
         // do we need to decrease sell price to be competetive?
-        if competitionAmount > self.maxCompetitionAtPrice {
+        if      let maxCompetition = self.minLimitOrderAmountAt(price: orderPrice),
+                competitionAmount > maxCompetition {
             NSLog("""
                 SellOrderManager(\(self.parentTrade.symbol)): Too much competition @
                 \(orderPrice.display8), replacing buy order

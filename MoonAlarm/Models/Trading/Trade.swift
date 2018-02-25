@@ -115,9 +115,8 @@ class Trade {
         switch self.status {
         case .draft: return nil
         case .entering, .entered, .exiting:
-            let orderBook = self.marketSnapshot.orderBook
             guard   let enterP = self.enterPrice,
-                    let currentP = orderBook.firstAskPrice
+                    let currentP = self.marketSnapshot.candleSticks.last?.closePrice
                     else { return nil }
             return currentP - enterP - (fee.percentToDouble * currentP)
         case .complete:
