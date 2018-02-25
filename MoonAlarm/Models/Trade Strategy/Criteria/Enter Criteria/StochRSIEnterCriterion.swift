@@ -24,7 +24,7 @@ class StochRSIEnter: TradeEnterCriterion {
     ///   - max: Only enter trades when current stoch RSI is below this value
     ///   - requireCross: Stoch RSI must have signal cross to enter trade
     ///   - noCrossInLast: To reduce weak crosses, only enter trade if no cross has happened recently
-    init(max: Double = 100, requireCross: Bool = true, noPriorCrossInLast: Int = 6) {
+    init(max: Double = 80, requireCross: Bool = true, noPriorCrossInLast: Int = 6) {
         self.maxStochRSI = max
         self.requireSignalCross = requireCross
         self.noPriorCrossInLast = noPriorCrossInLast
