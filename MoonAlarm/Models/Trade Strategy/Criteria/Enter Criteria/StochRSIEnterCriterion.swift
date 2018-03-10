@@ -37,8 +37,7 @@ class StochRSIEnter: TradeEnterCriterion {
         guard   snapshot.candleSticks.count > 3,
                 let currentStochRSI = sticks.last?.stochRSIK,
                 let currentSignalDelta = sticks.last?.stochRSISignalDelta,
-                let prev1SignalDelta = sticks[sticks.count - 2].stochRSISignalDelta,
-                let prev2SignalDelta = sticks[sticks.count - 3].stochRSISignalDelta
+                let prev1SignalDelta = sticks[sticks.count - 2].stochRSISignalDelta
                 else {
             NSLog("invalid data in StochRSIEnter Criterion")
             return false
@@ -71,7 +70,7 @@ class StochRSIEnter: TradeEnterCriterion {
         
         // look for signal cross in the last two candlesticks
         if self.requireSignalCross {
-            let wasNegativePreviously = prev1SignalDelta < 0 || prev2SignalDelta < 0
+            let wasNegativePreviously = prev1SignalDelta < 0
             let isPositiveNow = currentSignalDelta > 0
             let didCross = isPositiveNow && wasNegativePreviously
             return didCross
