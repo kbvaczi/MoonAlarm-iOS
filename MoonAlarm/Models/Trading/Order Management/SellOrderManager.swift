@@ -10,6 +10,9 @@ import Foundation
 
 class SellOrderManager: OrderManager {
     
+    /// Higher sensitivity for selling
+    override var maxChangeToTargetPrice: Percent { get { return 0.2 } set { } }
+    
     /// Place a new limit sell order
     ///
     /// - Parameter callback: do this after placing order
@@ -83,7 +86,7 @@ class SellOrderManager: OrderManager {
     /// Place a new market sell order
     ///
     /// - Parameter callback: do this after placing order
-    func placeNewMarketOrder(callback: @escaping (_ isSuccess: Bool) -> Void) {
+    override func placeNewMarketOrder(callback: @escaping (_ isSuccess: Bool) -> Void) {
         
         NSLog("SellOrderManager(\(self.parentTrade.symbol)): Placing new MARKET order")
         
