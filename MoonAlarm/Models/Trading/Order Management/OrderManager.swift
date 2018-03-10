@@ -27,11 +27,12 @@ class OrderManager {
     
     /// Used for status updates
     var updateTimer = Timer()
+    let updateDelay: TimeInterval
     
     ////////// SETTINGS //////////
     
     /// If market price moves more than this before target amount filled, stop issueing new orders
-    let maxChangeToTargetPrice: Percent = 0.2
+    var maxChangeToTargetPrice: Percent = 0.5
     
     ////////// INIT //////////
     
@@ -45,6 +46,7 @@ class OrderManager {
         self.targetPrice = price
         self.targetAmount = amount
         self.parentTrade = trade
+        self.updateDelay = parentTrade.updateDelay
     }
     
     ////////// USE METHODS //////////
@@ -69,11 +71,18 @@ class OrderManager {
         return minAmountChecked
     }
     
-    /// Place new order
+    /// Place new limit order
     ///
     /// - Parameter callback: do this after order placed
     func placeNewLimitOrder(callback: @escaping (_ isSuccess: Bool) -> Void) {
         NSLog("OrderManager(\(self.parentTrade.symbol): Error, placeNewLimitOrder not overridden")
+    }
+    
+    /// Place new market order
+    ///
+    /// - Parameter callback: do this after order placed
+    func placeNewMarketOrder(callback: @escaping (_ isSuccess: Bool) -> Void) {
+        NSLog("OrderManager(\(self.parentTrade.symbol): Error, placeNewMarketOrder not overridden")
     }
     
     /// Manage open order based on market conditions
