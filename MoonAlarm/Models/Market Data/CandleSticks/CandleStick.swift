@@ -55,6 +55,21 @@ class CandleStick {
         self.tradesCount = tradesCount
     }
     
+    ////////// Stochstic Price Oscillator //////////
+    
+    /// Stochastic Price indicator
+    var stoch: Double? = nil
+    /// Smoothed signal of stochastic price indicator
+    var stochK: Double? = nil
+    /// Smoothed smoothed signal of stochastic price indicator
+    var stochD: Double? = nil
+    /// stochK - stochD
+    var stochSignalDelta: Double? {
+        guard   let k = self.stochK,
+                let d = self.stochD else { return nil }
+        return k - d
+    }
+    
     ////////// MACD Indicator //////////
     
     var macd: Double? = nil
@@ -70,7 +85,7 @@ class CandleStick {
     
     var rsi: Double? = nil
     
-    ////////// Stoch RSI Indicator //////////
+    ////////// Stochastic RSI Oscilator //////////
     
     /// Stochastic RSI
     var stochRSI: Double? = nil
