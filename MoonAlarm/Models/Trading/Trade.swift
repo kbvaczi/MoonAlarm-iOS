@@ -40,7 +40,7 @@ class Trade {
     
     /// Amount of coins purchased to date for this trade
     var amountTrading: Double? {
-        if self.isTest {
+        guard   !self.isTest else {
             guard let enterPrice = self.targetEnterPrice else { return nil }
             let testTradeAmount = self.targetTradePairAmount / enterPrice
             return testTradeAmount
@@ -82,7 +82,9 @@ class Trade {
     var sellOrderManager: SellOrderManager? = nil
     
     /// Used to trigger regular market snapshot updates
-    private var updateTimer = Timer()                           // For updating market info
+    private var updateTimer = Timer()
+    /// How long to wait between updates
+    let updateDelay: TimeInterval = 2
     
     /// Keep track of status of trade
     ///
@@ -116,7 +118,7 @@ class Trade {
         case .draft: return nil
         case .entering, .entered, .exiting:
             guard   let enterP = self.enterPrice,
-                    let currentP = self.marketSnapshot.candleSticks.last?.closePrice
+                    let currentP = self.marketSnapshot.orderBook.topBidPrice
                     else { return nil }
             return currentP - enterP - (fee.percentToDouble * currentP)
         case .complete:
@@ -222,23 +224,15 @@ class Trade {
     /// Monitor an trade and determine whether to exit/complete
     private func monitor() {
         switch self.status {
-        case .entering:            
-            if self.exitCriteria.onePassedFor(self) {
-                self.exit()
-            } else {
-                let buyingComplete = self.buyOrderManager?.status == .complete
-                if buyingComplete {
-                    self.status = .entered
-                }
-            }
+        case .entering:
+            let buyingComplete = self.buyOrderManager?.status == .complete
+            if buyingComplete { self.status = .entered }
             break
         case .entered:
             if self.exitCriteria.onePassedFor(self) { self.exit(); break }
         case .exiting:
             let sellingComplete = self.sellOrderManager?.status == .complete
-            if sellingComplete {
-                self.complete()
-            }
+            if sellingComplete { self.complete() }
         case .draft, .complete: break
         }
     }
@@ -247,7 +241,7 @@ class Trade {
     
     private func startRegularUpdates() {
         self.updateTimer.invalidate()
-        self.updateTimer = Timer.scheduledTimer(timeInterval: 4, target: self,
+        self.updateTimer = Timer.scheduledTimer(timeInterval: self.updateDelay, target: self,
                                                 selector: #selector(self.regularUpdate),
                                                 userInfo: nil, repeats: true)
     }
