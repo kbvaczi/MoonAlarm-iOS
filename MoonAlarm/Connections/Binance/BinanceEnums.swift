@@ -19,6 +19,7 @@ extension BinanceAPI {
         case m15 = "15m"
         case m30 = "30m"
         case h1 = "1h"
+        case h6 = "6h"
         case h12 = "12h"
         case d1 = "1d"
     }
