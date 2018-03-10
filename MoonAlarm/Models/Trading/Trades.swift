@@ -14,7 +14,7 @@ extension Array where Element : Trade {
     
     /// Overall success rate of trades, success = profitable
     var successRate: Percent {
-        let completedTrades = self.filter { $0.status == .complete }
+        let completedTrades = self.filter { $0.status == .complete && $0.amountTrading != nil }
         let sRate = completedTrades.map({ ($0.wasProfitable ?? false) ? 1 : 0 })
                                    .reduce(0) {$0 + $1 / Double(completedTrades.count)}
         return sRate.doubleToPercent
@@ -22,7 +22,7 @@ extension Array where Element : Trade {
     
     /// Total percent profit of trades
     var totalProfitPercent: Percent {
-        let completedTrades = self.filter { $0.status == .complete }
+        let completedTrades = self.filter { $0.status == .complete && $0.amountTrading != nil }
         let tPP = completedTrades.map({ $0.profitPercent ?? 0 }).reduce(0) { $0 + $1 }
         return tPP
     }
