@@ -15,7 +15,7 @@ class TradeSession {
     
     // Market Data //
     var exchangeInfo = ExchangeInfo()
-    var symbolsWatching = [Symbol]()
+    var marketsWatching = Markets()
     var marketSnapshots = MarketSnapshots()
     
     // TIME //
@@ -29,6 +29,9 @@ class TradeSession {
     private var updateTimer = Timer() // Timer that periodically updates market data
     var lastUpdateTime: Milliseconds? = nil
     
+    /// Update markets watching, filter out bearish coins
+    private var marketUpdateTimer = Timer()
+    
     // Conditions //
     var status: Status = .stopped
     enum Status: String {
@@ -39,54 +42,47 @@ class TradeSession {
     // Children //
     var trades = Trades()
     
+    /// Start trade session
+    ///
+    /// - Parameter callback: do this after trade session started
     func start(callback: @escaping () -> Void) {
-        self.status = .running
-        self.startTime = Date.currentTimeInMS
-        TradeSettings.instance.updateBalances()
-        self.updateSymbolsAndPrioritize { isSuccess in
-            self.startRegularSnapshotUpdates()
+        self.updateMarketsWatching { isSuccess in
+            self.status = .running
+            self.startTime = Date.currentTimeInMS
+            TradeSettings.instance.updateBalances()
+            self.startRegularUpdates()
             callback()
         }
     }
     
+    /// Stop trade session
+    ///
+    /// - Parameter callback: do this after trade session stopped
     func stop(callback: @escaping () -> Void) {
         self.status = .stopped
-        self.stopRegularSnapshotUpdates()
+        self.stopRegularUpdates()
         callback()
     }
     
-    func updateSymbolsAndPrioritize(callback: @escaping (_ isSuccess: Bool) -> Void) {
+    /// Refresh available markekts for given trading pair, filter appropriately
+    ///
+    /// - Parameter callback: do this after markets updated
+    func updateMarketsWatching(callback: @escaping (_ isSuccess: Bool) -> Void) {
         let tradingPairSymbol = TradeSettings.instance.tradingPairSymbol
+        
+        self.marketsWatching.removeAll()
         
         self.exchangeInfo.updateData() { isSuccess in
             
             // Verify we got exchange data
             guard isSuccess == true else { callback(false); return }
             
-            self.symbolsWatching.removeAll()
-            
             let allAvailableSymbols = self.exchangeInfo.symbolsForPair(tradingPairSymbol)
-            let dpG = DispatchGroup() // Keep track of how many have updated
+            let newMarkets = Markets(symbols: allAvailableSymbols)
             
-            for symbol in allAvailableSymbols {
-                dpG.enter()
-                BinanceAPI.instance.get24HrPairVolume(forTradingPair: symbol.symbolPair) {
-                    (isSuccessful, pairVolume) in
-                    
-                    if isSuccessful, let pairVolume = pairVolume {
-                        // TODO: come up with a more intelligent way of filtering symbols
-                        let min24HrVol = TradeSettings.instance.marketMin24HrVol
-                        
-                        // Due to API request limits, can monitor up to 50 symbols at once
-                        if pairVolume > min24HrVol, self.symbolsWatching.count < 50 {
-                            self.symbolsWatching.append(symbol)
-                        }
-                    }
-                    dpG.leave()
-                }
-            }
-            
-            dpG.notify(queue: .main) {
+            newMarkets.filter() { isSuccess in
+                guard isSuccess else { callback(false); return }
+                self.marketsWatching = newMarkets
                 callback(true)
             }
         }
@@ -97,7 +93,7 @@ class TradeSession {
         // use a dispatch group to keep track of how many symbols we've updated
         let dpG = DispatchGroup()
         
-        for symbol in self.symbolsWatching {
+        for symbol in self.marketsWatching.symbols {
             // don't need to evaluate for coins already trading
             if trades.openTradeFor(symbol) { continue }
             
@@ -123,11 +119,16 @@ class TradeSession {
         }
     }
     
-    func startRegularSnapshotUpdates() {
+    func startRegularUpdates() {
         self.updateTimer.invalidate() // Stop prior update timer
         self.updateTimer = Timer.scheduledTimer(timeInterval: 10, target: self,
                                                 selector: #selector(self.regularUpdate),
                                                 userInfo: nil, repeats: true)
+        self.marketUpdateTimer.invalidate()
+        self.marketUpdateTimer = Timer.scheduledTimer(timeInterval: 10.0.minutesToSeconds,
+                                                      target: self,
+                                                      selector: #selector(self.marketUpdate),
+                                                      userInfo: nil, repeats: true)
     }
     
     @objc func regularUpdate() {
@@ -138,8 +139,13 @@ class TradeSession {
         }
     }
     
-    func stopRegularSnapshotUpdates() {
+    @objc func marketUpdate() {
+        self.updateMarketsWatching() { _ in }
+    }
+    
+    func stopRegularUpdates() {
         self.updateTimer.invalidate()
+        self.marketUpdateTimer.invalidate()
     }
     
     func investInWinners() {
