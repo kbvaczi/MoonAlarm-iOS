@@ -65,19 +65,6 @@ class MoonAlarmTableViewController: UITableViewController {
         self.initTestModeSwitch()
         
         //  MINI //
-        TradeSettings.instance.tradeStrategy.entranceCriteria = [
-            StochRSIEnter(max: 80, noPriorCrossInLast: 10),
-            SpareRunwayEnter(percent: 1.0),
-            DelayBetweenTradesEnter(delay: 10),
-        ]
-
-        TradeSettings.instance.tradeStrategy.exitCriteria = [
-            ProfitCutoffExit(percent: 0.5),
-            MinRunwayExit(percent: 0.1),
-            LossExit(percent: 0.4),
-        ]
-    
-        //  IPAD //
 //        TradeSettings.instance.tradeStrategy.entranceCriteria = [
 //            StochRSIEnter(max: 80, noPriorCrossInLast: 10),
 //            SpareRunwayEnter(percent: 1.0),
@@ -85,10 +72,25 @@ class MoonAlarmTableViewController: UITableViewController {
 //        ]
 //
 //        TradeSettings.instance.tradeStrategy.exitCriteria = [
-//            ProfitCutoffExit(percent: 0.8),
+//            ProfitCutoffExit(percent: 0.5),
 //            MinRunwayExit(percent: 0.1),
 //            LossExit(percent: 0.4),
 //        ]
+    
+        //  IPAD //
+        TradeSettings.instance.tradeStrategy.entranceCriteria = [
+            StochRSIEnter(max: 80, noPriorCrossInLast: 8),
+            SpareRunwayEnter(percent: 1.0),
+            DelayBetweenTradesEnter(delay: 10),
+        ]
+
+        TradeSettings.instance.tradeStrategy.exitCriteria = [
+            ProfitCutoffExit(percent: 5.0),
+            TrailingLossExit(percent: 0.3, after: 0.3, ignoreAbove: 1.0),
+            TrailingLossExit(percent: 1.0, after: 1.0),
+//            AndExit([MinRunwayExit(percent: 0.05), FallwayExit(percent: 0.2)]),
+            LossExit(percent: 0.5),
+        ]
     }
 
     /// Initialize test mode switch, set to current mode
@@ -170,7 +172,7 @@ class MoonAlarmTableViewController: UITableViewController {
         self.openTrades = TradeSession.instance.trades.filterOnlyOpen()
         self.completedTrades = TradeSession.instance.trades.filterOnlyComplete()
         self.tableView.reloadData()
-        self.symbolsCountLabel.text = "Markets: \(TradeSession.instance.symbolsWatching.count)"
+        self.symbolsCountLabel.text = "Markets: \(TradeSession.instance.marketsWatching.symbols.count)"
         if  let marketLastUpdate = TradeSession.instance.lastUpdateTime {
             let currentTime = Date.currentTimeInMS
             let secondsSinceLastUpdate = (currentTime - marketLastUpdate).msToSeconds
