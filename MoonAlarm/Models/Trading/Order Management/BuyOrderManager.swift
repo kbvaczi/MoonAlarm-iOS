@@ -84,6 +84,34 @@ class BuyOrderManager: OrderManager {
         }
     }
     
+    /// Place a new market buy order
+    ///
+    /// - Parameter callback: do this after placing order
+    override func placeNewMarketOrder(callback: @escaping (_ isSuccess: Bool) -> Void) {
+        
+        NSLog("BuyOrderManager(\(self.parentTrade.symbol)): Placing new MARKET order")
+        
+        /// Symbol we will use to buy/sell
+        let symbolPair = self.parentTrade.symbol.symbolPair
+        
+        /// Amount we have left to sell, we will place sell order for all of the remaining amount
+        let amountToList = self.targetAmount - self.orders.amountFilled
+        
+        let newOrder = TradeOrder(pair: symbolPair, side: .buy, type: .market,
+                                  amount: amountToList)
+        
+        newOrder.execute() { isSuccess in
+            if isSuccess {
+                NSLog("""
+                    SellOrderManager(\(self.parentTrade.symbol)): New MARKET buy executed
+                    at \((newOrder.avgfillPrice ?? 0.0).display8)
+                    """)
+                self.orders.append(newOrder)
+                callback(true)
+            }
+        }
+    }
+    
     /// Manage open order based on market conditions
     override func manageOpenOrder() {
         
