@@ -10,24 +10,27 @@ import Foundation
 
 class TrailingLossExit: TradeExitCriterion {
     
-    var afterGainPercent: Percent = 2.0
+    var afterGainPercent: Percent = 0.3
+    var ignoreAbovePercent: Percent = 1.0
     var hasExceededGain: Bool = false
-    var maxLossPercent: Percent = 1.0
+    var maxLossPercent: Percent = 0.3
     
     override var logMessage: String {
         return "Trailing Loss (\(self.maxLossPercent)% after \(self.afterGainPercent)%)"
     }
     
-    init(percent loss: Percent = 1.0, after gain: Percent = 2.0) {
+    init(percent loss: Percent = 0.3, after gain: Percent = 0.3, ignoreAbove: Percent = 1.0) {
         self.maxLossPercent = loss
         self.afterGainPercent = gain
+        self.ignoreAbovePercent = ignoreAbove
     }
     
     override func passedFor(trade: Trade) -> Bool {
         
         // Check for valid inputs
         guard   self.afterGainPercent > 0,
-                self.maxLossPercent > 0
+                self.maxLossPercent > 0,
+                self.ignoreAbovePercent >= afterGainPercent
                 else { return false }
         
         // Check for valid data
@@ -37,7 +40,7 @@ class TrailingLossExit: TradeExitCriterion {
         // Once we exceed target gain, begin looking for loss
         if profitPercent >= self.afterGainPercent {
             self.hasExceededGain = true
-            self.afterGainPercent = profitPercent
+            self.afterGainPercent = min(profitPercent, self.ignoreAbovePercent)
         }
         
         // exit trade if we see a loss after target gain
