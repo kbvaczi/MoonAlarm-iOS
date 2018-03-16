@@ -17,9 +17,9 @@ extension Array where Element : CandleStick {
         /// Stochastic period
         let lengthStoch = 9
         /// Smooth signal of stocastic RSI
-        let smoothK = 3
+        let smoothK = 2
         /// Smooth signal of smoothed stochastic RSI
-        let smoothD = 3
+        let smoothD = 2
         
         // RSI needs a minimum of 2 * period to be accurate
         guard   self.count > (2 * lengthRSI),
