@@ -26,7 +26,7 @@ class TradeSettings {
     var expectedFeePerTrade: Percent = 0.1
     var testMode: Bool = true
 
-    var candleStickPeriod: BinanceAPI.KLineInterval = .m5
+    var candleStickPeriod: BinanceAPI.KLineInterval = .h1
     
     var tradeStrategy = TradeStrategy()
     

@@ -32,7 +32,7 @@ class OrderManager {
     ////////// SETTINGS //////////
     
     /// If market price moves more than this before target amount filled, stop issueing new orders
-    var maxChangeToTargetPrice: Percent = 0.5
+    var maxChangeToTargetPrice: Percent = 0.4
     
     ////////// INIT //////////
     

@@ -73,7 +73,22 @@
 		BEF4963E200A9FC600501C5C /* TimeLimitProfitableCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF4963D200A9FC600501C5C /* TimeLimitProfitableCriterion.swift */; };
 		BEF49640200AA6A400501C5C /* TimeLimitUnprofitableCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF4963F200AA6A400501C5C /* TimeLimitUnprofitableCriterion.swift */; };
 		BEF49648200AAC4E00501C5C /* LossPercentCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF49647200AAC4E00501C5C /* LossPercentCriterion.swift */; };
+		BEF6BA0420541FCA00711DF7 /* TradeShowViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF6BA0320541FCA00711DF7 /* TradeShowViewController.swift */; };
+		BEF6BA0F205AAF1100711DF7 /* RunFallRatioCriterion.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF6BA0E205AAF1100711DF7 /* RunFallRatioCriterion.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		BEF6BA0D2054259800711DF7 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		12326CE732BB79C8E07E3DF8 /* Pods-MoonAlarm.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MoonAlarm.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MoonAlarm/Pods-MoonAlarm.debug.xcconfig"; sourceTree = "<group>"; };
@@ -146,6 +161,9 @@
 		BEF4963D200A9FC600501C5C /* TimeLimitProfitableCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeLimitProfitableCriterion.swift; sourceTree = "<group>"; };
 		BEF4963F200AA6A400501C5C /* TimeLimitUnprofitableCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeLimitUnprofitableCriterion.swift; sourceTree = "<group>"; };
 		BEF49647200AAC4E00501C5C /* LossPercentCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LossPercentCriterion.swift; sourceTree = "<group>"; };
+		BEF6BA0320541FCA00711DF7 /* TradeShowViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradeShowViewController.swift; sourceTree = "<group>"; };
+		BEF6BA062054256C00711DF7 /* Charts.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Charts.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		BEF6BA0E205AAF1100711DF7 /* RunFallRatioCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunFallRatioCriterion.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -180,6 +198,7 @@
 		BE390B802001488D00CFD46B = {
 			isa = PBXGroup;
 			children = (
+				BEF6BA062054256C00711DF7 /* Charts.framework */,
 				BE390B8B2001488D00CFD46B /* MoonAlarm */,
 				BE390B8A2001488D00CFD46B /* Products */,
 				8CE19EB6F85AED5810747D89 /* Pods */,
@@ -226,6 +245,7 @@
 			isa = PBXGroup;
 			children = (
 				BE390BA52002507B00CFD46B /* MoonAlarmTableViewController.swift */,
+				BEF6BA0320541FCA00711DF7 /* TradeShowViewController.swift */,
 			);
 			path = "View Controllers";
 			sourceTree = "<group>";
@@ -369,6 +389,7 @@
 				BE3BA14620138F4D00458621 /* RSIEnterCriterion.swift */,
 				BE7071892030969900A8C897 /* StochRSIEnterCriterion.swift */,
 				BE42797B20279F0400D6FE1E /* DelayBetweenTradesCriterion.swift */,
+				BEF6BA0E205AAF1100711DF7 /* RunFallRatioCriterion.swift */,
 			);
 			path = "Enter Criteria";
 			sourceTree = "<group>";
@@ -417,6 +438,7 @@
 				BE390B872001488D00CFD46B /* Resources */,
 				73B75C95897BA883B95F8E2F /* [CP] Embed Pods Frameworks */,
 				74B1252E793DBA76295B2914 /* [CP] Copy Pods Resources */,
+				BEF6BA0D2054259800711DF7 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -484,6 +506,7 @@
 				"${SRCROOT}/Pods/Target Support Files/Pods-MoonAlarm/Pods-MoonAlarm-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
 				"${BUILT_PRODUCTS_DIR}/AlamofireSwiftyJSON/AlamofireSwiftyJSON.framework",
+				"${BUILT_PRODUCTS_DIR}/Charts/Charts.framework",
 				"${BUILT_PRODUCTS_DIR}/CryptoSwift/CryptoSwift.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftyJSON/SwiftyJSON.framework",
 			);
@@ -491,6 +514,7 @@
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AlamofireSwiftyJSON.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Charts.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CryptoSwift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyJSON.framework",
 			);
@@ -546,6 +570,7 @@
 				BEF496262009791900501C5C /* TradeEnterExitCriteria.swift in Sources */,
 				BE3BA14D2013E8D100458621 /* BinanceKeys.swift in Sources */,
 				BE9E3CA1200588BA005D531C /* TradeSession.swift in Sources */,
+				BEF6BA0420541FCA00711DF7 /* TradeShowViewController.swift in Sources */,
 				BEAE63D1201BD023006746A7 /* FallwayExit.swift in Sources */,
 				BE4279722024B8B100D6FE1E /* BuyOrderManager.swift in Sources */,
 				BE1867502012BCF400E275E4 /* Symbol.swift in Sources */,
@@ -561,6 +586,7 @@
 				BE6B47A3204306CD00488F89 /* CandleSticksStoch.swift in Sources */,
 				BEC755FA200D87090092B316 /* CandleSticksRSI.swift in Sources */,
 				BE9E3C9620044CD9005D531C /* TimeAliases.swift in Sources */,
+				BEF6BA0F205AAF1100711DF7 /* RunFallRatioCriterion.swift in Sources */,
 				BE9E3CAB200686CE005D531C /* Order.swift in Sources */,
 				BEE6B0B9201503C70068DDCB /* TradeOrders.swift in Sources */,
 				BEAE63CD201AB784006746A7 /* RunwayExitCriterion.swift in Sources */,

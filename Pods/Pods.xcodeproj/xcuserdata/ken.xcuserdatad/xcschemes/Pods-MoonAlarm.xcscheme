@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "229E4F9084359FE39CC880972EA908FD"
+               BlueprintIdentifier = "A543FF30B10763681752F4ED754DB418"
                BuildableName = "Pods_MoonAlarm.framework"
                BlueprintName = "Pods-MoonAlarm"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -47,7 +47,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "229E4F9084359FE39CC880972EA908FD"
+            BlueprintIdentifier = "A543FF30B10763681752F4ED754DB418"
             BuildableName = "Pods_MoonAlarm.framework"
             BlueprintName = "Pods-MoonAlarm"
             ReferencedContainer = "container:Pods.xcodeproj">

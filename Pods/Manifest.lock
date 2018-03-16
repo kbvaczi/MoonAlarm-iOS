@@ -1,21 +1,26 @@
 PODS:
-  - Alamofire (4.6.0)
+  - Alamofire (4.7.0)
   - AlamofireSwiftyJSON (1.0.1):
     - Alamofire (~> 4.0)
     - SwiftyJSON (~> 4.0)
-  - CryptoSwift (0.8.1)
+  - Charts (3.0.5):
+    - Charts/Core (= 3.0.5)
+  - Charts/Core (3.0.5)
+  - CryptoSwift (0.8.3)
   - SwiftyJSON (4.0.0)
 
 DEPENDENCIES:
   - AlamofireSwiftyJSON
+  - Charts (~> 3.0)
   - CryptoSwift
 
 SPEC CHECKSUMS:
-  Alamofire: f41a599bd63041760b26d393ec1069d9d7b917f4
+  Alamofire: 907e0a98eb68cdb7f9d1f541a563d6ac5dc77b25
   AlamofireSwiftyJSON: ad896b68b586aea5de8ddba641ad3b402b8d5511
-  CryptoSwift: 4b07d5b508c1eb67bfa314a727b705f8048a85de
+  Charts: 45cdc985b764c838b35ee47eb1365d15735f6d1a
+  CryptoSwift: 033efc3523865d19cc6ab6612fa17a62613b5dfa
   SwiftyJSON: 070dabdcb1beb81b247c65ffa3a79dbbfb3b48aa
 
-PODFILE CHECKSUM: 8691cc701fce21ad58b6039a392ce60ec9d97b18
+PODFILE CHECKSUM: c2e378d268b4698d70a44361b60667aa7515a9d9
 
 COCOAPODS: 1.3.1

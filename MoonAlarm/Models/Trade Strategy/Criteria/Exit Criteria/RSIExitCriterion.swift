@@ -16,7 +16,7 @@ class RSIExit: TradeExitCriterion {
         return "RSIExit (\(self.maxRSI))"
     }
     
-    init(max rsi: Double = 60) {
+    init(max rsi: Double = 90) {
         self.maxRSI = rsi
     }
     

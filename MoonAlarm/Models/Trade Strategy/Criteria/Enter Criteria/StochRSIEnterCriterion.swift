@@ -24,7 +24,7 @@ class StochRSIEnter: TradeEnterCriterion {
     ///   - max: Only enter trades when current stoch RSI is below this value
     ///   - requireCross: Stoch RSI must have signal cross to enter trade
     ///   - noCrossInLast: To reduce weak crosses, only enter trade if no cross has happened recently
-    init(max: Double = 80, requireCross: Bool = true, noPriorCrossInLast: Int = 6) {
+    init(max: Double = 80, requireCross: Bool = true, noPriorCrossInLast: Int = 3) {
         self.maxStochRSI = max
         self.requireSignalCross = requireCross
         self.noPriorCrossInLast = noPriorCrossInLast
@@ -48,11 +48,11 @@ class StochRSIEnter: TradeEnterCriterion {
                 else { return false }
         
         // Verify there hasn't been a recent cross
-        let lastSticksToIgnore = 3
+        let lastSticksToIgnore = 2
         if noPriorCrossInLast > lastSticksToIgnore {
             var wasPriorCross = false
             let crossDataSet = snapshot.candleSticks.suffix(noPriorCrossInLast)
-                                                    .dropLast().dropLast().dropLast()
+                                                    .dropLast().dropLast()
             let startIndex = crossDataSet.startIndex
             for (i, stick) in crossDataSet.enumerated() {
                 let priorIndex = startIndex + i - 1
@@ -63,10 +63,7 @@ class StochRSIEnter: TradeEnterCriterion {
                 }
             }
             if wasPriorCross { return false }
-        } else {
-            NSLog("invalid noCrossInLast for StochRSIEnter Criterion")
         }
-        
         
         // look for signal cross in the last two candlesticks
         if self.requireSignalCross {

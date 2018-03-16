@@ -11,7 +11,7 @@ import Foundation
 class SellOrderManager: OrderManager {
     
     /// Higher sensitivity for selling
-    override var maxChangeToTargetPrice: Percent { get { return 0.2 } set { } }
+    override var maxChangeToTargetPrice: Percent { get { return 0.1 } set { } }
     
     /// Place a new limit sell order
     ///

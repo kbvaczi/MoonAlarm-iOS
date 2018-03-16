@@ -99,6 +99,7 @@ class Trade {
         case exiting = "Exiting"
         case complete = "Complete"
         
+        /// Trade is not complete
         var isOpen: Bool { return self != .complete }
     }
     
@@ -144,6 +145,9 @@ class Trade {
     /// Enter a new trade, setup buy orders if live trading, and start tracking
     func enter() {
         
+        // Gracefully handle repeat function calls
+        guard   self.status == .draft else { return }
+        
         NSLog("Trade(\(self.symbol)): Entered")
         
         let orderBook = self.marketSnapshot.orderBook
@@ -172,6 +176,11 @@ class Trade {
     
     /// Exit a trade, setup sell orders if appropriate, continue tracking until exit complete
     func exit() {
+        
+        // Gracefully handle repeat function calls
+        guard   self.status.isOpen,
+                self.status != .exiting else { return }
+        
         let orderBook = self.marketSnapshot.orderBook
         let firstAskPrice = orderBook.firstAskPrice
         let currentPrice = marketSnapshot.currentPrice
@@ -206,6 +215,10 @@ class Trade {
     
     /// Trade has been exited, clean up, and stop tracking
     private func complete() {
+        
+        // Gracefully handle repeat function calls
+        guard   self.status.isOpen else { return }
+        
         // Cleanup
         self.status = .complete
         self.endTime = Date.currentTimeInMS

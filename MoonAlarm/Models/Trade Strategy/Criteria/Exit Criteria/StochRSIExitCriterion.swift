@@ -11,6 +11,8 @@ import Foundation
 class StochRSIExit: TradeExitCriterion {
     
     let maxStochRSI: Double
+    let waitAfterCrossPriorToExit: Milliseconds = 30.0.secondsToMilliseconds
+    var crossStartedAt: Milliseconds? = nil
     
     override var logMessage: String {
         return "StochRSIExit"
@@ -37,7 +39,22 @@ class StochRSIExit: TradeExitCriterion {
         
         // look for signal cross
         let didCross = currentSignalDelta < 0 && prevSignalDelta > 0
-        return didCross
+        if didCross {
+            let currentTime = Date.currentTimeInMS
+            if let crossStartTime = self.crossStartedAt {
+                if currentTime - crossStartTime >= self.waitAfterCrossPriorToExit {
+                    return true
+                }
+            } else {
+                self.crossStartedAt = currentTime
+            }
+        } else {
+            // clear cross started at
+            self.crossStartedAt = nil
+        }
+        
+        // No cross or cross hasn't lasted long enough
+        return false
     }
     
     override func copy() -> StochRSIExit {

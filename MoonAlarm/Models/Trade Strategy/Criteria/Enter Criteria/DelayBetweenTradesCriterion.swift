@@ -16,7 +16,7 @@ class DelayBetweenTradesEnter: TradeEnterCriterion {
     /// Wait period of time after completing trade before entering new trade with the same coin
     ///
     /// - Parameter delay: time to wait, in minutes
-    init(delay: Minutes) {
+    init(minutes delay: Minutes) {
         self.timeDelay = delay
     }
     

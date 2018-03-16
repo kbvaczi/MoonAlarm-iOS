@@ -9,21 +9,6 @@
 import UIKit
 
 class MoonAlarmTableViewController: UITableViewController {
-
-    @IBAction func startStopButtonPushed(_ sender: UIButton) {
-        switch TradeSession.instance.status {
-        case .running:
-            sender.setTitle("Start Trading", for: .normal)
-            TradeSession.instance.stop {
-//                self.stopRegularDisplayUpdates()
-            }
-        case .stopped:
-            sender.setTitle("Stop Trading", for: .normal)
-            TradeSession.instance.start {
-//                self.startRegularDisplayUpdates()
-            }
-        }
-    }
     
     @IBAction func testModeSwitchToggle(_ sender: UISwitch) {
         if sender.isOn {
@@ -63,33 +48,22 @@ class MoonAlarmTableViewController: UITableViewController {
         super.viewDidLoad()
         self.startRegularDisplayUpdates()
         self.initTestModeSwitch()
-        
-        //  MINI //
-//        TradeSettings.instance.tradeStrategy.entranceCriteria = [
-//            StochRSIEnter(max: 80, noPriorCrossInLast: 10),
-//            SpareRunwayEnter(percent: 1.0),
-//            DelayBetweenTradesEnter(delay: 10),
-//        ]
-//
-//        TradeSettings.instance.tradeStrategy.exitCriteria = [
-//            ProfitCutoffExit(percent: 0.5),
-//            MinRunwayExit(percent: 0.1),
-//            LossExit(percent: 0.4),
-//        ]
+        self.initPlayButton()
     
         //  IPAD //
         TradeSettings.instance.tradeStrategy.entranceCriteria = [
-            StochRSIEnter(max: 80, noPriorCrossInLast: 8),
-            SpareRunwayEnter(percent: 1.0),
-            DelayBetweenTradesEnter(delay: 10),
+            StochRSIEnter(max: 85, noPriorCrossInLast: 0),
+//            RSIEnter(max: 30, inLast: 5),
+            RunFallRatioEnter(1.2),
+//            SpareRunwayEnter(percent: 0.5),
+            DelayBetweenTradesEnter(minutes: 5),
         ]
 
         TradeSettings.instance.tradeStrategy.exitCriteria = [
-            ProfitCutoffExit(percent: 5.0),
-            TrailingLossExit(percent: 0.3, after: 0.3, ignoreAbove: 1.0),
-            TrailingLossExit(percent: 1.0, after: 1.0),
-//            AndExit([MinRunwayExit(percent: 0.05), FallwayExit(percent: 0.2)]),
-            LossExit(percent: 0.5),
+//            ProfitCutoffExit(percent: 1.0),
+            StochRSIExit(max: 98),
+            AndExit([MinRunwayExit(percent: 0.05), FallwayExit(percent: 0.2)]),
+            LossExit(percent: 1.0),
         ]
     }
 
@@ -98,6 +72,23 @@ class MoonAlarmTableViewController: UITableViewController {
         let isTestMode = TradeSettings.instance.testMode
         self.testModeSwitch.setOn(isTestMode, animated: true)
         self.testModeSwitch.tintColor = UIColor.red // Show the switch as red if out of test mode
+    }
+    
+    @objc func tradeStartStopButtonPushed() {
+        switch TradeSession.instance.status {
+        case .running:
+            TradeSession.instance.stop {
+                self.initPlayButton()
+            }
+        case .stopped:
+            TradeSession.instance.start {
+                self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .pause, target: self, action: #selector(MoonAlarmTableViewController.tradeStartStopButtonPushed))
+            }
+        }
+    }
+    
+    func initPlayButton() {
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .play, target: self, action: #selector(MoonAlarmTableViewController.tradeStartStopButtonPushed))
     }
 
     // MARK: - Table view data source
@@ -123,6 +114,15 @@ class MoonAlarmTableViewController: UITableViewController {
         
     }
     
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        var sender: Any
+        switch indexPath.section {
+        case 0: sender = self.openTrades[indexPath.row]
+        default: sender = self.completedTrades[indexPath.row]
+        }
+        self.performSegue(withIdentifier: "showTradeSegue", sender: sender)
+    }
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "tradeDetailCell", for: indexPath)
         switch indexPath.section {
@@ -137,21 +137,12 @@ class MoonAlarmTableViewController: UITableViewController {
         return cell
     }
     
-    func buildCell(_ cell: UITableViewCell, from trade: Trade) {
-        
+    func buildCell(_ cell: UITableViewCell, from trade: Trade) {        
         // set fill amount
         let fillAmount = trade.amountTradingPair
         let fillAmtString = fillAmount != nil ? fillAmount!.display3 : "?"
         
-        // set enter price
-        let enterPrice = trade.enterPrice
-        let enterPriceString = enterPrice != nil ? enterPrice!.display8 : "?"
-        
-        // Set exit price
-        let exitPrice = trade.exitPrice ?? trade.marketSnapshot.orderBook.firstAskPrice
-        let exitPriceString = exitPrice != nil ? exitPrice!.display8 : "?"
-        
-        cell.textLabel?.text = "\(trade.symbol): \(fillAmtString) \(trade.tradingPairSymbol)  \(enterPriceString) -> \(exitPriceString)"
+        cell.textLabel?.text = "\(trade.symbol): \(fillAmtString) \(trade.tradingPairSymbol)"
         if let profitPercent = trade.profitPercent {
             cell.detailTextLabel?.text = "\(profitPercent)%"
         }
@@ -169,54 +160,74 @@ class MoonAlarmTableViewController: UITableViewController {
     }
     
     @objc private func updateDisplay() {
-        self.openTrades = TradeSession.instance.trades.filterOnlyOpen()
-        self.completedTrades = TradeSession.instance.trades.filterOnlyComplete()
+        
+        let tradeSession = TradeSession.instance
+        let tradeSettings = TradeSettings.instance
+        
+        // Reload table
+        self.openTrades = tradeSession.trades.filterOnlyOpen()
+        self.completedTrades = tradeSession.trades.filterOnlyComplete()
         self.tableView.reloadData()
-        self.symbolsCountLabel.text = "Markets: \(TradeSession.instance.marketsWatching.symbols.count)"
-        if  let marketLastUpdate = TradeSession.instance.lastUpdateTime {
+        
+        // Set Labels
+        self.symbolsCountLabel.text = "Markets: \(tradeSession.marketsWatching.symbols.count)"
+        if      tradeSession.status == .running,
+                let marketLastUpdate = tradeSession.lastUpdateTime {
             let currentTime = Date.currentTimeInMS
             let secondsSinceLastUpdate = (currentTime - marketLastUpdate).msToSeconds
             let secondsSinceLastUpdateDisplay =
-                                String(format: "%.0f", arguments: [secondsSinceLastUpdate])
+                String(format: "%.0f", arguments: [secondsSinceLastUpdate])
             self.lastUpdatedLabel.text = "Last Refresh: \(secondsSinceLastUpdateDisplay)"
         }
         
-        // Set Labels
-        
         // Account Balances
-        let pairBalance = TradeSettings.instance.tradingPairBalance.display8
-        let pairSymbol = TradeSettings.instance.tradingPairSymbol
+        let pairBalance = tradeSettings.tradingPairBalance.display8
+        let pairSymbol = tradeSettings.tradingPairSymbol
         let pairCoinBalanceString = "\(pairBalance) \(pairSymbol)"
-        self.pairCoinBalanceLabel.text = "Pair Coin Balance: \(pairCoinBalanceString)"
-        let feeCoinBalance = TradeSettings.instance.tradingFeeCoinBalance.display8
-        let feeCoinSymbol = TradeSettings.instance.tradingFeeCoinSymbol
+        self.pairCoinBalanceLabel.text = "\(pairCoinBalanceString)"
+        let feeCoinBalance = tradeSettings.tradingFeeCoinBalance.display8
+        let feeCoinSymbol = tradeSettings.tradingFeeCoinSymbol
         let feeCoinBalanceString =  feeCoinSymbol != nil ?
                                     "\(feeCoinBalance) \(feeCoinSymbol!)" :
                                     "N/A"
-        self.feeCoinBalanceLabel.text = "Fee Coin Balance: \(feeCoinBalanceString)"
+        self.feeCoinBalanceLabel.text = "\(feeCoinBalanceString)"
         
         // Trade Session Details
         self.completedTradesLabel.text =
-            "Trades Completed: \(TradeSession.instance.trades.countComplete())"
+            "Trades: \(TradeSession.instance.trades.countComplete())"
         self.successRateLabel.text =
-            "Success Rate: \(TradeSession.instance.trades.successRate)%"
+            "Success: \(TradeSession.instance.trades.successRate)%"
         self.totalProfitPercentLabel.text =
-            "Total Profit: \(TradeSession.instance.trades.totalProfitPercent)%"
+            "Profit: \(TradeSession.instance.trades.totalProfitPercent)%"
         self.sessionTimeLabel.text =
-            "Session Time: \(TradeSession.instance.duration.displayMsToHHMM)"
+            "Session: \(TradeSession.instance.duration.displayMsToHHMM)"
         let targetTradeAmount = TradeSettings.instance.tradeAmountTarget
-        self.tradeAmountLabel.text = "Target Trade Amount: \(targetTradeAmount) \(pairSymbol)"
+        self.tradeAmountLabel.text = "Amount: \(targetTradeAmount) \(pairSymbol)"
     }
-    
-   
-    /*
+
     // MARK: - Navigation
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {        
+        if (segue.identifier == "showTradeSegue") {
+            guard   let destination = segue.destination as? TradeShowViewController,
+                    let sender = sender as? Trade
+                    else { return }
+            
+            destination.trade = sender
+            destination.navTitle.title = sender.symbol.symbolPair
+        }
     }
-    */
+ 
 
 }
+
+
+
+
+
+
+
+
+
+
+
