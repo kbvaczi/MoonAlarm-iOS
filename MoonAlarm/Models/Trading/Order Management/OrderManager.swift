@@ -32,7 +32,7 @@ class OrderManager {
     ////////// SETTINGS //////////
     
     /// If market price moves more than this before target amount filled, stop issueing new orders
-    var maxChangeToTargetPrice: Percent = 0.4
+    var maxChangeToTargetPrice: Percent = 0.2
     
     ////////// INIT //////////
     
@@ -75,14 +75,14 @@ class OrderManager {
     ///
     /// - Parameter callback: do this after order placed
     func placeNewLimitOrder(callback: @escaping (_ isSuccess: Bool) -> Void) {
-        NSLog("OrderManager(\(self.parentTrade.symbol): Error, placeNewLimitOrder not overridden")
+        NSLog("OrderManager(\(self.parentTrade.symbol)): Error, placeNewLimitOrder not overridden")
     }
     
     /// Place new market order
     ///
     /// - Parameter callback: do this after order placed
     func placeNewMarketOrder(callback: @escaping (_ isSuccess: Bool) -> Void) {
-        NSLog("OrderManager(\(self.parentTrade.symbol): Error, placeNewMarketOrder not overridden")
+        NSLog("OrderManager(\(self.parentTrade.symbol)): Error, placeNewMarketOrder not overridden")
     }
     
     /// Manage open order based on market conditions
@@ -91,14 +91,20 @@ class OrderManager {
     }
     
     /// Place an order and start managing
-    func start() {
+    @objc func start() {
+        // gracefully handle multiple calls
+        guard self.status == .draft else { return }
+        
         self.placeNewLimitOrder() { isSuccess in
             if isSuccess {
                 self.status = .started
                 self.startRegularUpdates()
             } else {
-                NSLog("OrderManager(\(self.parentTrade.symbol): Error, initial order failed")
-                self.status = .complete
+                NSLog("OrderManager(\(self.parentTrade.symbol)): initial order FAILED, trying again")
+                // periodically try to re-enter order
+                Timer.scheduledTimer(timeInterval: 10.0, target: self,
+                                     selector: #selector(self.start),
+                                     userInfo: nil, repeats: false)
             }
         }
     }
@@ -108,13 +114,22 @@ class OrderManager {
     /// - Parameter order: order to replace
     func replaceOrder(_ order: TradeOrder) {
         order.cancel() { isSuccess in
-            // have we bought/sold enough already?
-            if isSuccess, self.orders.amountFilled < self.targetAmount {
+            if isSuccess {
+                // have we bought/sold enough already?
+                guard self.orders.amountFilled < self.targetAmount else { return }
+                
                 self.placeNewLimitOrder() { isSuccess in
                     if isSuccess {
                         NSLog("OrderManager(\(self.parentTrade.symbol)): Order replaced")
+                    } else {
+                        NSLog("OrderManager(\(self.parentTrade.symbol)): Order replaced FAILED")
+                        Timer.scheduledTimer(withTimeInterval: 10.0, repeats: false) { _ in
+                            self.replaceOrder(order)
+                        }
                     }
                 }
+            } else {
+                NSLog("OrderManager(\(self.parentTrade.symbol)): Error, unable to cancel order")
             }
         }
     }
@@ -127,7 +142,11 @@ class OrderManager {
     func cancelOrder(_ order: TradeOrder,
                      callback: @escaping (_ isSuccess: Bool) -> Void) {
         order.cancel() { isSuccess in
-            NSLog("OrderManager(\(self.parentTrade.symbol): Order cancelled")
+            if isSuccess {
+                NSLog("OrderManager(\(self.parentTrade.symbol)): Order cancelled")
+            } else {
+                NSLog("OrderManager(\(self.parentTrade.symbol)): Order cancelled FAILED")
+            }
             callback(isSuccess)
         }
     }
@@ -144,7 +163,7 @@ class OrderManager {
     private func startRegularUpdates() {
         NSLog("OrderManager(\(self.parentTrade.symbol)): Start regular updates")
         self.updateTimer.invalidate()
-        self.updateTimer = Timer.scheduledTimer(timeInterval: 4, target: self,
+        self.updateTimer = Timer.scheduledTimer(timeInterval: self.updateDelay, target: self,
                                                 selector: #selector(self.updateAndManageLastOrder),
                                                 userInfo: nil, repeats: true)
     }
@@ -156,7 +175,15 @@ class OrderManager {
         
         NSLog("OrderManager(\(self.parentTrade.symbol)): Updating")
         lastOrder.update() { isSuccess in
-            self.manageOpenOrder()
+            if isSuccess {
+                self.manageOpenOrder()
+            } else {
+                NSLog("OrderManager(\(self.parentTrade.symbol)): Order update FAILED")
+                self.stopRegularUpdates()
+                Timer.scheduledTimer(withTimeInterval: 10, repeats: false) { _ in
+                    self.startRegularUpdates()
+                }
+            }
         }
     }
     

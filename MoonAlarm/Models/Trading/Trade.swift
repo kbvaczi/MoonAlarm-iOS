@@ -175,7 +175,7 @@ class Trade {
     }
     
     /// Exit a trade, setup sell orders if appropriate, continue tracking until exit complete
-    func exit() {
+    @objc func exit() {
         
         // Gracefully handle repeat function calls
         guard   self.status.isOpen,
@@ -198,7 +198,13 @@ class Trade {
         } else {
             // Cancel any open buy orders before proceeding to make sale orders
             self.buyOrderManager?.cancelOpenOrderAndStopBuying() { isSuccess in
-                guard isSuccess else { self.exit(); return }
+                guard isSuccess else {
+                    NSLog("Trade(\(self.symbol)): Error, unable to cancel open order")
+                    let _ = Timer.scheduledTimer(timeInterval: 5.0, target: self,
+                                                selector: #selector(self.exit),
+                                                userInfo: nil, repeats: false)
+                    return
+                }
              
                 // If we're doing live trading, place and manage sale orders
                 guard   let amountToSell = self.amountTrading else {

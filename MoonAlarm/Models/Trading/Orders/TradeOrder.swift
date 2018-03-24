@@ -95,7 +95,7 @@ class TradeOrder {
     func execute(callback: @escaping (_ isSuccess: Bool) -> Void) {
         
         // Cannot execute an order that's already been executed
-        guard self.status == .new else { callback(false); return }
+        guard self.status == .new else { callback(true); return }
         
         BinanceAPI.instance.postNewOrder(for: self) { (isSuccess, processedOrder) in
             guard isSuccess, processedOrder != nil else {
@@ -128,7 +128,7 @@ class TradeOrder {
     func update(callback: @escaping (_ isSuccess: Bool) -> Void) {
         
         // No need to update an order that's already final
-        guard !self.isFinalized else { callback(false); return }
+        guard !self.isFinalized else { callback(true); return }
         
         BinanceAPI.instance.getOrderUpdate(for: self) {
             (isSuccess, processedOrder) in

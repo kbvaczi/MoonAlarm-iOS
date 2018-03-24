@@ -10,9 +10,6 @@ import Foundation
 
 class SellOrderManager: OrderManager {
     
-    /// Higher sensitivity for selling
-    override var maxChangeToTargetPrice: Percent { get { return 0.1 } set { } }
-    
     /// Place a new limit sell order
     ///
     /// - Parameter callback: do this after placing order
@@ -50,10 +47,10 @@ class SellOrderManager: OrderManager {
                 (\(amountToList.display8) @ \(priceToList.display8) less than min notional value
                 (\(minNotionalValue.display8), stop new order
                 """)
-            callback(false); return
+            callback(true); return
         }
         
-        // If there much competition at current price point, let's buy a little higher
+        // If there much competition at current price point, let's sell a little lower
         if      let maxCompetition = self.minLimitOrderAmountAt(price: priceToList),
                 firstAskQty > maxCompetition,
                 let priceIncrement = exchangeInfo.priceTick(for: symbolPair) {
@@ -63,7 +60,20 @@ class SellOrderManager: OrderManager {
                 """)
             priceToList = firstAskPrice - priceIncrement
         }
-
+        
+        // Verify price hasn't gone down too far since initially trying to sell
+        let percentBelowTargetPrice = (self.targetPrice / firstAskPrice - 1).doubleToPercent
+        guard   percentBelowTargetPrice <= self.maxChangeToTargetPrice else {
+            NSLog("""
+                BuyOrderManager(\(self.parentTrade.symbol)): Price dropped too much
+                (\(percentBelowTargetPrice)%%), force market sell
+                """)
+            self.placeNewMarketOrder() { isSuccess in
+                callback(isSuccess)
+            }
+            return
+        }
+        
         // Try an iceburg limit order by hiding most of our order, leaving just min notional
         var amtVisible = self.minLimitOrderAmountAt(price: priceToList)
         if amtVisible ?? 0 >= amountToList { amtVisible = nil }
@@ -78,8 +88,13 @@ class SellOrderManager: OrderManager {
                     @ \(priceToList.display8)
                     """)
                 self.orders.append(newOrder)
-                callback(true)
+            } else {
+                NSLog("""
+                    SellOrderManager(\(self.parentTrade.symbol)): New sell order FAILED
+                    @ \(priceToList.display8)
+                    """)
             }
+            callback(isSuccess)
         }
     }
     
@@ -92,9 +107,14 @@ class SellOrderManager: OrderManager {
         
         /// Symbol we will use to buy/sell
         let symbolPair = self.parentTrade.symbol.symbolPair
+        /// Exchange info we will use for lot size and price filter
+        let exchangeInfo = TradeSession.instance.exchangeInfo
         
         /// Amount we have left to sell, we will place sell order for all of the remaining amount
-        let amountToList = self.targetAmount - self.orders.amountFilled
+        let amountLeftToOrder = self.targetAmount - self.orders.amountFilled
+        guard   let amountToList = exchangeInfo.nearestValidAmount(to: amountLeftToOrder,
+                                                                   for: symbolPair)
+                else { callback(false); return }
 
         let newOrder = TradeOrder(pair: symbolPair, side: .sell, type: .market,
                                   amount: amountToList)
@@ -106,17 +126,27 @@ class SellOrderManager: OrderManager {
                     at \((newOrder.avgfillPrice ?? 0.0).display8)
                     """)
                 self.orders.append(newOrder)
-                callback(true)
+                self.complete()
+            } else {
+                NSLog("""
+                    SellOrderManager(\(self.parentTrade.symbol)): New MARKET sell FAILED
+                    at \((newOrder.avgfillPrice ?? 0.0).display8)
+                    """)
             }
+            callback(isSuccess)
         }
     }
     
     override func manageOpenOrder() {
         
+        // Skip update if there is no order
+        guard   let order = self.orders.last else {
+            NSLog("BuyOrderManager(\(self.parentTrade.symbol)): ERROR, No order to manage")
+            return
+        }
+        
         // If order is finished, stop managing orders
-        guard   let order = self.orders.last,
-                !order.isFinalized
-                else {
+        guard   !order.isFinalized else {
             NSLog("SellOrderManager(\(self.parentTrade.symbol)): Order Finalized, stop managing")
             self.complete()
             return
@@ -125,7 +155,6 @@ class SellOrderManager: OrderManager {
         /// Use orderbook to track other orders on this market
         let orderBook = self.parentTrade.marketSnapshot.orderBook
         guard   let orderPrice = order.orderPrice,
-                let firstAsk = orderBook.firstAskPrice,
                 let competitionAmount = orderBook.amountAtOrBelowAsk(price: orderPrice)
                 else {
                 
@@ -136,24 +165,10 @@ class SellOrderManager: OrderManager {
             return
         }
         
-        // Verify price hasn't gone down too far since initially trying to sell
-        let percentBelowTargetPrice = (self.targetPrice / firstAsk - 1).doubleToPercent
-        guard   percentBelowTargetPrice <= self.maxChangeToTargetPrice else {
-            NSLog("""
-                BuyOrderManager(\(self.parentTrade.symbol)): Price dropped too much
-                (\(percentBelowTargetPrice)%%), force market sell
-                """)
-            cancelOrder(order) { isSuccess in
-                if isSuccess {
-                    self.placeNewMarketOrder(){ _ in }
-                }
-            }
-            return
-        }
-        
         // do we need to decrease sell price to be competetive?
         if      let maxCompetition = self.minLimitOrderAmountAt(price: orderPrice),
                 competitionAmount > maxCompetition {
+            
             NSLog("""
                 SellOrderManager(\(self.parentTrade.symbol)): Too much competition @
                 \(orderPrice.display8), replacing buy order

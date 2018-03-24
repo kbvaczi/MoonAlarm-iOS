@@ -52,17 +52,17 @@ class MoonAlarmTableViewController: UITableViewController {
     
         //  IPAD //
         TradeSettings.instance.tradeStrategy.entranceCriteria = [
-            StochRSIEnter(max: 85, noPriorCrossInLast: 0),
+            StochRSIEnter(max: 70, noPriorCrossInLast: 0),
 //            RSIEnter(max: 30, inLast: 5),
-            RunFallRatioEnter(1.2),
-//            SpareRunwayEnter(percent: 0.5),
+//            RunFallRatioEnter(1.0),
+            SpareRunwayEnter(percent: 1.0),
             DelayBetweenTradesEnter(minutes: 5),
         ]
 
         TradeSettings.instance.tradeStrategy.exitCriteria = [
 //            ProfitCutoffExit(percent: 1.0),
-            StochRSIExit(max: 98),
-            AndExit([MinRunwayExit(percent: 0.05), FallwayExit(percent: 0.2)]),
+            StochRSIExit(max: 97),
+            AndExit([MinRunwayExit(percent: 0.1), FallwayExit(percent: 0.2)]),
             LossExit(percent: 1.0),
         ]
     }

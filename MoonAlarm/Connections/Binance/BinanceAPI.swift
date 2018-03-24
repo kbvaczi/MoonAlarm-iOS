@@ -485,6 +485,7 @@ class BinanceAPI {
         if order.type != .market {
             params["timeInForce"] = order.timeInForce.rawValue
             guard let price = order.orderPrice else {
+                NSLog("BinanceAPI::NewOrder(\(order.symbolPair)): Error, order has no price")
                 callback(false, nil)
                 return
             }
@@ -498,6 +499,7 @@ class BinanceAPI {
             (isSuccessful, jsonResponse) in
             
             guard isSuccessful else {
+                NSLog("BinanceAPI::NewOrder(\(order.symbolPair)): Error, request unsuccessful")
                 callback(false, nil)
                 return
             }
@@ -519,6 +521,7 @@ class BinanceAPI {
         
         // Verify order has been processed before proceeding
         guard let orderID = order.uid else {
+            NSLog("BinanceAPI::UpdateOrder(\(order.symbolPair)): Error, order has no UID")
             callback(false, nil)
             return
         }
@@ -533,6 +536,7 @@ class BinanceAPI {
             (isSuccessful, jsonResponse) in
             
             guard isSuccessful else {
+                NSLog("BinanceAPI::UpdateOrder(\(order.symbolPair)): Error, request unsuccessful")
                 callback(false, nil)
                 return
             }
@@ -553,6 +557,7 @@ class BinanceAPI {
         
         // Verify order has been processed before proceeding
         guard let orderID = order.uid else {
+            NSLog("BinanceAPI::CancelOrder(\(order.symbolPair)): Error, order has no UID")
             callback(false, nil)
             return
         }
@@ -608,6 +613,11 @@ class BinanceAPI {
         let newStatusString = json["status"].stringValue
         if let newStatus = BinanceAPI.OrderStatus(rawValue: newStatusString) {
             order.status = newStatus
+        } else {
+            NSLog("""
+                BinanceAPI::UpdateOrder(\(order.symbolPair)): Error, invalid new status
+                named \(newStatusString)
+                """)
         }
         
         // Update fills (expect this only from create response with market orders?)

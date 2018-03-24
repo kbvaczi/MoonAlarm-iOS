@@ -22,11 +22,11 @@ class TradeSettings {
     
     var marketMin24HrVol: Double = 1000
     var tradeAmountTarget: Double = 0.005
-    var maxOpenTrades: Int = 5
+    var maxOpenTrades: Int = 8
     var expectedFeePerTrade: Percent = 0.1
     var testMode: Bool = true
 
-    var candleStickPeriod: BinanceAPI.KLineInterval = .h1
+    var candleStickPeriod: BinanceAPI.KLineInterval = .m5
     
     var tradeStrategy = TradeStrategy()
     

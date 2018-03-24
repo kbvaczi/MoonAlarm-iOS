@@ -27,10 +27,10 @@ class Markets {
     func filter (callback: @escaping (_ isSuccess: Bool) -> Void) {
         self.filterBy24HrVol() { isSuccess in
             guard isSuccess else { callback(false); return }
-//            self.filterWithStochRSI() { isSuccess in
+            self.filterWithStochRSI() { isSuccess in
                 NSLog("MARKETS: Filtered Markets Watching to \(self.symbols)")
                 callback(isSuccess)
-//            }
+            }
         }
     }
     
@@ -82,19 +82,17 @@ class Markets {
         for (index, symbol) in self.symbols.enumerated() {
             dpG.enter()
             let pair = symbol.symbolPair
-            // Get enough 1-day sticks to calculate stochastic price oscillator
-            BinanceAPI.instance.getCandleSticks(symbolPair: pair, interval: .h1, limit: 100) {
+            // Get enough longer period sticks to calculate stochastic price oscillator
+            BinanceAPI.instance.getCandleSticks(symbolPair: pair, interval: .m30, limit: 100) {
                 (isSuccess, cSticks) in
                 if isSuccess, let cSticks = cSticks {
                     cSticks.calculateRSI()
                     cSticks.calculateStochRSI()
-                    if let currentStoch = cSticks.last?.stochRSIK,
-                       let prevStoch = cSticks[cSticks.count - 2].stochRSIK,
-                       let currentStochDelta = cSticks.last?.stochRSISignalDelta {
-                        if currentStoch > 80 || currentStochDelta < 0 || currentStoch < prevStoch {
-                            indexesToRemove.append(index)
-                        }
-                    } else {
+                    let currentStochDelta = cSticks.last?.stochRSISignalDelta ?? 0
+                    let currentSRSIK = cSticks.last?.stochRSIK ?? 0
+                    let prevSRSIK = cSticks[cSticks.count - 2].stochRSIK ?? 0
+                    // filter if not enough data set to run RSI calculation or if SRSI is declining
+                    if currentStochDelta <= 0 || currentSRSIK < prevSRSIK {
                         indexesToRemove.append(index)
                     }
                 } else {

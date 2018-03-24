@@ -47,7 +47,7 @@ class BuyOrderManager: OrderManager {
                 (\(amountToList.display8)) less than min notional (\(minNotionalValue.display8),
                 stop new order
                 """)
-            callback(false); return
+            callback(true); return
         }
         
         // If there much competition at current price point, let's buy a little higher
@@ -62,8 +62,18 @@ class BuyOrderManager: OrderManager {
         }
         
         // Verify price hasn't increased too much prior to filling our target amount
+        // Execute market order if price continues to increase
         let percentOverTarget = (priceToList / self.targetPrice - 1).doubleToPercent
-        guard percentOverTarget <= self.maxChangeToTargetPrice else { callback(false); return }
+        guard percentOverTarget <= self.maxChangeToTargetPrice else {
+            NSLog("""
+                BuyOrderManager(\(self.parentTrade.symbol)): Price got too expensive
+                (\(percentOverTarget)%%), execute market order
+                """)
+            self.placeNewMarketOrder() { isSuccess in
+                callback(isSuccess)
+            }
+            return
+        }
         
         // Try an iceburg limit order by hiding most of our order, leaving just min notional
         var amtVisible = self.minLimitOrderAmountAt(price: priceToList)
@@ -79,8 +89,13 @@ class BuyOrderManager: OrderManager {
                     @ \(priceToList.display8)
                     """)
                 self.orders.append(newOrder)
-                callback(true)
+            } else {
+                NSLog("""
+                    BuyOrderManager(\(self.parentTrade.symbol)): New buy order FAILED
+                    @ \(priceToList.display8)
+                    """)
             }
+            callback(isSuccess)
         }
     }
     
@@ -93,31 +108,46 @@ class BuyOrderManager: OrderManager {
         
         /// Symbol we will use to buy/sell
         let symbolPair = self.parentTrade.symbol.symbolPair
+        /// Exchange info we will use for lot size and price filter
+        let exchangeInfo = TradeSession.instance.exchangeInfo
         
-        /// Amount we have left to sell, we will place sell order for all of the remaining amount
-        let amountToList = self.targetAmount - self.orders.amountFilled
+        /// Amount we have left to buy, we will place buy order for all of the remaining amount
+        let amountLeftToOrder = self.targetAmount - self.orders.amountFilled
+        guard   let amountToBuy = exchangeInfo.nearestValidAmount(to: amountLeftToOrder,
+                                                                  for: symbolPair)
+                else { callback(false); return }
         
-        let newOrder = TradeOrder(pair: symbolPair, side: .buy, type: .market,
-                                  amount: amountToList)
+        let newOrder = TradeOrder(pair: symbolPair, side: .buy, type: .market, amount: amountToBuy)
         
         newOrder.execute() { isSuccess in
             if isSuccess {
                 NSLog("""
-                    SellOrderManager(\(self.parentTrade.symbol)): New MARKET buy executed
+                    BuyOrderManager(\(self.parentTrade.symbol)): New MARKET buy executed
                     at \((newOrder.avgfillPrice ?? 0.0).display8)
                     """)
                 self.orders.append(newOrder)
-                callback(true)
+                self.complete()
+            } else {
+                NSLog("""
+                    BuyOrderManager(\(self.parentTrade.symbol)): New MARKET buy FAILED
+                    at \((newOrder.avgfillPrice ?? 0.0).display8)
+                    """)
             }
+            callback(isSuccess)
         }
     }
     
     /// Manage open order based on market conditions
     override func manageOpenOrder() {
         
+        // Skip update if there is no order
+        guard   let order = self.orders.last else {
+            NSLog("BuyOrderManager(\(self.parentTrade.symbol)): ERROR, No order to manage")
+            return
+        }
+        
         // If order is finished, stop managing orders
-        guard   let order = self.orders.last,
-                !order.isFinalized else {
+        guard   !order.isFinalized else {
             NSLog("BuyOrderManager(\(self.parentTrade.symbol)): Order Finalized, stop managing")
             self.complete()
             return
@@ -126,26 +156,12 @@ class BuyOrderManager: OrderManager {
         /// Use orderbook to track other orders on this market
         let orderBook = self.parentTrade.marketSnapshot.orderBook
         guard   let orderPrice = order.orderPrice,
-                let topBid = orderBook.topBidPrice,
                 let competitionAmount = orderBook.amountAtOrAboveBid(price: orderPrice)
                 else {
             NSLog("""
                 BuyOrderManager(\(self.parentTrade.symbol)): Error, no orderbook info,
                 unable to manage order
                 """)
-            return
-        }
-        
-        // Verify price hasn't gone up too far since initially trying to purchase
-        let percentAboveTargetPrice = (topBid / self.targetPrice - 1).doubleToPercent
-        guard   percentAboveTargetPrice <= self.maxChangeToTargetPrice else {
-            NSLog("""
-                BuyOrderManager(\(self.parentTrade.symbol)): Price got too expensive
-                (\(percentAboveTargetPrice)%%), stop placing new buy orders
-                """)
-            cancelOrder(order) { isSuccess in
-                if isSuccess { self.complete() }
-            }
             return
         }
         
@@ -165,10 +181,14 @@ class BuyOrderManager: OrderManager {
     /// - Parameter callback: do this after
     func cancelOpenOrderAndStopBuying(callback: @escaping (_ isSuccess: Bool) -> Void ) {
         
-        // Verify order needs to be canceled
-        guard   let orderToCancel = self.orders.last,
-                !orderToCancel.isFinalized
-                else { callback(true); return }
+        // Verify order needs to be cancelled
+        guard   let orderToCancel = self.orders.last else {
+            NSLog("BuyOrderManager(\(self.parentTrade.symbol)): Error, no order to cancel")
+            callback(false)
+            return
+        }
+        
+        guard   !orderToCancel.isFinalized else { callback(true); return }
         
         self.cancelOrder(orderToCancel) { isSuccess in
             if isSuccess { self.complete() }

@@ -162,7 +162,6 @@
 		BEF4963F200AA6A400501C5C /* TimeLimitUnprofitableCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeLimitUnprofitableCriterion.swift; sourceTree = "<group>"; };
 		BEF49647200AAC4E00501C5C /* LossPercentCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LossPercentCriterion.swift; sourceTree = "<group>"; };
 		BEF6BA0320541FCA00711DF7 /* TradeShowViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradeShowViewController.swift; sourceTree = "<group>"; };
-		BEF6BA062054256C00711DF7 /* Charts.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Charts.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BEF6BA0E205AAF1100711DF7 /* RunFallRatioCriterion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunFallRatioCriterion.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -198,7 +197,6 @@
 		BE390B802001488D00CFD46B = {
 			isa = PBXGroup;
 			children = (
-				BEF6BA062054256C00711DF7 /* Charts.framework */,
 				BE390B8B2001488D00CFD46B /* MoonAlarm */,
 				BE390B8A2001488D00CFD46B /* Products */,
 				8CE19EB6F85AED5810747D89 /* Pods */,
@@ -767,9 +765,9 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 9TGE3BXSJD;
 				INFOPLIST_FILE = MoonAlarm/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = vaczoway.MoonAlarm;
+				PRODUCT_BUNDLE_IDENTIFIER = com.vaczoway.MoonAlarm;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.0;
@@ -786,9 +784,9 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 9TGE3BXSJD;
 				INFOPLIST_FILE = MoonAlarm/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = vaczoway.MoonAlarm;
+				PRODUCT_BUNDLE_IDENTIFIER = com.vaczoway.MoonAlarm;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.0;
